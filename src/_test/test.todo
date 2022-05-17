@@ -1,0 +1,15 @@
+1 these estimator definitions should be moved to their respective folders 
+ 1 these fgh definitions should be moved to their respective folders 
+ 3 still have to define the GrumpsSolution type 
+ 1 remember: only stick stuff in space structs that gets reused 
+ 4 must reset lastδ every time a new θ is computed 
+ 2 GrumpsSpace frugal memspace not yet implemented 
+ 1 balancing scheme is different from before in that I now subtract out the mean; need to think about whether that's a good idea 
+ 2 SetHighWaterMark! not written yet 
+ 2 SetStatus! not written yet 
+ 1 move sizes elsewhere 
+ 1 document micllf 
+ 2 parallelize MicroObjectiveθ! 
+ 2 parallelize MacroObjectiveθ! 
+ 1 document this file 
+ 

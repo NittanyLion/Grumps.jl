@@ -1,0 +1,961 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- This file was created with the aha Ansi HTML Adapter. https://github.com/theZiz/aha -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="application/xml+xhtml; charset=UTF-8" />
+<title>stdin</title>
+</head>
+<body>
+<pre>
+
+****** these estimator definitions should be moved to their respective folders *****  #= /slowpoke/Dropbox/repos/grumps-super-modular/common/types/est.jl:6 =#
+
+
+****** these fgh definitions should be moved to their respective folders *****  #= /slowpoke/Dropbox/repos/grumps-super-modular/common/types/fgh.jl:53 =#
+
+
+****** still have to define the GrumpsSolution type *****  #= /slowpoke/Dropbox/repos/grumps-super-modular/common/types/sol.jl:4 =#
+
+
+****** remember: only stick stuff in space structs that gets reused *****  #= /slowpoke/Dropbox/repos/grumps-super-modular/common/types/space.jl:10 =#
+
+
+****** must reset lastδ every time a new θ is computed *****  #= /slowpoke/Dropbox/repos/grumps-super-modular/common/types/space.jl:45 =#
+
+
+****** GrumpsSpace frugal memspace not yet implemented *****  #= /slowpoke/Dropbox/repos/grumps-super-modular/common/types/space.jl:133 =#
+
+
+****** balancing scheme is different from before in that I now subtract out the mean; need to think about whether that's a good idea *****  #= /slowpoke/Dropbox/repos/grumps-super-modular/common/data/balance.jl:9 =#
+
+
+****** data processing takes longer than it probably should *****  #= /slowpoke/Dropbox/repos/grumps-super-modular/common/data/data.jl:5 =#
+
+
+****** SetHighWaterMark! not written yet *****  #= /slowpoke/Dropbox/repos/grumps-super-modular/common/sol/sol.jl:10 =#
+
+
+****** SetStatus! not written yet *****  #= /slowpoke/Dropbox/repos/grumps-super-modular/common/sol/sol.jl:20 =#
+
+
+****** move sizes elsewhere *****  #= /slowpoke/Dropbox/repos/grumps-super-modular/common/optim/micllf.jl:16 =#
+
+
+****** document micllf *****  #= /slowpoke/Dropbox/repos/grumps-super-modular/common/optim/micllf.jl:27 =#
+
+
+****** parallelize MicroObjectiveθ! *****  #= /slowpoke/Dropbox/repos/grumps-super-modular/common/optim/micllf.jl:28 =#
+
+
+****** parallelize MacroObjectiveθ! *****  #= /slowpoke/Dropbox/repos/grumps-super-modular/common/optim/macllf.jl:88 =#
+
+
+****** document this file *****  #= /slowpoke/Dropbox/repos/grumps-super-modular/common/optim/expo.jl:2 =#
+
+
+  ________               _____ __________  _________
+ /  _____/______ __ __  /     \\______   \/   _____/
+/   \  __\_  __ \  |  \/  \ /  \|     ___/\_____  \ 
+\    \_\  \  | \/  |  /    Y    \    |    /        \
+ \______  /__|  |____/\____|__  /____|   /_______  /
+        \/                    \/                 \/ 
+
+ Please note:
+ 1: read the manual grumps-documentation.pdf 
+ 2: this is a preliminary version
+ 3: still need to put in designed quadrature
+ 4: does not do CUDA
+ 5: uses multithreading, but no distributed computing
+ 6: does not do multinomial logit
+ 7: please direct all questions/suggestions/comments to Joris Pinkse at joris@psu.edu
+
+
+                     consumers: _example_consumers.csv  text file delimited by a ,
+                      products: _example_products.csv  text file delimited by a ,
+                   marketsizes: _example_marketsizes.csv  text file delimited by a ,
+                         draws: _example_draws.csv  text file delimited by a ,
+                          user: unspecified
+
+column headings used:
+                        market: market
+                       product: product
+                        choice: choice
+                         share: share
+                    marketsize: N
+labels used:
+                   outsidegood: product 11
+interactions used:
+                        income * constant
+                        income * ibu
+                           age * ibu
+regressors:
+                      constant
+                           ibu
+                           abv
+instruments:
+                      constant
+                           ibu
+                           abv
+                      IVgh_ibu
+                      IVgh_abv
+dummies:
+                          none
+nuisancedummy:
+                          none
+
+Grumps.EstimatorDescription[Grumps.EstimatorDescription(:mixedlogit, &quot;Mixed Logit&quot;, [&quot;mixed logit&quot;, &quot;mixed&quot;, &quot;random coefficients logit&quot;, &quot;micro logit&quot;]), Grumps.EstimatorDescription(:shareconstraint, &quot;Share Constraint MLE&quot;, [&quot;sc&quot;, &quot;shareconstraint&quot;, &quot;mle with share constraint&quot;, &quot;share constraint&quot;]), Grumps.EstimatorDescription(:vanilla, &quot;Grumps MLE&quot;, [&quot;mle&quot;, &quot;grumps mle&quot;, &quot;maximum likelihood&quot;, &quot;grumps maximum likelihood&quot;, &quot;ml&quot;, &quot;maxlik&quot;])]
+(50, 3) versus (50, 3)
+got here
+1  inside  F 3.4473878811587445e-11
+1  inside  Hδδ 16175.708830218384
+1  inside  Hδθ 29737.61754343805
+1  outside  F 1412.6034916808455
+1  outside  Gθ 353.02810806147795
+1  outside  Gδ 22.0934319171969
+1  outside  Hθθ 2029.3891658838352
+1  outside  Hδδ 163.88203763324805
+1  outside  Hδθ 302.55566946741686
+2  inside  F 2.219664323950016e-10
+2  inside  Hδδ 17698.149372924025
+2  inside  Hδθ 41016.195739781695
+2  outside  F 1096.3786308745491
+2  outside  Gθ 381.8828128216171
+2  outside  Gδ 26.950022532445985
+2  outside  Hθθ 2087.4956264749517
+2  outside  Hδδ 178.8510378164682
+2  outside  Hδθ 420.21094629969394
+3  inside  F 4.298142271732916e-11
+3  inside  Hδδ 10639.00544280828
+3  inside  Hδθ 19315.17437523308
+3  outside  F 1224.4160387636143
+3  outside  Gθ 277.414540957185
+3  outside  Gδ 13.749762017957202
+3  outside  Hθθ 1522.0707238687764
+3  outside  Hδδ 107.14972662021482
+3  outside  Hδθ 194.4672403635643
+4  inside  F 2.5200830326507613e-10
+4  inside  Hδδ 20459.139513845188
+4  inside  Hδθ 33375.688425755005
+4  outside  F 1409.063489685814
+4  outside  Gθ 365.22071860400985
+4  outside  Gδ 24.090425900069693
+4  outside  Hθθ 2161.0385862470553
+4  outside  Hδδ 206.60966624220399
+4  outside  Hδθ 334.0355639839218
+5  inside  F 1.1384160280015874e-10
+5  inside  Hδδ 20203.99127008168
+5  inside  Hδθ 28462.084008738595
+5  outside  F 1349.3771862710146
+5  outside  Gθ 361.7267921439454
+5  outside  Gδ 10.565733168041282
+5  outside  Hθθ 1643.8848221939961
+5  outside  Hδδ 204.151293109413
+5  outside  Hδθ 285.1570248140482
+
+                              Share Constraint MLE
+                              ____________________
+itr    obj fun value    gradient norm        time    (transformed) theta coefficients
+---   --------------   --------------      -------
+  0   +6491.83883728    1255.29849382      0.00     +0.00   +0.00   +0.00   -0.69   -0.69 
+1  inside  F 1.7311651185285677e-10
+1  inside  Hδδ 15481.142345095464
+1  inside  Hδθ 19980.761983813893
+1  outside  F 1255.6162831164352
+1  outside  Gθ 432.3769563643209
+1  outside  Gδ 43.09055498485558
+1  outside  Hθθ not needed
+1  outside  Hδδ not needed
+1  outside  Hδθ not needed
+2  inside  F 1.3660438136164348e-10
+2  inside  Hδδ 15014.036773670738
+2  inside  Hδθ 27127.022318772357
+2  outside  F 929.1674884362195
+2  outside  Gθ 471.498169555695
+2  outside  Gδ 57.46933416580631
+2  outside  Hθθ not needed
+2  outside  Hδδ not needed
+2  outside  Hδθ not needed
+3  inside  F 2.062631902480186e-10
+3  inside  Hδδ 10378.867134960588
+3  inside  Hδθ 13192.961785151263
+3  outside  F 1108.647133093931
+3  outside  Gθ 321.6347671017804
+3  outside  Gδ 27.446835897538993
+3  outside  Hθθ not needed
+3  outside  Hδδ not needed
+3  outside  Hδθ not needed
+4  inside  F 1.7880352747124047e-10
+4  inside  Hδδ 19823.87180543131
+4  inside  Hδθ 21864.301575462716
+4  outside  F 1266.6303268601996
+4  outside  Gθ 401.7354397280792
+4  outside  Gδ 46.02382252688315
+4  outside  Hθθ not needed
+4  outside  Hδδ not needed
+4  outside  Hδθ not needed
+5  inside  F 1.6398603745516758e-10
+5  inside  Hδδ 18945.457937653904
+5  inside  Hδθ 19409.475694759563
+5  outside  F 1193.7312161837308
+5  outside  Gθ 432.17736996497575
+5  outside  Gδ 20.550571951883846
+5  outside  Hθθ not needed
+5  outside  Hδδ not needed
+5  outside  Hδθ not needed
+
+1  inside  F 1.7311651185285677e-10
+1  inside  Hδδ 15481.142345095464
+1  inside  Hδθ 19980.761983813893
+1  outside  F 1255.6162831164352
+1  outside  Gθ 432.3769563643209
+1  outside  Gδ 43.09055498485558
+1  outside  Hθθ 3617.310019667482
+1  outside  Hδδ 325.2413632003383
+1  outside  Hδθ 552.6752342272898
+2  inside  F 1.3660438136164348e-10
+2  inside  Hδδ 15014.036773670738
+2  inside  Hδθ 27127.022318772357
+2  outside  F 929.1674884362195
+2  outside  Gθ 471.498169555695
+2  outside  Gδ 57.46933416580631
+2  outside  Hθθ 3614.0541093626416
+2  outside  Hδδ 339.5726315761936
+2  outside  Hδθ 750.140282624106
+3  inside  F 2.062631902480186e-10
+3  inside  Hδδ 10378.867134960588
+3  inside  Hδθ 13192.961785151263
+3  outside  F 1108.647133093931
+3  outside  Gθ 321.6347671017804
+3  outside  Gδ 27.446835897538993
+3  outside  Hθθ 2664.6811440692222
+3  outside  Hδδ 212.80904802064626
+3  outside  Hδθ 352.43373896353404
+4  inside  F 1.7880352747124047e-10
+4  inside  Hδδ 19823.87180543131
+4  inside  Hδθ 21864.301575462716
+4  outside  F 1266.6303268601996
+4  outside  Gθ 401.7354397280792
+4  outside  Gδ 46.02382252688315
+4  outside  Hθθ 3841.369825136897
+4  outside  Hδδ 412.85947741742376
+4  outside  Hδθ 604.9284329921624
+5  inside  F 1.6398603745516758e-10
+5  inside  Hδδ 18945.457937653904
+5  inside  Hδθ 19409.475694759563
+5  outside  F 1193.7312161837308
+5  outside  Gθ 432.17736996497575
+5  outside  Gδ 20.550571951883846
+5  outside  Hθθ 2927.3918377138084
+5  outside  Hδδ 403.2089347117341
+5  outside  Hδθ 519.2613589950945
+
+  1   +5753.79244769    1454.62822640      0.82     +0.55   +0.38   +0.45   -1.22   -0.97 
+1  inside  F 4.455735780368138e-11
+1  inside  Hδδ 15101.127235503955
+1  inside  Hδθ 13431.466512234665
+1  outside  F 1245.701882598431
+1  outside  Gθ 419.42660747373264
+1  outside  Gδ 63.56654473071466
+1  outside  Hθθ not needed
+1  outside  Hδδ not needed
+1  outside  Hδθ not needed
+2  inside  F 5.73591171669619e-11
+2  inside  Hδδ 13335.138319870344
+2  inside  Hδθ 17751.321227374465
+2  outside  F 915.8838137895104
+2  outside  Gθ 465.8287821478241
+2  outside  Gδ 89.38385917300064
+2  outside  Hθθ not needed
+2  outside  Hδδ not needed
+2  outside  Hδθ not needed
+3  inside  F 3.166871252179743e-10
+3  inside  Hδδ 10212.751968803328
+3  inside  Hδθ 8628.268449533061
+3  outside  F 1112.5409933813655
+3  outside  Gθ 271.8006647131951
+3  outside  Gδ 41.12108721064823
+3  outside  Hθθ not needed
+3  outside  Hδδ not needed
+3  outside  Hδθ not needed
+4  inside  F 3.2304134020982085e-10
+4  inside  Hδδ 19526.02690569799
+4  inside  Hδθ 13833.312137380984
+4  outside  F 1282.5865335985338
+4  outside  Gθ 323.9152311979013
+4  outside  Gδ 67.39134939619969
+4  outside  Hθθ not needed
+4  outside  Hδδ not needed
+4  outside  Hδθ not needed
+5  inside  F 2.630064633070836e-10
+5  inside  Hδδ 17737.75799180334
+5  inside  Hδθ 11613.731665526828
+5  outside  F 1187.7973995260797
+5  outside  Gθ 392.1260485762412
+5  outside  Gδ 30.19110484811847
+5  outside  Hθθ not needed
+5  outside  Hδδ not needed
+5  outside  Hδθ not needed
+
+  2   +5753.79244769    1454.62822640      1.00     +0.55   +0.38   +0.45   -1.22   -0.97 
+1  inside  F 4.383127193856064e-11
+1  inside  Hδδ 15065.2293394153
+1  inside  Hδθ 13420.581050978317
+1  outside  F 1245.669611218781
+1  outside  Gθ 426.9550409754088
+1  outside  Gδ 84.1590561986937
+1  outside  Hθθ not needed
+1  outside  Hδδ not needed
+1  outside  Hδθ not needed
+2  inside  F 2.4947910745540236e-10
+2  inside  Hδδ 13283.473025723384
+2  inside  Hδθ 17817.814966446564
+2  outside  F 914.8106250430359
+2  outside  Gθ 477.3720558961442
+2  outside  Gδ 121.39282540368518
+2  outside  Hθθ not needed
+2  outside  Hδδ not needed
+2  outside  Hδθ not needed
+3  inside  F 1.0505302329736045e-10
+3  inside  Hδδ 10213.931753424824
+3  inside  Hδθ 8866.720388605258
+3  outside  F 1109.6076721191253
+3  outside  Gθ 232.15109900693207
+3  outside  Gδ 54.761286703348965
+3  outside  Hθθ not needed
+3  outside  Hδδ not needed
+3  outside  Hδθ not needed
+4  inside  F 2.483011767588024e-10
+4  inside  Hδδ 19496.45679414454
+4  inside  Hδθ 14066.783630582175
+4  outside  F 1278.5836801317498
+4  outside  Gθ 255.03746644309288
+4  outside  Gδ 88.88032269327222
+4  outside  Hθθ not needed
+4  outside  Hδδ not needed
+4  outside  Hδθ not needed
+5  inside  F 8.081927803247001e-11
+5  inside  Hδδ 17726.384244805642
+5  inside  Hδθ 12783.455383732724
+5  outside  F 1184.751021797487
+5  outside  Gθ 363.65373585550674
+5  outside  Gδ 39.80142069462473
+5  outside  Hθθ not needed
+5  outside  Hδδ not needed
+5  outside  Hδθ not needed
+
+  3   +5753.79244769    1454.62822640      1.18     +0.55   +0.38   +0.45   -1.22   -0.97 
+1  inside  F 2.0080969731689271e-10
+1  inside  Hδδ 15348.040610189564
+1  inside  Hδθ 17896.94050107291
+1  outside  F 1248.7861929440958
+1  outside  Gθ 498.0077626089122
+1  outside  Gδ 105.1050131251557
+1  outside  Hθθ not needed
+1  outside  Hδδ not needed
+1  outside  Hδθ not needed
+2  inside  F 1.5837026583296354e-11
+2  inside  Hδδ 14470.096600736832
+2  inside  Hδθ 24184.552219496294
+2  outside  F 920.4010833599714
+2  outside  Gθ 553.0683258199175
+2  outside  Gδ 152.47533960745764
+2  outside  Hθθ not needed
+2  outside  Hδδ not needed
+2  outside  Hδθ not needed
+3  inside  F 1.3284804420983413e-10
+3  inside  Hδδ 10325.9438613562
+3  inside  Hδθ 11844.02580910878
+3  outside  F 1104.413962541885
+3  outside  Gθ 250.12715423303752
+3  outside  Gδ 68.44556805127387
+3  outside  Hθθ not needed
+3  outside  Hδδ not needed
+3  outside  Hδθ not needed
+4  inside  F 1.028952937977602e-10
+4  inside  Hδδ 19712.71931502079
+4  inside  Hδθ 19436.376473009615
+4  outside  F 1264.0925142626988
+4  outside  Gθ 259.7537639514182
+4  outside  Gδ 110.77846523383477
+4  outside  Hθθ not needed
+4  outside  Hδδ not needed
+4  outside  Hδθ not needed
+5  inside  F 2.007533942531872e-10
+5  inside  Hδδ 18588.9052715351
+5  inside  Hδθ 17426.96858001027
+5  outside  F 1186.4284374404203
+5  outside  Gθ 401.60079269397005
+5  outside  Gδ 49.66049027404284
+5  outside  Hθθ not needed
+5  outside  Hδδ not needed
+5  outside  Hδθ not needed
+
+1  inside  F 2.0080969731689271e-10
+1  inside  Hδδ 15348.040610189564
+1  inside  Hδθ 17896.94050107291
+1  outside  F 1248.7861929440958
+1  outside  Gθ 498.0077626089122
+1  outside  Gδ 105.1050131251557
+1  outside  Hθθ 5108.377900472707
+1  outside  Hδδ 485.813907416182
+1  outside  Hδθ 789.8724537665432
+2  inside  F 1.5837026583296354e-11
+2  inside  Hδδ 14470.096600736832
+2  inside  Hδθ 24184.552219496294
+2  outside  F 920.4010833599714
+2  outside  Gθ 553.0683258199175
+2  outside  Gδ 152.47533960745764
+2  outside  Hθθ 5032.343074798461
+2  outside  Hδδ 496.26067425057875
+2  outside  Hδθ 1060.398488102447
+3  inside  F 1.3284804420983413e-10
+3  inside  Hδδ 10325.9438613562
+3  inside  Hδθ 11844.02580910878
+3  outside  F 1104.413962541885
+3  outside  Gθ 250.12715423303752
+3  outside  Gδ 68.44556805127387
+3  outside  Hθθ 3735.1542063236084
+3  outside  Hδδ 318.05010132433665
+3  outside  Hδθ 502.2509284271904
+4  inside  F 1.028952937977602e-10
+4  inside  Hδδ 19712.71931502079
+4  inside  Hδθ 19436.376473009615
+4  outside  F 1264.0925142626988
+4  outside  Gθ 259.7537639514182
+4  outside  Gδ 110.77846523383477
+4  outside  Hθθ 5409.763658475712
+4  outside  Hδδ 618.6982689346918
+4  outside  Hδθ 859.7931322278238
+5  inside  F 2.007533942531872e-10
+5  inside  Hδδ 18588.9052715351
+5  inside  Hδθ 17426.96858001027
+5  outside  F 1186.4284374404203
+5  outside  Gθ 401.60079269397005
+5  outside  Gδ 49.66049027404284
+5  outside  Hθθ 4131.762126469734
+5  outside  Hδδ 600.0702027625631
+5  outside  Hδθ 740.7522831871551
+
+  4   +5724.12219055    1248.84329309      1.55     +0.63   +0.47   +0.49   -1.22   -0.97 
+1  inside  F 1.5528634150070056e-10
+1  inside  Hδδ 15317.69698437802
+1  inside  Hδθ 17409.163199686467
+1  outside  F 1247.7394881705873
+1  outside  Gθ 567.2375642547235
+1  outside  Gδ 126.03566409319627
+1  outside  Hθθ not needed
+1  outside  Hδδ not needed
+1  outside  Hδθ not needed
+2  inside  F 1.2315383808866717e-11
+2  inside  Hδδ 14344.335800797448
+2  inside  Hδθ 23495.52561861274
+2  outside  F 918.8839188046028
+2  outside  Gθ 625.7257177911088
+2  outside  Gδ 183.65782459604117
+2  outside  Hθθ not needed
+2  outside  Hδδ not needed
+2  outside  Hδθ not needed
+3  inside  F 1.9910814963200206e-10
+3  inside  Hδδ 10313.828280718204
+3  inside  Hδθ 11524.727124082892
+3  outside  F 1103.9154659726119
+3  outside  Gθ 262.68999976279684
+3  outside  Gδ 82.12519293329608
+3  outside  Hθθ not needed
+3  outside  Hδδ not needed
+3  outside  Hδθ not needed
+4  inside  F 1.4339834150385126e-10
+4  inside  Hδδ 19688.099418039925
+4  inside  Hδθ 18869.59136103886
+4  outside  F 1264.1844648308188
+4  outside  Gθ 259.00896976052553
+4  outside  Gδ 132.63633527970606
+4  outside  Hθθ not needed
+4  outside  Hδδ not needed
+4  outside  Hδθ not needed
+5  inside  F 2.2431163531030592e-10
+5  inside  Hδδ 18503.459528764757
+5  inside  Hδθ 16956.981095303796
+5  outside  F 1185.2577427178878
+5  outside  Gθ 432.3888704301676
+5  outside  Gδ 59.485850428668236
+5  outside  Hθθ not needed
+5  outside  Hδδ not needed
+5  outside  Hδθ not needed
+
+  5   +5724.12219055    1248.84329309      1.74     +0.63   +0.47   +0.49   -1.22   -0.97 
+1  inside  F 3.221000093554165e-10
+1  inside  Hδδ 15340.350933540512
+1  inside  Hδθ 17773.323565160685
+1  outside  F 1248.5048797202326
+1  outside  Gθ 641.2890726308129
+1  outside  Gδ 146.97828452357405
+1  outside  Hθθ not needed
+1  outside  Hδδ not needed
+1  outside  Hδθ not needed
+2  inside  F 5.5881356916320173e-11
+2  inside  Hδδ 14438.276555371556
+2  inside  Hδθ 24009.97221450293
+2  outside  F 919.9985869630528
+2  outside  Gθ 703.6332347165828
+2  outside  Gδ 214.76800719471018
+2  outside  Hθθ not needed
+2  outside  Hδδ not needed
+2  outside  Hδθ not needed
+3  inside  F 2.3748534983335034e-12
+3  inside  Hδδ 10322.87061019567
+3  inside  Hδθ 11763.153457165334
+3  outside  F 1104.268518290538
+3  outside  Gθ 280.23757283847556
+3  outside  Gδ 95.80833654734256
+3  outside  Hθθ not needed
+3  outside  Hδδ not needed
+3  outside  Hδθ not needed
+4  inside  F 1.9978702806953053e-10
+4  inside  Hδδ 19706.45092341158
+4  inside  Hδθ 19292.95739595536
+4  outside  F 1264.0897311641381
+4  outside  Gθ 265.3058531660758
+4  outside  Gδ 154.52955793976483
+4  outside  Hθθ not needed
+4  outside  Hδδ not needed
+4  outside  Hδθ not needed
+5  inside  F 9.502281678901442e-13
+5  inside  Hδδ 18567.335491026402
+5  inside  Hδθ 17308.269323648714
+5  outside  F 1186.1126211540889
+5  outside  Gθ 468.8604881294504
+5  outside  Gδ 69.33689620169147
+5  outside  Hθθ not needed
+5  outside  Hδδ not needed
+5  outside  Hδθ not needed
+
+  6   +5724.12219055    1248.84329309      1.90     +0.63   +0.47   +0.49   -1.22   -0.97 
+1  inside  F 1.9295671530908217e-11
+1  inside  Hδδ 15346.111785916548
+1  inside  Hδθ 17865.93367023043
+1  outside  F 1248.7146025980335
+1  outside  Gθ 717.0463176144945
+1  outside  Gδ 167.92376963201468
+1  outside  Hθθ not needed
+1  outside  Hδδ not needed
+1  outside  Hδθ not needed
+2  inside  F 5.573740817348517e-11
+2  inside  Hδδ 14462.118379115453
+2  inside  Hδθ 24140.764561204884
+2  outside  F 920.2989779166729
+2  outside  Gθ 783.3135894628964
+2  outside  Gδ 245.85994784787368
+2  outside  Hθθ not needed
+2  outside  Hδδ not needed
+2  outside  Hδθ not needed
+3  inside  F 2.407246327134928e-10
+3  inside  Hδδ 10325.17281285746
+3  inside  Hδθ 11823.743475844845
+3  outside  F 1104.376275156808
+3  outside  Gθ 299.24468215327244
+3  outside  Gδ 109.49233758937898
+3  outside  Hθθ not needed
+3  outside  Hδδ not needed
+3  outside  Hδθ not needed
+4  inside  F 1.4190571565081021e-10
+4  inside  Hδδ 19711.145151009066
+4  inside  Hδθ 19400.41623219092
+4  outside  F 1264.090173079432
+4  outside  Gθ 274.26064035716314
+4  outside  Gδ 176.43243328066472
+4  outside  Hθθ not needed
+4  outside  Hδδ not needed
+4  outside  Hδθ not needed
+5  inside  F 3.7044909361836477e-10
+5  inside  Hδδ 18583.500086430486
+5  inside  Hδθ 17397.220742013567
+5  outside  F 1186.3480072728887
+5  outside  Gθ 506.84958567085715
+5  outside  Gδ 79.1945799642387
+5  outside  Hθθ not needed
+5  outside  Hδδ not needed
+5  outside  Hδθ not needed
+
+  7   +5724.12219055    1248.84329309      2.09     +0.63   +0.47   +0.49   -1.22   -0.97 
+1  inside  F 1.1749024457988622e-10
+1  inside  Hδδ 15347.558005149938
+1  inside  Hδθ 17889.182412486076
+1  outside  F 1248.7682159350968
+1  outside  Gθ 793.6418423109566
+1  outside  Gδ 188.86998860093735
+1  outside  Hθθ not needed
+1  outside  Hδδ not needed
+1  outside  Hδθ not needed
+2  inside  F 5.376357186855008e-11
+2  inside  Hδδ 14468.100603310397
+2  inside  Hδθ 24173.59643014403
+2  outside  F 920.3754639267047
+2  outside  Gθ 863.810894055059
+2  outside  Gδ 276.9474956072278
+2  outside  Hθθ not needed
+2  outside  Hδδ not needed
+2  outside  Hδθ not needed
+3  inside  F 1.7992008161540557e-10
+3  inside  Hδδ 10325.75092886297
+3  inside  Hδθ 11838.951230387542
+3  outside  F 1104.4044574098104
+3  outside  Gθ 318.79405157362106
+3  outside  Gδ 123.17655150438327
+3  outside  Hθθ not needed
+3  outside  Hδδ not needed
+3  outside  Hδθ not needed
+4  inside  F 5.8379212037538536e-12
+4  inside  Hδδ 19712.325332819528
+4  inside  Hδθ 19427.379856510084
+4  outside  F 1264.0918255854695
+4  outside  Gθ 284.70985593036494
+4  outside  Gδ 198.3382210233079
+4  outside  Hθθ not needed
+4  outside  Hδδ not needed
+4  outside  Hδθ not needed
+5  inside  F 1.6866427230482247e-10
+5  inside  Hδδ 18587.553183625958
+5  inside  Hδθ 17419.5270908406
+5  outside  F 1186.4082371783318
+5  outside  Gθ 545.2778907750575
+5  outside  Gδ 89.05398762615927
+5  outside  Hθθ not needed
+5  outside  Hδδ not needed
+5  outside  Hδθ not needed
+
+  8   +5724.12219055    1248.84329309      2.29     +0.63   +0.47   +0.49   -1.22   -0.97 
+1  inside  F 1.1748845853516355e-10
+1  inside  Hδδ 15347.919934015414
+1  inside  Hδθ 17895.000580616826
+1  outside  F 1248.7816937194168
+1  outside  Gθ 870.7641006473683
+1  outside  Gδ 209.81641089885767
+1  outside  Hθθ not needed
+1  outside  Hδδ not needed
+1  outside  Hδθ not needed
+2  inside  F 5.843045585298849e-11
+2  inside  Hδδ 14469.597511389993
+2  inside  Hδθ 24181.812718135156
+2  outside  F 920.3946726769814
+2  outside  Gθ 944.8023790323726
+2  outside  Gδ 308.0340874056271
+2  outside  Hθθ not needed
+2  outside  Hδδ not needed
+2  outside  Hδθ not needed
+3  inside  F 2.029984392723275e-10
+3  inside  Hδδ 10325.8956175946
+3  inside  Hδθ 11842.75691502939
+3  outside  F 1104.411581047406
+3  outside  Gθ 338.6291767145275
+3  outside  Gδ 136.86081858705998
+3  outside  Hθθ not needed
+3  outside  Hδδ not needed
+3  outside  Hδθ not needed
+4  inside  F 3.6252049927079206e-11
+4  inside  Hδδ 19712.620791902737
+4  inside  Hδθ 19434.126909678682
+4  outside  F 1264.09233562356
+4  outside  Gθ 296.28159902152413
+4  outside  Gδ 220.24509960005943
+4  outside  Hθθ not needed
+4  outside  Hδδ not needed
+4  outside  Hδθ not needed
+5  inside  F 2.302761851543633e-10
+5  inside  Hδδ 18588.567200153546
+5  inside  Hδθ 17425.107925154178
+5  outside  F 1186.423381572632
+5  outside  Gθ 583.8641652880173
+5  outside  Gδ 98.91386758748025
+5  outside  Hθθ not needed
+5  outside  Hδδ not needed
+5  outside  Hδθ not needed
+
+  9   +5724.12219055    1248.84329309      2.47     +0.63   +0.47   +0.49   -1.22   -0.97 
+1  inside  F 1.3305157464108484e-10
+1  inside  Hδδ 15348.010439589238
+1  inside  Hδθ 17896.455496072456
+1  outside  F 1248.7850678270177
+1  outside  Gθ 948.2628427932884
+1  outside  Gδ 230.76289933083407
+1  outside  Hθθ not needed
+1  outside  Hδδ not needed
+1  outside  Hδθ not needed
+2  inside  F 6.461428603932073e-11
+2  inside  Hδδ 14469.971822777981
+2  inside  Hδθ 24183.867309539855
+2  outside  F 920.3994803250628
+2  outside  Gθ 1026.1430230818194
+2  outside  Gδ 339.12054756390955
+2  outside  Hθθ not needed
+2  outside  Hδδ not needed
+2  outside  Hδθ not needed
+3  inside  F 2.2879950777440776e-10
+3  inside  Hδδ 10325.93179975108
+3  inside  Hδθ 11843.708570006458
+3  outside  F 1104.4133668424533
+3  outside  Gθ 358.66234373383304
+3  outside  Gδ 150.54509899225363
+3  outside  Hθθ not needed
+3  outside  Hδδ not needed
+3  outside  Hδθ not needed
+4  inside  F 2.52562355188904e-11
+4  inside  Hδδ 19712.694682518424
+4  inside  Hδθ 19435.814056610267
+4  outside  F 1264.0924691984158
+4  outside  Gθ 308.7996250283234
+4  outside  Gδ 242.1525221402067
+4  outside  Hθθ not needed
+4  outside  Hδδ not needed
+4  outside  Hδθ not needed
+5  inside  F 1.815927791329294e-11
+5  inside  Hδδ 18588.82075060309
+5  inside  Hδθ 17426.5033986445
+5  outside  F 1186.4271731107176
+5  outside  Gθ 622.5295789891805
+5  outside  Gδ 108.77389607114004
+5  outside  Hθθ not needed
+5  outside  Hδδ not needed
+5  outside  Hδθ not needed
+
+ 10   +5724.12219055    1248.84329309      2.63     +0.63   +0.47   +0.49   -1.22   -0.97 
+1  inside  F 2.347135867859872e-10
+1  inside  Hδδ 15348.03306744222
+1  inside  Hδθ 17896.819248267722
+1  outside  F 1248.7859116453942
+1  outside  Gθ 1026.0475039545413
+1  outside  Gδ 251.70941601309752
+1  outside  Hθθ not needed
+1  outside  Hδδ not needed
+1  outside  Hδθ not needed
+2  inside  F 8.503900397646929e-11
+2  inside  Hδδ 14470.065405895777
+2  inside  Hδθ 24184.38098984386
+2  outside  F 920.4006825784835
+2  outside  Gθ 1107.749012603328
+2  outside  Gδ 370.20705666785096
+2  outside  Hθθ not needed
+2  outside  Hδδ not needed
+2  outside  Hδθ not needed
+3  inside  F 1.6919701279131057e-10
+3  inside  Hδδ 10325.940845913357
+3  inside  Hδθ 11843.946498359359
+3  outside  F 1104.4138135966616
+3  outside  Gθ 378.8521408808942
+3  outside  Gδ 164.2293827559749
+3  outside  Hθθ not needed
+3  outside  Hδδ not needed
+3  outside  Hδθ not needed
+4  inside  F 2.1211699578942369e-10
+4  inside  Hδδ 19712.71315678751
+4  inside  Hδθ 19436.23586731202
+4  outside  F 1264.0925029713449
+4  outside  Gθ 322.1419214620054
+4  outside  Gδ 264.06028797952644
+4  outside  Hθθ not needed
+4  outside  Hδδ not needed
+4  outside  Hδθ not needed
+5  inside  F 1.2524151989728684e-10
+5  inside  Hδδ 18588.884141108883
+5  inside  Hδθ 17426.852283565586
+5  outside  F 1186.4281213353217
+5  outside  Gθ 661.2477102786222
+5  outside  Gδ 118.63398489785934
+5  outside  Hθθ not needed
+5  outside  Hδδ not needed
+5  outside  Hδθ not needed
+
+ 11   +5724.12219055    1248.84329309      2.80     +0.63   +0.47   +0.49   -1.22   -0.97 
+1  inside  F 5.1344533048855756e-12
+1  inside  Hδδ 15348.038724496748
+1  inside  Hδθ 17896.91018777454
+1  outside  F 1248.7861226182042
+1  outside  Gθ 1104.0563765726622
+1  outside  Gδ 272.6559488938238
+1  outside  Hθθ not needed
+1  outside  Hδδ not needed
+1  outside  Hδθ not needed
+2  inside  F 3.2201327673051904e-10
+2  inside  Hδδ 14470.088802004522
+2  inside  Hδθ 24184.509411947987
+2  outside  F 920.4009831631776
+2  outside  Gθ 1189.564036353477
+2  outside  Gδ 401.2936416816114
+2  outside  Hθθ not needed
+2  outside  Hδδ not needed
+2  outside  Hδθ not needed
+3  inside  F 3.8843841457787223e-10
+3  inside  Hδδ 10325.9431074929
+3  inside  Hδθ 11844.00598136052
+3  outside  F 1104.4139253043068
+3  outside  Gθ 399.1723219227212
+3  outside  Gδ 177.91366738138976
+3  outside  Hθθ not needed
+3  outside  Hδδ not needed
+3  outside  Hδθ not needed
+4  inside  F 8.531630164142095e-11
+4  inside  Hδδ 19712.717775455745
+4  inside  Hδθ 19436.341321485274
+4  outside  F 1264.092511438278
+4  outside  Gθ 336.2076303740501
+4  outside  Gδ 285.96830135958953
+4  outside  Hθθ not needed
+4  outside  Hδδ not needed
+4  outside  Hδθ not needed
+5  inside  F 1.684084578522333e-10
+5  inside  Hδδ 18588.899988916342
+5  inside  Hδθ 17426.939505830156
+5  outside  F 1186.4283584127295
+5  outside  Gθ 700.0066385474771
+5  outside  Gδ 128.49410690351124
+5  outside  Hθθ not needed
+5  outside  Hδδ not needed
+5  outside  Hδθ not needed
+
+ 12   +5724.12219055    1248.84329309      2.96     +0.63   +0.47   +0.49   -1.22   -0.97 
+1  inside  F 1.252475949602516e-10
+1  inside  Hδδ 15348.040138766028
+1  inside  Hδθ 17896.932922742373
+1  outside  F 1248.7861753625493
+1  outside  Gθ 1182.2447674706482
+1  outside  Gδ 293.6024930782458
+1  outside  Hθθ not needed
+1  outside  Hδδ not needed
+1  outside  Hδθ not needed
+2  inside  F 3.253838820992721e-11
+2  inside  Hδδ 14470.094651052525
+2  inside  Hδθ 24184.541517600832
+2  outside  F 920.4010583106841
+2  outside  Gθ 1271.547324476855
+2  outside  Gδ 432.38029613377245
+2  outside  Hθθ not needed
+2  outside  Hδδ not needed
+2  outside  Hδθ not needed
+3  inside  F 1.181445159531268e-10
+3  inside  Hδδ 10325.94367289022
+3  inside  Hδθ 11844.020852167887
+3  outside  F 1104.413953232411
+3  outside  Gθ 419.6033292850704
+3  outside  Gδ 191.5979522397673
+3  outside  Hθθ not needed
+3  outside  Hδδ not needed
+3  outside  Hδθ not needed
+4  inside  F 1.2197446696830111e-10
+4  inside  Hδδ 19712.71893012915
+4  inside  Hδθ 19436.367685122346
+4  outside  F 1264.0925135564928
+4  outside  Gθ 350.9091314580429
+4  outside  Gδ 307.87650510639446
+4  outside  Hθθ not needed
+4  outside  Hδδ not needed
+4  outside  Hδθ not needed
+5  inside  F 1.1808423671997662e-10
+5  inside  Hδδ 18588.90395087948
+5  inside  Hδθ 17426.961311460833
+5  outside  F 1186.4284176834085
+5  outside  Gθ 738.7991411776921
+5  outside  Gδ 138.35425157223372
+5  outside  Hθθ not needed
+5  outside  Hδδ not needed
+5  outside  Hδθ not needed
+
+ 13   +5724.12219055    1248.84329309      3.14     +0.63   +0.47   +0.49   -1.22   -0.97 
+1  inside  F 1.6477786290814166e-10
+1  inside  Hδδ 15348.040492333694
+1  inside  Hδθ 17896.93860648995
+1  outside  F 1248.7861885487048
+1  outside  Gθ 1260.5791968371311
+1  outside  Gδ 314.5490459419472
+1  outside  Hθθ not needed
+1  outside  Hδδ not needed
+1  outside  Hδθ not needed
+2  inside  F 1.841378443074723e-10
+2  inside  Hδδ 14470.096113315796
+2  inside  Hδθ 24184.549544021986
+2  outside  F 920.4010770976447
+2  outside  Gθ 1353.6682009882068
+2  outside  Gδ 463.46700859567073
+2  outside  Hθθ not needed
+2  outside  Hδδ not needed
+2  outside  Hδθ not needed
+3  inside  F 1.1915770542461687e-10
+3  inside  Hδδ 10325.943814239705
+3  inside  Hδθ 11844.024569873296
+3  outside  F 1104.413960214512
+3  outside  Gθ 440.12957654234236
+3  outside  Gδ 205.28223717053777
+3  outside  Hθθ not needed
+3  outside  Hδδ not needed
+3  outside  Hδθ not needed
+4  inside  F 6.16427584137299e-11
+4  inside  Hδδ 19712.719218797916
+4  inside  Hδθ 19436.374276037437
+4  outside  F 1264.0925140861423
+4  outside  Gθ 366.16970315124587
+4  outside  Gδ 329.78486017318136
+4  outside  Hθθ not needed
+4  outside  Hδδ not needed
+4  outside  Hδθ not needed
+5  inside  F 6.816904766558722e-11
+5  inside  Hδδ 18588.90494137104
+5  inside  Hδθ 17426.96676287264
+5  outside  F 1186.4284325011613
+5  outside  Gθ 777.619991149525
+5  outside  Gδ 148.2144135029035
+5  outside  Hθθ not needed
+5  outside  Hδδ not needed
+5  outside  Hδθ not needed
+
+ 14   +5724.12219055    1248.84329309      3.32     +0.63   +0.47   +0.49   -1.22   -0.97 
+1  inside  F 1.2360657430750442e-10
+1  inside  Hδδ 15348.04058072559
+1  inside  Hδθ 17896.940027427296
+1  outside  F 1248.7861918452472
+1  outside  Gθ 1339.0340162636342
+1  outside  Gδ 335.4956057656912
+1  outside  Hθθ not needed
+1  outside  Hδδ not needed
+1  outside  Hδθ not needed
+2  inside  F 5.2631260907488974e-11
+2  inside  Hδδ 14470.0964788816
+2  inside  Hδθ 24184.55155062763
+2  outside  F 920.4010817943899
+2  outside  Gθ 1435.9030337935205
+2  outside  Gδ 494.5537687791091
+2  outside  Hθθ not needed
+2  outside  Hδδ not needed
+2  outside  Hδθ not needed
+3  inside  F 2.617625222607233e-10
+3  inside  Hδδ 10325.943849577054
+3  inside  Hδθ 11844.025499299873
+3  outside  F 1104.413961960042
+3  outside  Gθ 460.73829686087845
+3  outside  Gδ 218.96652213098636
+3  outside  Hθθ not needed
+3  outside  Hδδ not needed
+3  outside  Hδθ not needed
+4  inside  F 2.7494000507261204e-10
+4  inside  Hδδ 19712.7192909651
+4  inside  Hδθ 19436.375923766638
+4  outside  F 1264.0925142185583
+4  outside  Gθ 381.9222996170391
+4  outside  Gδ 351.69333799865325
+4  outside  Hθθ not needed
+4  outside  Hδδ not needed
+4  outside  Hδθ not needed
+5  inside  F 1.4550114646942835e-10
+5  inside  Hδδ 18588.90518899377
+5  inside  Hδθ 17426.96812572582
+5  outside  F 1186.4284362056062
+5  outside  Gθ 816.4650939247495
+5  outside  Gδ 158.07458924085267
+5  outside  Hθθ not needed
+5  outside  Hδδ not needed
+5  outside  Hδθ not needed
+
+ 15   +5724.12219055    1248.84329309      3.48     +0.63   +0.47   +0.49   -1.22   -0.97 
+  8.262260 seconds (16.15 M allocations: 882.013 MiB, 1.00% gc time, 62.24% compilation time)
+</pre>
+</body>
+</html>
