@@ -6,7 +6,7 @@
 Initializes n random number generators to be used on parallel threads with the specified seed using the Threefry4x algorithm.
 """
 function RandomNumberGenerators( n :: Int; seed = 2 )
-    Random.seed!( seed )
+    Random123.seed!( seed )
     rngs = Vec{ Threefry4x{UInt64,32} }( undef, n )
     per = div( typemax( UInt32 ), n ) 
     for i ∈ 0: n-1
