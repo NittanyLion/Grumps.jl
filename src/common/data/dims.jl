@@ -96,6 +96,9 @@ function RSJ( d :: GrumpsMicroData )
 end
 
 
+RSJ( d :: GrumpsMarketData ) = RSJ( d.microdata )
+
+
 function RJ( d :: GrumpsMacroData )
     return 1:dimR( d ), 1:dimJ( d ), 1:dimδ( d ), 1:dimθ( d )
 end

@@ -116,12 +116,10 @@ struct GrumpsPLMData{T<:Flt} <: PLMData{T}
 
     function GrumpsPLMData( 𝒳 :: Mat{T2}, 𝒳̂ :: Mat{T2}, names :: Vec{String}, dmom :: Int, 𝒦 :: Mat{T2}, σ2 :: T2 = 1.0 ) where {T2<:Flt}
         dδ, dβ  = size( 𝒳 )
-        println( size(𝒳), " versus ", size(𝒳̂) )
         @ensure dδ == size( 𝒳̂, 1 )  "mismatch in first dimension"
         @ensure dβ == size( 𝒳̂, 2 )  "mismatch in second dimension"
         @ensure length( names ) == dβ  "incorrect number of names"
         @ensure dmom ≥ dβ "underidentification in product level moments"
-        println( size(𝒦,1 ), "  versus  $dδ")
         @ensure size( 𝒦, 1 ) == dδ  "𝒦 must have the same number of rows as 𝒳"
         @ensure σ2 > 0.0        "error variance must be positive"
         new{T2}( 𝒳, 𝒳̂, names, dmom, 𝒦, σ2    )

@@ -40,6 +40,7 @@ function GrumpsData(
     @warnif !usesmicrodata( e ) && isa( s.consumers, DataFrame ) "ignoring consumer information since it is not used for this estimator type"
     @ensure !usesmicrodata( e ) || isa( s.consumers, DataFrame ) "this estimator type requires consumer information"
 
+    @info "estimator = $e"
     if isa( s.consumers, DataFrame ) && usesmicrodata( e )
         MustBeInDF( [ v.market, v.choice ], s.consumers, "consumers" )
         nwgmic = NodesWeightsGlobal( microsampler( samplers ), dθν, rngs[1]  )

@@ -4,7 +4,7 @@ function grumpsδ!(
     fgh     :: GrumpsSingleFGH{T}, 
     θ       :: Vec{T},
     δ       :: Vec{T}, 
-    e       :: GrumpsMLE, 
+    e       :: GrumpsEstimator, 
     d       :: GrumpsMarketData{T}, 
     o       :: OptimizationOptions, 
     s       :: GrumpsMarketSpace{T}, 

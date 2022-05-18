@@ -5,16 +5,15 @@
 function Momentθ1!( 
     fgh                                 :: GMMMarketFGH{T},
     θ                                   :: A1{T},  
-    δ                                   :: A1{T},
     e                                   :: GrumpsGMM, 
     d                                   :: GrumpsMarketData{T}, 
     𝒦m                                  :: AA2{T},
     o                                   :: OptimizationOptions,
     s                                   :: GrumpsSpace{T},
-    computeF,                           :: Bool,
-    computeG,                           :: Bool,
+    computeF                            :: Bool,
+    computeG                            :: Bool,
     m                                   :: Int
-    ) 
+    ) where {T<:Flt}
 
     recompute =  s.currentθ ≠ θ || memsave( o )
 
@@ -68,7 +67,6 @@ function ObjectiveFunctionθ!(
         Momentθ1!( 
             fgh.market[m],
             θ,
-            δ,
             e, 
             d.marketdata[m], 
             view( d.plmdata.𝒦, ranges[m], : ),

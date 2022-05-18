@@ -16,4 +16,5 @@ Estimator( ::Val{ :gmm } ) = GrumpsGMMEstimator()
 # Version( ::GrumpsGMMEstimator ) = GrumpsVersionGMM()
 
 usesmicrodata( ::GrumpsGMMEstimator ) = true
-
+usesmicromoments( ::GrumpsGMMEstimator ) = true
+usespenalty( ::GrumpsGMMEstimator ) = true

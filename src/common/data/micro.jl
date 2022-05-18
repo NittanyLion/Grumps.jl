@@ -31,23 +31,25 @@ end
 
 
 function CreateMicroInstruments( dfc:: AbstractDataFrame, dfp:: AbstractDataFrame, v :: Variables, usesmicmom :: Bool, T = F64 )
-    S = nrow( dfc )
-    dδ = nrow( dfp ) 
-    moms = size( v.microinstruments, 1 )
+    S, dδ = nrow( dfc ), nrow( dfp ) 
+    J = dδ + 1
+    micinst = size( v.microinstruments, 1 ) == 0 ? v.interactions : v.microinstruments
+    moms = size( micinst, 1 )
     if moms == 0 || !usesmicmom
+        @info "moms=$moms  usesmicmom = $usesmicmom"
         return zeros( T, S, dδ, 0 )
     end
-    MustBeInDF( v.microinstruments[:,1], dfc, "consumer data frame" )
-    MustBeInDF( v.microinstruments[:,2], dfp, "product data frame" )
+    MustBeInDF( micinst[:,1], dfc, "consumer data frame" )
+    MustBeInDF( micinst[:,2], dfp, "product data frame" )
 
-    ℳ = zeros( T, S, J, moms )
+    ℳ = zeros( T, S, dδ + 1, moms )
     for t ∈ 1:moms, j ∈ 1:dδ, i ∈ 1:S
-        ℳ[i,j,t] = dfc[i, v.microinstruments[t,1] ] * dfp[j, v.microinstruments[t,2] ]
+        ℳ[i,j,t] = dfc[i, micinst[t,1] ] * dfp[j, micinst[t,2] ]
     end
     # now replace ℳ with ℳ (ℳ'ℳ)^{-1/2}
-    ℛ = reshape( ℳ, S * dδ, moms )
+    ℛ = reshape( ℳ, S * J, moms )
     𝒮 = svd( ℛ; alg = LinearAlgebra.QRIteration() )
-    ℳ = reshape( 𝒮.U * 𝒮.Vt, S, dδ, moms )
+    ℳ = reshape( 𝒮.U * 𝒮.Vt, S, J, moms )
     return ℳ
 end
 
