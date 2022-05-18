@@ -18,8 +18,9 @@ include( "$(commondir)/$(commondir).jl" )
 
 function EstimatorFolders( )
     ests = String[]
-    for fn ∈ readdir()
+    for fn ∈ readdir( "$(@__DIR__)" )
         if isdir( fn ) && fn[1] ∉ [ '.', '_' ] && fn ∉ [ commondir, docdir, pkgdir ]
+            @info "loading estimator $fn"
             ests = vcat( ests, fn )
         end
     end
