@@ -3,7 +3,7 @@
 
 module Grumps
 
-run(`clear`)
+# run(`clear`)
 
 
 include( "debug.jl" )
