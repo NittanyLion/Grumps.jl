@@ -1,3 +1,5 @@
+@todo 3 "too much garbage collection for gmm"
+
 function GMMMoment1!( 
     mom         :: A1{T},
     momdθ       :: HType{T},
@@ -10,18 +12,20 @@ function GMMMoment1!(
     ms          :: GrumpsMarketSpace{T}
 ) where {T<:Flt}
 
+    if momdθ ≠ nothing
+        println( "momdθ")
+    else
+        println("only levels")
+    end
     s,d = ms.microspace, md.microdata
     weights, consumers, products, insides, parameters = RSJ( d )
     dθz, dθν, dθ, J, dδ, S = dimθz( d ), dimθν( d ), dimθ( d ), dimJ( d ), dimδ( d ), dimS( d )
 
-    demographics = 1:dθz
-    rancos = 1:dθν
 
     B = d.ℳ               # instruments
     dmomb, dmomk = size( B, 3 ), size( 𝒦m, 2 )
     dmom = dmomb + dmomk
 
-    @info "$(size(B)) $dmomb $dmomk $dmom $(size(mom,1))"
     @ensure dmom == size( mom, 1 )   "mismatch of the number of moments"
 
 
@@ -35,6 +39,7 @@ function GMMMoment1!(
             πij[i,j] = sum( d.w[r] * s.πrij[r,i,j] for r ∈ weights )
         end
     end
+
 
     # first fill the moments
     mom .= zero( T )     
@@ -56,8 +61,8 @@ function GMMMoment1!(
         momdθ .= zero( T )
         for i ∈ consumers, r ∈ weights
             ComputeΔb!( Δb, s, d, o, r, i )
-            for μ ∈ bmoments, v ∈ demographics
-                momdθ[ μ, v ] -=  d.w[r] * sum( s.πrij[r,i,j] * B[i,j,μ] * Δb[j,v] for j ∈ products )
+            for μ ∈ bmoments, v ∈ parameters, j ∈ products
+                momdθ[ μ, v ] -=  d.w[r] * s.πrij[r,i,j] * B[i,j,μ] * Δb[j,v] 
             end
         end
         # no derivatives of macro moments with respect to θ            
@@ -68,16 +73,16 @@ function GMMMoment1!(
     end
 
     momdδ .= zero( T )
-    Σππ = [ sum( d.w[r] * s.πrij[r,i,j] * s.πrij[r,i,k] for r ∈ weights ) for i ∈ consumers, j ∈ products, k ∈ products ]
     @threads :dynamic for μ ∈ bmoments
         for k ∈ insides
             for i ∈ consumers
-                momdδ[μ,k] -= B[i,k,μ] * πij[ i, k ] - sum( Σππ[ i, j, k ] * B[i,j,μ] for j ∈ products )
+                momdδ[μ,k] -= ( B[i,k,μ] * πij[ i, k ] -
+                   sum( d.w[r] * s.πrij[r,i,j] * s.πrij[r,i,k] * B[i,j,μ] for j ∈ products, r ∈ weights ) )
             end
         end
     end
-    @info "$(size(Km)) $(size(δ))"
-    momdδ[dmomb+1:end,:] += T( 2.0 ) .*  𝒦m' * δ
+
+    momdδ[dmomb+1:end,:] +=   𝒦m'  
 
     return nothing
 end
@@ -97,10 +102,10 @@ function OutsideMoment1!(
     computeG    :: Bool 
     ) where {T<:Flt}
 
-    return GMMMoment1!( 
+     return GMMMoment1!( 
         fgh.mom,  
-        grif( computeG || computeH, fgh.momdθ ),
-        grif( computeG || computeH, fgh.momdδ ),
+        grif( computeG, fgh.momdθ ),
+        grif( computeG, fgh.momdδ ),
         θ,
         δ,
         d,

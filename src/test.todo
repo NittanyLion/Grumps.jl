@@ -20,4 +20,5 @@
  4 create type GMMFGH 
  2 define moment type as symbolic value argument 
  1 document this file 
+ 3 too much garbage collection for gmm 
  

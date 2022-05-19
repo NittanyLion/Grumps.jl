@@ -86,8 +86,6 @@ function CreateK( s :: Sources, v :: Variables, dδ :: Int, σ2 :: T, ::Val{ tru
     UX, = svd( Xtilde; alg = LinearAlgebra.QRIteration() )
     V = dregs > 0 ? UZ * nullspace( UZ'UX ) : UZ
 
-    println( rank(V),  "  $dinst  $dregs" )
-    println( size(V) )
     @ensure rank( V ) == dinst - dregs "underidentified"
     return V / sqrt( σ2 )
 end

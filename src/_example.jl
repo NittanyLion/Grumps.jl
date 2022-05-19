@@ -27,12 +27,12 @@ function mle(  )
     )
     println( v )
     dop = DataOptions( ;micromode = :Hog, macromode = :Ant, balance = :micro )
-    e = Estimator( "mle" )
+    e = Estimator( "gmm" )
     d = Data( e, s, v )
     # th = Grumps.GrumpsThreads(; markets = 1, inner = 1 )
-    grumps( e, d )
+    # grumps( e, d )
 
-
+    grumps(e, d, OptimizationOptions(), fill(0.5,5), Grumps.StandardErrorOptions() ) 
 end
 
 mle()

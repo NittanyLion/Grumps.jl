@@ -47,6 +47,7 @@ function CreateMicroInstruments( dfc:: AbstractDataFrame, dfp:: AbstractDataFram
         ℳ[i,j,t] = dfc[i, micinst[t,1] ] * dfp[j, micinst[t,2] ]
     end
     # now replace ℳ with ℳ (ℳ'ℳ)^{-1/2}
+    # I've tested this
     ℛ = reshape( ℳ, S * J, moms )
     𝒮 = svd( ℛ; alg = LinearAlgebra.QRIteration() )
     ℳ = reshape( 𝒮.U * 𝒮.Vt, S, J, moms )

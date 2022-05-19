@@ -31,7 +31,7 @@ function Momentθ1!(
     
 
     # if computeG || computeH || !inisout( e )
-        F = OutsideMoment1!(  fgh, θ, δ, e, d, 𝒦m, o, ms, computeF, computeG )
+       @time F = OutsideMoment1!(  fgh, θ, δ, e, d, 𝒦m, o, ms, computeF, computeG )
     # end
 
     freeAθZXθ!( e, s, o, memslot )
@@ -44,7 +44,7 @@ end
 function ObjectiveFunctionθ!( 
     fgh         :: GMMFGH{T}, 
     F           :: FType{T},
-    G           :: GType{T},
+    Garg        :: GType{T},
     H           :: HType{T},      
     θtr         :: Vec{ T }, 
     e           :: GrumpsGMM, 
@@ -55,16 +55,16 @@ function ObjectiveFunctionθ!(
 
     θ = getθ( θtr, d )
 
-    computeF, computeG, computeH = computewhich( F, G, H )
+    computeF, computeG, computeH = computewhich( F, Garg, H )
 
 
     
-    SetZero!( true, F, G, H )
     markets = 1:dimM( d )
     ranges = Ranges( dimδm( d ) )
 
-    @threads :dynamic for m ∈ markets
-        Momentθ1!( 
+    # @threads :dynamic 
+    for m ∈ markets
+        @time Momentθ1!( 
             fgh.market[m],
             θ,
             e, 
@@ -84,34 +84,38 @@ function ObjectiveFunctionθ!(
         F = dot( mom, mom )
     end
 
-    if computeH && !computeG
-        computeG = true
-        G = 𝓏𝓈( T, dimθ( d ) )
+    if !computeG && !computeH
+        return F
     end
 
 
+    δθ = Vec{ Mat{T} }( undef, markets[end] )
+    insides = 1:dimδ( d )
+    parameters = 1:dimθ( d )
 
-    if computeG || computeH
-        δθ = Vec{ Mat{T} }( undef, markets[end] )
-        insides = 1:dimδ( d )
-        parameters = 1:dimθ( d )
-        @threads :dynamic for m ∈ markets
-            δθ[m] = - fgh.market[m].inside.Hδδ \ fgh.market[m].inside.Hδθ
-        end
-    
-        momdθ = sum( fgh.market[m].momdθ for m ∈ markets )
-        cross = sum( fgh.market[m].momdδ * δθ[m] for m ∈ markets )
-        both = momdθ + cross
+    @threads :dynamic for m ∈ markets
+        δθ[m] = - fgh.market[m].inside.Hδδ \ fgh.market[m].inside.Hδθ
+    end
 
-        G[:] = 2.0 * both'  * mom
+    momdθ = sum( fgh.market[m].momdθ for m ∈ markets )
+    cross = sum( fgh.market[m].momdδ * δθ[m] for m ∈ markets )
+    both = momdθ + cross
+
+    G = 2.0 * both'  * mom
 
 
-        if computeH
-            H[:,:] = 2.0 * both' * both
-        end
+    if computeH
+        # println( momdθ'momdθ )
+        println( "eigen system momdθ: ", eigen( momdθ'momdθ ) )
+        println( "eigen system cross: ", eigen( cross'cross ) )
+        H[:,:] = 2.0 * both' * both
+        println( "eigen system H: ", eigen(H) )
+    end
 
-        ExponentiationCorrection!( G, H, θ, dimθz( d ) )
+    ExponentiationCorrection!( G, H, θ, dimθz( d ) )
 
+    if computeG
+        copyto!( Garg, G )
     end
 
     return F
