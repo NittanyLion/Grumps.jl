@@ -19,7 +19,7 @@ function Momentθ1!(
 
     memslot = recompute ? AθZXθ!( θ, e, d, o, s, m ) : m
     ms = s.marketspace[memslot]
-    δ = 𝓏𝓈( dimδ( d ) )
+    δ = 𝓏𝓈( T, dimδ( d ) )
 
     # if recompute
         ms.microspace.lastδ .= typemax( T )
@@ -31,7 +31,7 @@ function Momentθ1!(
     
 
     # if computeG || computeH || !inisout( e )
-       @time F = OutsideMoment1!(  fgh, θ, δ, e, d, 𝒦m, o, ms, computeF, computeG )
+       F = OutsideMoment1!(  fgh, θ, δ, e, d, 𝒦m, o, ms, computeF, computeG )
     # end
 
     freeAθZXθ!( e, s, o, memslot )
@@ -64,7 +64,7 @@ function ObjectiveFunctionθ!(
 
     # @threads :dynamic 
     for m ∈ markets
-        @time Momentθ1!( 
+        Momentθ1!( 
             fgh.market[m],
             θ,
             e, 
@@ -106,10 +106,10 @@ function ObjectiveFunctionθ!(
 
     if computeH
         # println( momdθ'momdθ )
-        println( "eigen system momdθ: ", eigen( momdθ'momdθ ) )
-        println( "eigen system cross: ", eigen( cross'cross ) )
+        # println( "eigen system momdθ: ", eigen( momdθ'momdθ ) )
+        # println( "eigen system cross: ", eigen( cross'cross ) )
         H[:,:] = 2.0 * both' * both
-        println( "eigen system H: ", eigen(H) )
+        # println( "eigen system H: ", eigen(H) )
     end
 
     ExponentiationCorrection!( G, H, θ, dimθz( d ) )

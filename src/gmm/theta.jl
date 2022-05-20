@@ -6,10 +6,11 @@ function GMMMoment1!(
     momdδ       :: HType{T},
     θ           :: A1{T},
     δ           :: A1{T},
-    md          :: GrumpsMarketData{T},
+    # md          :: GrumpsMarketData{T},
+    d           :: GrumpsMicroData{T},
     𝒦m          :: AA2{T},
     o           :: OptimizationOptions,
-    ms          :: GrumpsMarketSpace{T}
+    s          :: GrumpsMicroSpace{T}
 ) where {T<:Flt}
 
     if momdθ ≠ nothing
@@ -17,7 +18,7 @@ function GMMMoment1!(
     else
         println("only levels")
     end
-    s,d = ms.microspace, md.microdata
+    # s,d = ms.microspace, md.microdata
     weights, consumers, products, insides, parameters = RSJ( d )
     dθz, dθν, dθ, J, dδ, S = dimθz( d ), dimθν( d ), dimθ( d ), dimJ( d ), dimδ( d ), dimS( d )
 
@@ -108,10 +109,10 @@ function OutsideMoment1!(
         grif( computeG, fgh.momdδ ),
         θ,
         δ,
-        d,
+        d.microdata,
         𝒦m,
         o,
-        ms
+        ms.microspace
         )
 
 end
