@@ -13,11 +13,6 @@ function GMMMoment1!(
     s          :: GrumpsMicroSpace{T}
 ) where {T<:Flt}
 
-    if momdθ ≠ nothing
-        println( "momdθ")
-    else
-        println("only levels")
-    end
     # s,d = ms.microspace, md.microdata
     weights, consumers, products, insides, parameters = RSJ( d )
     dθz, dθν, dθ, J, dδ, S = dimθz( d ), dimθν( d ), dimθ( d ), dimJ( d ), dimδ( d ), dimS( d )
@@ -45,7 +40,7 @@ function GMMMoment1!(
     # first fill the moments
     mom .= zero( T )     
     @threads :dynamic for μ ∈ bmoments
-        mom[ μ ] = sum( ( d.Y[i,j] - πij[i,j] ) * B[i,j,μ] for i ∈ consumers, j ∈ products )
+        mom[ μ ] = sum( ( d.Y[i,j] - πij[i,j] ) * B[i,j,μ] for i ∈ consumers, j ∈ insides )
     end
     for μ ∈ kmoments
         mom[ dmomb + μ ] = dot( 𝒦m[:,μ], δ )
@@ -62,7 +57,7 @@ function GMMMoment1!(
         momdθ .= zero( T )
         for i ∈ consumers, r ∈ weights
             ComputeΔb!( Δb, s, d, o, r, i )
-            for μ ∈ bmoments, v ∈ parameters, j ∈ products
+            for μ ∈ bmoments, v ∈ parameters, j ∈ insides
                 momdθ[ μ, v ] -=  d.w[r] * s.πrij[r,i,j] * B[i,j,μ] * Δb[j,v] 
             end
         end
@@ -78,7 +73,7 @@ function GMMMoment1!(
         for k ∈ insides
             for i ∈ consumers
                 momdδ[μ,k] -= ( B[i,k,μ] * πij[ i, k ] -
-                   sum( d.w[r] * s.πrij[r,i,j] * s.πrij[r,i,k] * B[i,j,μ] for j ∈ products, r ∈ weights ) )
+                   sum( d.w[r] * s.πrij[r,i,j] * s.πrij[r,i,k] * B[i,j,μ] for j ∈ insides, r ∈ weights ) )
             end
         end
     end

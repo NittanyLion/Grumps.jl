@@ -1,6 +1,4 @@
 
-@todo 4 "create type GMMFGH"
-@todo 2 "define moment type as symbolic value argument"
 
 function Momentθ1!( 
     fgh                                 :: GMMMarketFGH{T},
@@ -62,8 +60,7 @@ function ObjectiveFunctionθ!(
     markets = 1:dimM( d )
     ranges = Ranges( dimδm( d ) )
 
-    # @threads :dynamic 
-    for m ∈ markets
+    @threads :dynamic for m ∈ markets
         Momentθ1!( 
             fgh.market[m],
             θ,
@@ -105,11 +102,7 @@ function ObjectiveFunctionθ!(
 
 
     if computeH
-        # println( momdθ'momdθ )
-        # println( "eigen system momdθ: ", eigen( momdθ'momdθ ) )
-        # println( "eigen system cross: ", eigen( cross'cross ) )
         H[:,:] = 2.0 * both' * both
-        # println( "eigen system H: ", eigen(H) )
     end
 
     ExponentiationCorrection!( G, H, θ, dimθz( d ) )

@@ -69,7 +69,7 @@ function FGH( e :: GrumpsMLE, d :: GrumpsData{T} ) where {T<:Flt}
 end
 
 function FGH( e :: GrumpsGMM, d :: GrumpsData{T} ) where {T<:Flt}
-    return GMMFGH{T}( [ GMMMarketFGH( T, e, dimθ( d ), dimδ( d.marketdata[m] ), dimmom( d ) - dimβ( d ) + dimθz( d ) ) for m ∈ 1:dimM( d ) ] )
+    return GMMFGH{T}( [ GMMMarketFGH( T, e, dimθ( d ), dimδ( d.marketdata[m] ), dimmom( d ) - dimβ( d )  ) for m ∈ 1:dimM( d ) ] )
 end
 
 

@@ -8,10 +8,10 @@ Grumps.@Imports()
 function mle(  )
     @info "setting source files"
     s = Sources(
-      consumers = "_example_consumers.csv",
-      products = "_example_products.csv",
-      marketsizes = "_example_marketsizes.csv",
-      draws = "_example_draws.csv"  
+      consumers = "_ss_consumers.csv",
+      products = "_ss_products.csv",
+      marketsizes = "_ss_marketsizes.csv",
+      draws = "_ss_draws.csv"  
     )
     println( s )
     v = Variables(
@@ -29,7 +29,7 @@ function mle(  )
             :income :ibu; 
             :age :ibu
             ],
-        outsidegood = "product 11"
+        outsidegood = "outside"
     )
     println( v )
     dop = DataOptions( ;micromode = :Hog, macromode = :Ant, balance = :micro )

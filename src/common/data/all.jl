@@ -109,7 +109,7 @@ function GrumpsData(
         u.randomcoefficientnames )      # names of all user-created random coefficients
     
     nrm = Vec{ GrumpsNormalization{T} }(undef, dθ )
-    dims = Dimensions( dθ, dθ - dθν, dθν, length( plm.names ), length.( fap ), dimmom( plm ) + size( v.microinstruments, 2 ) )
+    dims = Dimensions( dθ, dθ - dθν, dθν, length( plm.names ), length.( fap ), dimmom( plm ) + size( v.microinstruments, 1 ) )
     gd = GrumpsData{T}( mic, mac, plm, varnames, nrm, dims )
     Balance!( gd, Val( options.balance ) )
     return gd

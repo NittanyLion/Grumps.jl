@@ -17,8 +17,6 @@
  2 parallelize MicroObjectiveθ! 
  2 parallelize MacroObjectiveθ! 
  2 figure out when to recompute 
- 4 create type GMMFGH 
- 2 define moment type as symbolic value argument 
  1 document this file 
  3 too much garbage collection for gmm 
  
