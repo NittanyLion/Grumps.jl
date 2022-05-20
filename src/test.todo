@@ -10,6 +10,9 @@
  2 get rid of estimator version BS 
  4 make sure dataframes are sorted in the right order 
  2 data processing takes longer than it probably should 
+ 3 currently only saving θ coefficients 
+ 2 still need to compute standard errors 
+ 4 still need to do penalized estimator 
  2 SetHighWaterMark! not written yet 
  2 SetStatus! not written yet 
  1 move sizes elsewhere 

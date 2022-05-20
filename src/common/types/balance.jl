@@ -14,3 +14,4 @@ function show( io :: IO, n :: GrumpsNormalization{T}; adorned = true ) where {T<
     return nothing 
 end
     
+

@@ -110,6 +110,13 @@ function Balance!( gd :: GrumpsData{T}, scheme :: Val{ :none } ) where {T<:Flt}
     return nothing
 end
 
+
+function Unbalance!( θ :: Vector{T}, gd :: GrumpsData{T} ) where {T<:Flt}
+    for t ∈ eachindex( gd.balance )
+        θ[t] /= gd.balance[t].σ
+    end
+    return nothing
+end
 # function Balance!( scheme :: BalancingScheme, gd :: GrumpsData{T} ) where {T<:Flt}
 #     if usemicro 
 #         @ensure anymicrodata( gd ) "there are no micro data to balance with"

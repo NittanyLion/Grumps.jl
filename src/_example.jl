@@ -38,7 +38,7 @@ function mle(  )
     # th = Grumps.GrumpsThreads(; markets = 1, inner = 1 )
     # grumps( e, d )
 
-    grumps(e, d, OptimizationOptions(), nothing, Grumps.StandardErrorOptions() ) 
+    println( grumps(e, d, OptimizationOptions(), nothing, Grumps.StandardErrorOptions() ) )
 end
 
 mle()
