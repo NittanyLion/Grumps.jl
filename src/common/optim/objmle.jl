@@ -17,7 +17,6 @@ function ObjectiveFunctionθ1!(
     ) where {T<:Flt}
 
     recompute =  s.currentθ ≠ θ || memsave( o )
-
     memslot = recompute ? AθZXθ!( θ, e, d, o, s, m ) : m
     ms = s.marketspace[memslot]
     # δ = 𝓏𝓈( dimδ( d ) )

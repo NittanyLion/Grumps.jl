@@ -35,7 +35,6 @@ function CreateMicroInstruments( dfc:: AbstractDataFrame, dfp:: AbstractDataFram
     J = dδ + 1
     micinst = size( v.microinstruments, 1 ) == 0 ? v.interactions : v.microinstruments
     moms = size( micinst, 1 )
-    @info "moms = $moms"
     if moms == 0 || !usesmicmom
         return zeros( T, S, dδ, 0 )
     end

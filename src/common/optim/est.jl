@@ -28,12 +28,14 @@ function grumps( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstart
             )
     )
 
-    θ = getθ( Optim.minimizer( result ), d )
-
-    ObjectiveFunctionθ!( fgh, zero(T), nothing, nothing, θ, δ, e, d, o, s )         # pick up δ
-
+    θtr = Optim.minimizer( result )
+    θ = getθ( θtr, d )
     Unbalance!( θ, d )
+
+    ObjectiveFunctionθ!( fgh, zero(T), nothing, nothing, θtr , δ, e, d, o, s )         # pick up δ
+    
     δvec = vcat( δ... )
+
     Computeβ!( solution, δvec, d )
     # SetResult!( solution, e, d, o, seo, result, fgh )
     SetResult!( solution, θ, δvec, nothing )
