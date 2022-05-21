@@ -15,6 +15,6 @@ makedocs( sitename = "Grumps.jl",
     
     deploydocs(;
     repo = "github.com/NittanyLion/Grumps.jl",
-    target = "build"
+    devbranch = "main"
 )
 
