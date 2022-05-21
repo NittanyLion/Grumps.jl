@@ -11,3 +11,10 @@ makedocs( sitename = "Grumps.jl",
     "Quick Start" => "quickstart.md"
     ]
     )
+    
+    
+    deploydocs(;
+    repo = "github.com/NittanyLion/Grumps.jl",
+    target = "build"
+)
+
