@@ -71,8 +71,10 @@ function GrumpsθCallBack( statevec, e :: GrumpsEstimator, d :: GrumpsData{T}, o
         printstyled( @sprintf( "%14.8f   ", state.g_norm ); color = :blue ) 
         printstyled( @sprintf( "%7.2f   ", state.metadata["time"] ); color = :green ) 
         try x = state.metadata["x"]
+            θ = getθ( x, d )
+            Unbalance!( θ, d )
             for i ∈ eachindex( x )
-                printstyled( @sprintf( "%+7.2f ", x[i] ); color = :magenta )
+                printstyled( @sprintf( "%+7.2f ", θ[i] ); color = :magenta )
             end
             if x ≠ oldx
                 repeatx .= 0

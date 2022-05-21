@@ -38,6 +38,7 @@ function Balance!( gd :: GrumpsData{T}, scheme :: Val{ :micro } ) where {T<:Flt}
             for m ∈ activemarkets
                 # gd.marketdata[m].microdata.Z[:,:,t] .-= μ
                 gd.marketdata[m].microdata.Z[:,:,t] ./= σ
+                # @info "divided Z[:,:,$t] in market $m by $σ"
             end
         end
         gd.balance[t] = GrumpsNormalization( μ, σ )
@@ -71,6 +72,7 @@ function Balance!( gd :: GrumpsData{T}, scheme :: Val{ :micro } ) where {T<:Flt}
             for m ∈ activemarkets
                 # gd.marketdata[m].microdata.X[:,:,t] .-= μ
                 gd.marketdata[m].microdata.X[:,:,t] ./= σ
+                # @info "divided X[:,:,$t] in market $m by $σ"
             end
         end
         gd.balance[k] = GrumpsNormalization( μ, σ )
@@ -89,6 +91,7 @@ function Balance!( gd :: GrumpsData{T}, scheme :: Val{ :micro } ) where {T<:Flt}
             elseif tp <: GrumpsMacroDataAnt
                 # Md.𝒳[:,t] .-= bal.μ
                 Md.𝒳[:,t] ./= bal.σ
+                # @info "divided 𝒳[:,:,$t] in market $m by $(bal.σ)"
             else
                 @ensure false "unknown type"
             end

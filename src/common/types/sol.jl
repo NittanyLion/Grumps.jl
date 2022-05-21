@@ -37,3 +37,6 @@ function Solution( e :: GrumpsEstimator, d :: GrumpsData{T}, seo :: StandardErro
     
     return GrumpsSolution( T , vn.θnames , vn.βnames, vn.δnames )
 end
+
+
+

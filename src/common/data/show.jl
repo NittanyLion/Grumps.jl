@@ -128,3 +128,13 @@ function show( io :: IO, d :: GrumpsPLMData{T}; adorned = true) where {T<:Flt}
     end
     return nothing
 end
+
+
+
+function show( io :: IO, sol :: GrumpsSolution{T}; adorned = true ) where {T<:Flt}
+    prstyledln( adorned, )
+
+
+end
+
+

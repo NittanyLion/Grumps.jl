@@ -25,8 +25,9 @@ function grumps( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstart
             )
     )
 
-    θ = Optim.minimizer( result )
+    θ = getθ( Optim.minimizer( result ), d )
     Unbalance!( θ, d )
+    println( θ )
 
     SetResult!( solution, e, d, o, seo, result, fgh )
     return solution
