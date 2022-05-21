@@ -60,7 +60,7 @@ function GrumpsθCallBack( statevec, e :: GrumpsEstimator, d :: GrumpsData{T}, o
             printstyled( @sprintf( "%14s   ", "obj fun value" ); color = :red ) 
             printstyled( @sprintf( "%14s   ", "gradient norm" ); color = :blue ) 
             printstyled( @sprintf( "%10s   ", "  time " ); color = :green ) 
-            printstyled( @sprintf( "%30s\n", "(transformed) theta coefficients" ); color = :magenta ) 
+            printstyled( @sprintf( "%30s\n", "              theta coefficients" ); color = :magenta ) 
             printstyled( @sprintf( "%3s   ", "---" ); bold = true ) 
             printstyled( @sprintf( "%14s   ", "--------------" ); color = :red ) 
             printstyled( @sprintf( "%14s   ", "--------------" ); color = :blue ) 
