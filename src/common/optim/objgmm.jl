@@ -3,6 +3,7 @@
 function Momentθ1!( 
     fgh                                 :: GMMMarketFGH{T},
     θ                                   :: A1{T},  
+    δ                                   :: A1{T},
     e                                   :: GrumpsGMM, 
     d                                   :: GrumpsMarketData{T}, 
     𝒦m                                  :: AA2{T},
@@ -17,7 +18,8 @@ function Momentθ1!(
 
     memslot = recompute ? AθZXθ!( θ, e, d, o, s, m ) : m
     ms = s.marketspace[memslot]
-    δ = 𝓏𝓈( T, dimδ( d ) )
+    # δ = 𝓏𝓈( T, dimδ( d ) )
+    δ .= zero( T )
 
     # if recompute
         ms.microspace.lastδ .= typemax( T )
@@ -45,6 +47,7 @@ function ObjectiveFunctionθ!(
     Garg        :: GType{T},
     H           :: HType{T},      
     θtr         :: Vec{ T }, 
+    δ           :: Vec{ Vec{T} },
     e           :: GrumpsGMM, 
     d           :: GrumpsData{T}, 
     o           :: OptimizationOptions,
@@ -64,6 +67,7 @@ function ObjectiveFunctionθ!(
         Momentθ1!( 
             fgh.market[m],
             θ,
+            δ[m],
             e, 
             d.marketdata[m], 
             view( d.plmdata.𝒦, ranges[m], : ),

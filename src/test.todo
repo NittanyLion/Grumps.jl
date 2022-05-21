@@ -16,6 +16,8 @@
  2 SetHighWaterMark! not written yet 
  2 SetStatus! not written yet 
  2 save log and results to file 
+ 2 not sure if last call to pick up δ is needed 
+ 4 check betahat formula 
  1 move sizes elsewhere 
  1 document micllf 
  2 parallelize MicroObjectiveθ! 
