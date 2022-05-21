@@ -15,6 +15,7 @@
  4 still need to do penalized estimator 
  2 SetHighWaterMark! not written yet 
  2 SetStatus! not written yet 
+ 2 save log and results to file 
  1 move sizes elsewhere 
  1 document micllf 
  2 parallelize MicroObjectiveθ! 

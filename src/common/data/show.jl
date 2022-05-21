@@ -131,10 +131,4 @@ end
 
 
 
-function show( io :: IO, sol :: GrumpsSolution{T}; adorned = true ) where {T<:Flt}
-    prstyledln( adorned, )
-
-
-end
-
 

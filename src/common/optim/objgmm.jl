@@ -59,7 +59,7 @@ function ObjectiveFunctionθ!(
     
     markets = 1:dimM( d )
     ranges = Ranges( dimδm( d ) )
-
+    
     @threads :dynamic for m ∈ markets
         Momentθ1!( 
             fgh.market[m],

@@ -29,7 +29,9 @@ function grumps( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstart
     Unbalance!( θ, d )
     println( θ )
 
-    SetResult!( solution, e, d, o, seo, result, fgh )
+    # SetResult!( solution, e, d, o, seo, result, fgh )
+    SetResult!( solution, θ, nothing, nothing )
+    println( solution )
     return solution
 end
 
