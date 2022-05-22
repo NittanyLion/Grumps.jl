@@ -1,6 +1,5 @@
 [compat]
-# julia = "1.8.0-beta3"
-julia = "nightly"
+julia = "1.8.0-beta3"
 
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
