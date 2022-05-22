@@ -5,6 +5,7 @@ module Grumps
 
 # run(`clear`)
 
+export grumps, GrumpsSources
 
 include( "debug.jl" )
 
@@ -17,7 +18,7 @@ function __init__()
     for 𝓁 ∈ readlines( "$(@__DIR__)/splash.txt" )  printstyled( "$𝓁\n"; bold = true, color=:blink  ) end
     println()
     printstyled( " Please note:\n"; bold = true, color=:green )
-    println(" 1: read the manual grumps-documentation.pdf ")
+    println(" 1: read the manual")
     println(" 2: this is a preliminary version")
     println(" 3: still need to put in designed quadrature")
     println(" 4: does not do CUDA")

@@ -1,6 +1,10 @@
 
 
+"""
+    Sources{T}
 
+abstract mother type
+"""
 abstract type Sources{T} end
 abstract type SourceFileType end
 
@@ -15,7 +19,11 @@ end
 
 const DefaultSourceTypes = Union{ DataFrame, Nothing, SourceFileType }
 
+"""
+    GrumpsSources{T}
 
+Data type that contains information on filenames, dataframes, etc; see the Sources method for detailed information.
+"""
 struct GrumpsSources{T} <: Sources{T} 
     consumers   :: T
     products    :: T
@@ -37,8 +45,13 @@ end
 Creates a GrumpsSources object with source type entries of type T where
 the entries are provided in the optional parameters.
 
-By default, the entries can be nothing, a string, a DataFrame, or a SourceFileType.  If a string is entered then it is converted to a SourceFileCSV
-entry with comma delimiter.
+The T argument is mostly there to allow for future expansion, so the description below applies to the case in which T = DefaultSourceTypes.
+    
+By default, the entries can be nothing, a string, a DataFrame, or a SourceFileType.  If an entry is nothing, it means that no such data is to be used.  If an entry is a string then it is converted to a SourceFileCSV entry with comma delimiter where the string name is the file name.  To use other source file types, create a SourceFileType first.  A DataFrame can be passed, also.  In all cases other than nothing, data will eventually be (converted to) a DataFrame and parsed from that.
+
+The *consumers* variable specifies where consumer-level data can be found, the *products* variable is for the product-level data, *marketsizes* is for market sizes, and *draws* is for demographic draws; *user* has not been implemented yet.
+
+Use the **Variables** method to specify the way the data sources are formatted and the specification to estimate.
 """
 function Sources( 
     T2          = DefaultSourceTypes; 
@@ -62,7 +75,7 @@ function Sources(
 end
 
 """
-    function Sources( T, consumers, products,  marketsizes, draws, user )
+    Sources( T, consumers, products,  marketsizes, draws, user )
 
 Calls the method Sources with optional parameters.  Use the optional parameters version to avoid ambiguity and to avoid having to enter all arguments.  In other words: *don't use this method.*
 """

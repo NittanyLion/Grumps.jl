@@ -10,14 +10,18 @@
  2 get rid of estimator version BS 
  4 make sure dataframes are sorted in the right order 
  2 data processing takes longer than it probably should 
+ 3 currently only saving θ coefficients 
+ 2 still need to compute standard errors 
+ 4 still need to do penalized estimator 
  2 SetHighWaterMark! not written yet 
  2 SetStatus! not written yet 
+ 2 save log and results to file 
+ 2 not sure if last call to pick up δ is needed 
+ 4 check betahat formula 
  1 move sizes elsewhere 
  1 document micllf 
  2 parallelize MicroObjectiveθ! 
  2 parallelize MacroObjectiveθ! 
  2 figure out when to recompute 
- 4 create type GMMFGH 
- 2 define moment type as symbolic value argument 
  1 document this file 
  

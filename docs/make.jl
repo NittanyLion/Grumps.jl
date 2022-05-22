@@ -2,13 +2,15 @@ push!(LOAD_PATH, "../src")
 
 using Documenter, Grumps
 
+Grumps.@Imports()
 
 
 makedocs( sitename = "Grumps.jl",
     authors = "Joris Pinkse",
     pages = [
     "Home" => "index.md",
-    "Quick Start" => "quickstart.md"
+    "Quick Start" => "quickstart.md",
+    "Methods and types" => "objects.md"
     ]
     )
     
