@@ -5,7 +5,7 @@ module Grumps
 
 # run(`clear`)
 
-export grumps, GrumpsSources
+export grumps, GrumpsSources, OptimOptionsθ, OptimOptionsδ
 
 include( "debug.jl" )
 

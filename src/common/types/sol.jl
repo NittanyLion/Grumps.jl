@@ -40,3 +40,19 @@ end
 
 
 
+
+# getθ( sol :: GrumpsSolution, ::Val{:coef} ) = [ sol.θ[i].coef for i ∈ eachindex( sol.θ ) ]
+# getθ( sol :: GrumpsSolution, ::Val{:stde} ) = [ sol.θ[i].stde for i ∈ eachindex( sol.θ ) ]
+
+
+# getθ( sol :: GrumpsSolution, which :: Symbol ) = getθ( sol, Val( which ) )
+
+
+getθ( sol :: GrumpsSolution ) = sol.θ
+getδ( sol :: GrumpsSolution ) = sol.δ
+getβ( sol :: GrumpsSolution ) = sol.β
+
+getcoef( e :: GrumpsEstimate ) = e.coef
+getstde( e :: GrumpsEstimate ) = e.stde
+gettstat( e :: GrumpsEstimate ) = e.tstat
+getname( e :: GrumpsEstimate ) = e.name

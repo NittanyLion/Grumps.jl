@@ -45,15 +45,50 @@ struct OptimOptions
 
 end
 
-function OptimOptions( ::Val{ :θ}; f_tol = 1.0e-8, g_tol = 1.0e-8, x_tol = 1.0e-6, iterations = 50, show_trace = true, store_trace = true, extended_trace = true )
+function OptimOptions( ::Val{ :θ}; f_tol = 1.0e-8, g_tol = 1.0e-4, x_tol = 1.0e-5, iterations = 50, show_trace = true, store_trace = true, extended_trace = true )
     OptimOptions( f_tol, g_tol, x_tol, iterations, show_trace, store_trace, extended_trace  )
 end
 
-function OptimOptions( ::Val{ :δ}; f_tol = 1.0e-8, g_tol = 1.0e-4, x_tol = 1.0e-5, iterations = 25, show_trace = false, store_trace = true, extended_trace = false )
+function OptimOptions( ::Val{ :δ}; f_tol = 1.0e-8, g_tol = 1.0e-8, x_tol = 1.0e-6, iterations = 25, show_trace = false, store_trace = true, extended_trace = false )
     OptimOptions( f_tol, g_tol, x_tol, iterations, show_trace, store_trace, extended_trace  )
 end
 
-OptimOptionsθ( ; x... ) = OptimOptions( Val( :θ ); x... )
+"""
+    OptimOptionsθ(; 
+    f_tol = 1.0e-8, 
+    g_tol = 1.0e-4, 
+    x_tol = 1.0e-5, 
+    iterations = 25, 
+    show_trace = true, 
+    store_trace = true, 
+    extended_trace = true )
+
+Creates and returns an *OptimOptions* optimization options variable for the outer optimization algorithm, including the function value tolerance, the
+gradient tolerance, the solution tolerance, the maximum number of iterations, whether to show the trace, whether
+to store the trace, and whether to keep the extended trace.  See the **Optim** package for details.  
+
+The current version of Grumps will largely ignore the trace-related parameters.
+"""
+function OptimOptionsθ( ; x... ) 
+    return OptimOptions( Val( :θ ); x... )
+end
+
+"""
+    OptimOptionsδ( ; 
+    f_tol = 1.0e-8, 
+    g_tol = 1.0e-8, 
+    x_tol = 1.0e-6, 
+    iterations = 25, 
+    show_trace = false, 
+    store_trace = true, 
+    extended_trace = false )
+
+Creates and returns an *OptimOptions* optimization options variable for the inner optimization algorithm, including the function value tolerance, the
+gradient tolerance, the solution tolerance, the maximum number of iterations, whether to show the trace, whether
+to store the trace, and whether to keep the extended trace.  See the **Optim** package for details.  
+
+The current version of Grumps will largely ignore the trace-related parameters.
+"""
 OptimOptionsδ( ; x... ) = OptimOptions( Val( :δ ); x... )
 
 
@@ -111,7 +146,24 @@ blasthreads( o :: GrumpsOptimizationOptions )   = blasthreads( o.gth )
 probtype( o :: GrumpsOptimizationOptions )      = o.probtype
 memsave( o :: GrumpsOptimizationOptions )       = o.memsave
 
+"""
+    OptimizationOptions(; 
+    θopt = OptimOptionsθ(), 
+    δopt = OptimOptionsδ(), 
+    threads = GrumpsThreads(), 
+    memsave = false, 
+    maxrepeats = 4, 
+    probtype = :fast )
 
+Sets the options used for numerical optimization.  *θopt* is used for the external optimization routine,
+*δopt* for the internal one.  These are both of type *OptimOptions*; see the *OptimOptionsθ* and *OptimOptionsδ*
+methods for elaboration.  The *memsave* variable is set to false by default; turning it on will reduce memory
+consumption significantly, but will also slow down computation.  The variable *maxrepeats* may disappear in the 
+future.  
+
+Finally, there are two ways of computing choice probabilities: robust and fast, specified by passing *:robust* or
+*:fast* in *probtype*. Fast choice probabilities are the default for good reason.
+"""
 OptimizationOptions(x...) = GrumpsOptimizationOptions(x...)
 
 struct StandardErrorOptions

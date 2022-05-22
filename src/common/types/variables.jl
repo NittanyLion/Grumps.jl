@@ -56,11 +56,18 @@ end
       instruments         :: Vec{Symbol} = [],
       dummies             :: Vec{Symbol} = [],
       nuisancedummy       :: Symbol = :none,
+      microinstruments    :: Mat{Symbol} = [],
       user                :: Mat{Symbol} = []
         )  
 
-This method creates an object of type GrumpsVariables.  It contains references to the variables that Grumps uses to create variables.  These
-correspond to DataFrames (or CSV file headings).  Make sure that case and spaces match.
+This method creates an object of type GrumpsVariables.  It contains references to the variables that Grumps uses to create variables from
+the data sources specified by the call to the **Sources** function. 
+
+For instance, *market* is the column heading in the source spreadsheets for the market indicator.  This get's passed as a symbol,
+so the default (:market) says that the column heading is *market*, which is both case and spaces sensititve.  The same column heading 
+is used across all sources.  All entries with the exception of *outsidegood* refer to the column heading: *outsidegood* refers to the
+label used for the outside good, which should be the same across both spreadsheets and markets.
+
 
 *market* refers to the variable containing the market indicator in all input datasets
 
@@ -86,7 +93,7 @@ correspond to DataFrames (or CSV file headings).  Make sure that case and spaces
 
 *nuisancedummy* refers to at most one variable to be converted to a second stage dummy regressors and instrument whose coefficient value is of no interest
 
-*microinstruments* refers to micro instruments
+*microinstruments* refers to micro instruments, which are only relevant for gmm style procedures
 
 *user* refers to a list of variables to be added to the consumer-product interactions using a user-specified procedure
 """

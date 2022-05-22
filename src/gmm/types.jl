@@ -10,6 +10,7 @@ name( ::GrumpsGMMEstimator ) = name( Val( :gmm ) )
 
 inisout( ::GrumpsGMMEstimator ) = false
 
+
 Estimator( ::Val{ :gmm } ) = GrumpsGMMEstimator()
 
 

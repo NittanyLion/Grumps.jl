@@ -1,11 +1,6 @@
-push!(LOAD_PATH, ".")
-using Grumps
-
-Grumps.@Imports()
 
 
-
-function mle(  )
+function precomp(  )
     @info "setting source files"
     s = Sources(
       consumers = "_example_consumers.csv",
@@ -33,14 +28,13 @@ function mle(  )
     )
     println( v )
     dop = DataOptions( ;micromode = :Hog, macromode = :Ant, balance = :micro )
-    e = Estimator( :vanilla )
+    e = Estimator( "mle" )
     d = Data( e, s, v )
     # th = Grumps.GrumpsThreads(; markets = 1, inner = 1 )
     # grumps( e, d )
 
-    @time println( grumps(e, d, OptimizationOptions(), nothing, Grumps.StandardErrorOptions() ) )
-    # @time grumps(e, d, OptimizationOptions(), nothing, Grumps.StandardErrorOptions() ) 
+    println( grumps(e, d, OptimizationOptions(), nothing, Grumps.StandardErrorOptions() ) )
 end
 
-mle()
+
 
