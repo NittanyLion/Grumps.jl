@@ -23,7 +23,8 @@ OptimOptionsδ()
 ## Estimator choice
 
 ```@docs
-Estimator()
+Estimator( s :: String )
+Estimator( s :: Symbol )
 ```
 
 ## Data object creation

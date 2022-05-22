@@ -1,6 +1,4 @@
-@info "************************"
-@info "this certainly gets read"
-@info "************************"
+
 
 """
     Estimator( s :: String )

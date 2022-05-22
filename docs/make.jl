@@ -4,6 +4,7 @@ using Documenter, Grumps
 
 Grumps.@Imports()
 
+import Grumps.Estimator
 
 makedocs( sitename = "Grumps.jl",
     authors = "Joris Pinkse",
