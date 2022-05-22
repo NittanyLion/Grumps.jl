@@ -93,19 +93,3 @@ function show( io :: IO, sol :: GrumpsSolution{T}; adorned = true, printθ = tru
 end
 
 
-function show( io :: IO, vn :: VariableNames; adorned = true, printδ = false)
-    prstyledln( adorned, "Variables used:"; color = :green, bold = true )
-    for fn ∈ [ :θnames, :βnames, :δnames ]
-        firstletter = string( fn )[1]
-        prstyledln( adorned, "    $firstletter coefficients:"; color = :blue, bold = true )
-        if firstletter == 'δ' && !printδ
-            @printf( "%30s\n", "printing not requested") 
-            continue
-        end
-        s = getfield( vn, fn )
-        for t ∈ eachindex( s )
-            @printf( "%30s\n", s[t] )
-        end
-    end
-    return nothing
-end
