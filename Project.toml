@@ -4,19 +4,20 @@ authors = ["Joris Pinkse <pinkse@gmail.com> and contributors"]
 version = "0.1.0"
 
 [deps]
-DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
-Random123 = "74087812-796a-5b5d-8853-05524746bad3"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 FastGaussQuadrature = "442a2c76-b920-505d-bb47-c5924d526838"
-StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Optim = "429524aa-4258-5aef-a3af-852621145aeb"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Random123 = "74087812-796a-5b5d-8853-05524746bad3"
+StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 StatsFuns = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
 StringDistances = "88034a9c-02f8-509d-84a9-84ec65e18404"
-Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
-LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [compat]
+StringDistances = "0.11"
 julia = "1.8"
 
 [extras]
