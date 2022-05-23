@@ -1,4 +1,4 @@
-struct GrumpsPLMEstimator <: GrumpsPLM
+struct GrumpsPLMEstimator <: GrumpsPenalized
     function GrumpsPLMEstimator() 
         new()
     end
