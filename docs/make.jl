@@ -11,7 +11,7 @@ makedocs( sitename = "Grumps.jl",
     pages = [
     "Home" => "index.md",
     "Quick Start" => "quickstart.md",
-    "Methods and types" => "objects.md",
+    "User Interface" => "objects.md",
     "Extending Grumps" => "extending.md"
     ]
     )

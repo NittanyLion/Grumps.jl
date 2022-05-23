@@ -1,4 +1,4 @@
-# Methods and types
+# User Interface
 
 ## Data entry
 
