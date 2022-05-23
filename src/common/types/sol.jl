@@ -32,7 +32,6 @@ end
 
 
 function Solution( e :: GrumpsEstimator, d :: GrumpsData{T}, seo :: StandardErrorOptions ) where {T<:Flt}
-    @info "initializing solution"
     vn = d.variablenames
     
     return GrumpsSolution( T , vn.θnames , vn.βnames, vn.δnames )
@@ -41,18 +40,53 @@ end
 
 
 
-# getθ( sol :: GrumpsSolution, ::Val{:coef} ) = [ sol.θ[i].coef for i ∈ eachindex( sol.θ ) ]
-# getθ( sol :: GrumpsSolution, ::Val{:stde} ) = [ sol.θ[i].stde for i ∈ eachindex( sol.θ ) ]
 
+"""
+    getθ( sol :: GrumpsSolution )
 
-# getθ( sol :: GrumpsSolution, which :: Symbol ) = getθ( sol, Val( which ) )
-
-
+Returns a vector of GrumpsEstimate types for θ that can be queried for results.  See  *getcoef*, *getstde*, *gettstat*, and *getname*.
+"""
 getθ( sol :: GrumpsSolution ) = sol.θ
+
+"""
+    getδ( sol :: GrumpsSolution )
+
+Returns a vector of GrumpsEstimate types for δ that can be queried for results. See  *getcoef*, *getstde*, *gettstat*, and *getname*.
+"""
 getδ( sol :: GrumpsSolution ) = sol.δ
+
+
+"""
+    getβ( sol :: GrumpsSolution )
+
+Returns a vector of GrumpsEstimate types for β that can be queried for results. See  *getcoef*, *getstde*, *gettstat*, and *getname*.
+"""
 getβ( sol :: GrumpsSolution ) = sol.β
 
+"""
+    getcoef( e :: GrumpsEstimate )
+
+Returns the estimated coefficient value.
+"""
 getcoef( e :: GrumpsEstimate ) = e.coef
+
+"""
+    getstde( e :: GrumpsEstimate )
+
+Returns the standard error.
+"""
 getstde( e :: GrumpsEstimate ) = e.stde
+
+"""
+    gettstat( e :: GrumpsEstimate )
+
+Returns the t statistic.
+"""
 gettstat( e :: GrumpsEstimate ) = e.tstat
+
+"""
+    getname( e :: GrumpsEstimate )
+
+Returns the variable name.
+"""
 getname( e :: GrumpsEstimate ) = e.name

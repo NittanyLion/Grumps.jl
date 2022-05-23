@@ -28,3 +28,25 @@ Estimator( s :: Symbol )
 ```
 
 ## Data object creation
+
+**to be done**
+
+## Algorithm call
+
+**to be done**
+
+## Retrieving results
+
+As noted above, Grumps will return its results in a *GrumpsSolution* variable that can be queried as follows.  **to be expanded**
+
+```@docs
+getθ( sol :: GrumpsSolution )
+getδ( sol :: GrumpsSolution )
+getβ( sol :: GrumpsSolution )
+getcoef( e :: GrumpsEstimate )
+getstde( e :: GrumpsEstimate )
+gettstat( e :: GrumpsEstimate )
+getname( e :: GrumpsEstimate )
+```
+
+## Extending Grumps
