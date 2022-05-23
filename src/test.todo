@@ -1,4 +1,5 @@
-1 these estimator definitions should be moved to their respective folders 
+2 need to increase exports 
+ 1 these estimator definitions should be moved to their respective folders 
  3 still have to define the GrumpsSolution type 
  1 remember: only stick stuff in space structs that gets reused 
  4 must reset lastδ every time a new θ is computed 
