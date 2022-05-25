@@ -14,6 +14,7 @@ function Estimator( s :: String )
         fn = findnearest( s, estdesc[e].descriptions, Levenshtein() )
         val[e] = fn[1] == nothing ? typemax(F64) : Levenshtein()( s, fn[1] )
     end
+    @ensure !all( val .== typemax( F64 ) ) "cannot find desired estimator"
     winner = argmin( val )
     @info "identified $(estdesc[winner].name) as the estimator intended"
     return Estimator( Val( estdesc[winner].symbol ) )
