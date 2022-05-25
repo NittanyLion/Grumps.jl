@@ -5,7 +5,7 @@ OutsideObjective1!(
     fgh         :: GrumpsSingleFGH{T}, 
     θ           :: Vec{T},
     δ           :: Vec{T},
-    e           :: GrumpsPLMEstimator, 
+    e           :: GrumpsPMLEstimator, 
     d           :: GrumpsMarketData{T}, 
     o           :: OptimizationOptions, 
     s           :: GrumpsMarketSpace{T}, 
@@ -14,7 +14,7 @@ OutsideObjective1!(
     computeH    :: Bool 
     )
 
-Outside single market objective function for the PLM Estimator.  
+Outside single market objective function for the PML Estimator.  
 Since the inside and outside objective functions coincide there is no
 reason to recompute Ωδδ, Ωδθ
 """
@@ -22,7 +22,7 @@ function  OutsideObjective1!(
     fgh         :: GrumpsSingleFGH{T}, 
     θ           :: Vec{T},
     δ           :: Vec{T},
-    e           :: GrumpsPLMEstimator, 
+    e           :: GrumpsPMLEstimator, 
     d           :: GrumpsMarketData{T}, 
     o           :: OptimizationOptions, 
     s           :: GrumpsMarketSpace{T}, 

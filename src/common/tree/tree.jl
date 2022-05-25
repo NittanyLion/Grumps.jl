@@ -8,6 +8,6 @@ function GrumpsTypes()
     print_tree( Options )
     print_tree( Sources )
     print_tree( OptimizationOptions )
-    print_tree( Variable )
+    print_tree( Variables )
     print_tree( Solution )
 end

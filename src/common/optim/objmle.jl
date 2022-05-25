@@ -1,5 +1,7 @@
    
 @todo 2 "figure out when to recompute"
+@todo 4 "for all estimators, note that frugal is not compatible with for threads; need spawns"
+@todo 1 "replace 𝓏𝓈 with zeros"
 
 
 function ObjectiveFunctionθ1!( 

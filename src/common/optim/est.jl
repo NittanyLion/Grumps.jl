@@ -1,6 +1,5 @@
 
 @todo 2 "not sure if last call to pick up δ is needed"
-@todo 4 "check betahat formula"
 
 function grumps( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstart :: StartingVector{T}, seo :: StandardErrorOptions ) where {T<:Flt}
 
@@ -37,7 +36,6 @@ function grumps( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstart
     δvec = vcat( δ... )
 
     Computeβ!( solution, δvec, d )
-    # SetResult!( solution, e, d, o, seo, result, fgh )
     SetResult!( solution, θ, δvec, nothing )
     return solution
 end
