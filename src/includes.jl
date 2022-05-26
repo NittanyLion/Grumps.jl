@@ -5,9 +5,6 @@ include( "packages/packages.jl" )
 import Base.show, Base.Threads.@threads, Base.Threads.nthreads, Base.Threads.threadid, Base.Threads.@spawn
 
 
-# for fn ∈ [ "common", "mixedlogit", "vanilla" ]
-#     include( "$fn/$(fn).jl" )
-# end
 
 const commondir = "common"
 const docdir    = "doc"
@@ -15,16 +12,17 @@ const pkgdir    = "packages"
 
 include( "$(commondir)/$(commondir).jl" )
 
+const rootfolder = String( @__DIR__ )
 
 function EstimatorFolders( )
     ests = String[]
-    for fn ∈ readdir( "$(@__DIR__)" )
-        if isdir( fn ) && fn[1] ∉ [ '.', '_' ] && fn ∉ [ commondir, docdir, pkgdir ]
-            @info "loading estimator $fn"
+    for fn ∈ readdir( rootfolder )
+        ffn = "$rootfolder/$fn"
+        if isdir( ffn ) && fn[1] ∉ [ '.', '_' ] && fn ∉ [ commondir, docdir, pkgdir ]
+            @info "loading estimator $fn from $ffn"
             ests = vcat( ests, fn )
         end
     end
-    @info "estimators = $ests" 
     return ests
 end
 
