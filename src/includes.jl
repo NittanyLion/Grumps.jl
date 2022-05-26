@@ -44,7 +44,6 @@ end
 const estdesc = [ Description( Symbol( e ), Val( Symbol( e ) ) ) for e ∈ estfolds ]
 
 
-@info "$estdesc"
 
 
 
