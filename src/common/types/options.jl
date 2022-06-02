@@ -49,7 +49,7 @@ function OptimOptions( ::Val{ :θ}; f_tol = 1.0e-8, g_tol = 1.0e-4, x_tol = 1.0e
     OptimOptions( f_tol, g_tol, x_tol, iterations, show_trace, store_trace, extended_trace  )
 end
 
-function OptimOptions( ::Val{ :δ}; f_tol = 1.0e-8, g_tol = 1.0e-8, x_tol = 1.0e-6, iterations = 25, show_trace = false, store_trace = true, extended_trace = false )
+function OptimOptions( ::Val{ :δ}; f_tol = 0.0, g_tol = 1.0e-8, x_tol = 0.0, iterations = 25, show_trace = false, store_trace = true, extended_trace = false )
     OptimOptions( f_tol, g_tol, x_tol, iterations, show_trace, store_trace, extended_trace  )
 end
 

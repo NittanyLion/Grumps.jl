@@ -8,7 +8,7 @@ end
 macro warnif( cond, msg )
     local lcond = esc( cond )
     local lmsg = esc( msg )
-    return :( $lcond ? nothing : @warn $msg )
+    return :( !$lcond ? nothing : @warn $msg  )
 end
 
 

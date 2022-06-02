@@ -22,7 +22,7 @@ function  OutsideObjective1!(
     fgh         :: GrumpsSingleFGH{T}, 
     θ           :: Vec{T},
     δ           :: Vec{T},
-    e           :: GrumpsPMLEstimator, 
+    e           :: GrumpsPenalized, 
     d           :: GrumpsMarketData{T}, 
     o           :: OptimizationOptions, 
     s           :: GrumpsMarketSpace{T}, 

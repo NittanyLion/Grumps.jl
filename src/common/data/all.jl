@@ -37,6 +37,7 @@ function GrumpsData(
 
     # ranges = SplitEqually( M, nthreads() )
     # process data needed for the micro likelihood
+    println( "****************\n", e, "  ", usesmicrodata( e ),"\n*************" )
     @warnif !usesmicrodata( e ) && isa( s.consumers, DataFrame ) "ignoring consumer information since it is not used for this estimator type"
     @ensure !usesmicrodata( e ) || isa( s.consumers, DataFrame ) "this estimator type requires consumer information"
 

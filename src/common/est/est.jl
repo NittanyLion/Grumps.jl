@@ -8,7 +8,6 @@ Creates and returns a GrumpsEstimator type.  Grumps is reasonably good at figuri
 """
 function Estimator( s :: String )
     s = lowercase( s )
-    println( estdesc )
     val = Vector{Float64}( undef, length(estdesc) )
     for e ∈ eachindex( estdesc )
         fn = findnearest( s, estdesc[e].descriptions, Levenshtein() )

@@ -1,44 +1,30 @@
-   
+for f ∈ [ "types", "algo", "opt", "ui", "util" ]
+    include( "pmlalgo/$(f).jl" )
+end  
+
 @todo 2 "figure out when to recompute"
 @todo 4 "call delta objective function outside across markets"
 
 function ObjectiveFunctionθ1!( 
-    fgh         :: GrumpsMarketFGH{T},
+    fgh         :: PMLMarketFGH{T},
     θ           :: Vec{ T }, 
     δ           :: Vec{ T },
-    e           :: GrumpsPLM, 
+    e           :: GrumpsPenalized, 
     d           :: GrumpsMarketData{T}, 
     o           :: OptimizationOptions,
-    s           :: GrumpsSpace{T},
+    ms          :: GrumpsMarketSpace{T},
     computeF    :: Bool,
     computeG    :: Bool,
     computeH    :: Bool,
     m           :: Int                              
     ) where {T<:Flt}
 
-    recompute =  s.currentθ ≠ θ || memsave( o )
-    memslot = recompute ? AθZXθ!( θ, e, d, o, s, m ) : m
-    ms = s.marketspace[memslot]
-    # δ = 𝓏𝓈( dimδ( d ) )
-    δ .= zero( T )
 
-    # if recompute
-        ms.microspace.lastδ .= typemax( T )
-        ms.macrospace.lastδ .= typemax( T )
-        grumpsδ!( fgh.inside, θ, δ, e, d, o, ms, m )      # compute δs in the inner loop and store them in s.δ
-    # else
-        # @warn "did not recompute δ"
-    # end
-    
+    F = OutsideObjective1!(  fgh.outside, θ, δ, e, d, o, ms, computeF, computeG, computeH )
+    if computeF
+        fgh.outside.F .= F
+    end
 
-    # if computeG || computeH || !inisout( e )
-        F = OutsideObjective1!(  fgh.outside, θ, δ, e, d, o, ms, computeF, computeG, computeH )
-        if computeF
-            fgh.outside.F .= F
-        end
-    # end
-
-    freeAθZXθ!( e, s, o, memslot )
     return nothing
 end
 
@@ -46,13 +32,13 @@ end
 
 
 function ObjectiveFunctionθ!( 
-    fgh         :: GrumpsFGH{T}, 
+    fgh         :: PMLFGH{T}, 
     F           :: FType{T},
     G           :: GType{T},
     H           :: HType{T},      
     θtr         :: Vec{ T }, 
     δ           :: Vec{ Vec{T} },
-    e           :: GrumpsMLE, 
+    e           :: GrumpsPenalized, 
     d           :: GrumpsData{T}, 
     o           :: OptimizationOptions,
     s           :: GrumpsSpace{T} 
@@ -66,8 +52,22 @@ function ObjectiveFunctionθ!(
     
     SetZero!( true, F, G, H )
     markets = 1:dimM( d )
+    for m ∈ markets
+        δ[m] .= zero( T )
+    end
+
+    if !memsave( o )
+        for m ∈ markets
+            AθZXθ!( θ, e, d.marketdata[m], o, s, m )
+        end
+    end
+
+    grumpsδ!( fgh, θ, δ, e, d, o, s )
 
     @threads :dynamic for m ∈ markets
+        local recompute = memsave( o )
+
+        local memslot = recompute ? AθZXθ!( θ, e, d.marketdata[m], o, s, m ) : m
         ObjectiveFunctionθ1!( 
             fgh.market[m],
             θ,
@@ -75,17 +75,24 @@ function ObjectiveFunctionθ!(
             e, 
             d.marketdata[m], 
             o,
-            s,
+            s.marketspace[memslot],
             computeF,
             computeG,
             computeH,
             m                              
             ) 
+        
+        recompute && freeAθZXθ!( e, s, o, memslot )
+
     end
+
     copyto!( s.currentθ, θ )                                        
 
+    ranges = Ranges( δ )
+    Kδ = [ d.plmdata.𝒦[ranges[m],:]'δ[m] for m ∈ markets ]
+
     if computeF
-        F = sum( fgh.market[m].outside.F[1] for m ∈ markets )
+        F = sum( fgh.market[m].outside.F[1] + 0.5 * dot( Kδ[m], Kδ[m] ) for m ∈ markets )
     end
 
     if computeH && !computeG
@@ -96,12 +103,14 @@ function ObjectiveFunctionθ!(
 
 
     if computeG || computeH
-        δθ = Vector{ Matrix{T} }(undef, markets[end] )
+        δθ = Vector{ Matrix{T} }( undef, markets[end] )
+        Kdδθ = Vector{ Matrix{T} }( undef, markets[end] )
         @threads :dynamic for m ∈ markets
             δθ[m] = - fgh.market[m].inside.Hδδ \ fgh.market[m].inside.Hδθ
+            Kdδθ[m] = d.plmdata.𝒦[ranges[m],:]'δθ[m]
         end
-    
-        G[:] = sum( fgh.market[m].outside.Gθ +  δθ[m]' * fgh.market[m].outside.Gδ for m ∈ markets )
+        
+        G[:] = sum( fgh.market[m].outside.Gθ +  δθ[m]' * fgh.market[m].outside.Gδ + Kdδθ[m]'Kδ[m] for m ∈ markets )
         if computeH
             prd = Vector{ Matrix{T} }(undef, markets[end] )
             @threads :dynamic for m ∈ markets
@@ -111,12 +120,18 @@ function ObjectiveFunctionθ!(
                         + prd[m]
                         + prd[m]'
                         + δθ[m]' * fgh.market[m].outside.Hδδ * δθ[m] 
-                            for m ∈ markets )
+                        + Kdδθ[m]' * Kdδθ[m]
+                            for m ∈ markets ) 
         end
         ExponentiationCorrection!( G, H, θ, dimθz( d ) )
 
     end
 
+    if !memsave( o )
+        for m ∈ markets
+            freeAθZXθ!( e, s, o, m )
+        end
+    end
     return F
 end
 

@@ -1,9 +1,9 @@
 push!(LOAD_PATH, ".")
-using Grumps
+using Grumps, LinearAlgebra
 
 Grumps.@Imports()
 
-
+BLAS.set_num_threads(8)
 
 function mle(  )
     @info "setting source files"
@@ -33,7 +33,7 @@ function mle(  )
     )
     println( v )
     dop = DataOptions( ;micromode = :Hog, macromode = :Ant, balance = :micro )
-    e = Estimator( "mle" )
+    e = Estimator( "pml" )
     d = Data( e, s, v )
     # th = Grumps.GrumpsThreads(; markets = 1, inner = 1 )
     # grumps( e, d )

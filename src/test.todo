@@ -1,5 +1,6 @@
 2 need to increase exports 
  1 these estimator definitions should be moved to their respective folders 
+ 4 must create a constructor for PMLFGH 
  3 still have to define the GrumpsSolution type 
  1 remember: only stick stuff in space structs that gets reused 
  4 must reset lastδ every time a new θ is computed 
@@ -18,13 +19,19 @@
  2 SetStatus! not written yet 
  2 save log and results to file 
  2 not sure if last call to pick up δ is needed 
- 4 check betahat formula 
  1 move sizes elsewhere 
  1 document micllf 
  2 parallelize MicroObjectiveθ! 
  2 parallelize MacroObjectiveθ! 
  2 figure out when to recompute 
+ 4 for all estimators, note that frugal is not compatible with for threads; need spawns 
+ 1 replace 𝓏𝓈 with zeros 
+ 2 REMOVE DUPLICATION WITH PREVIOUS FUNCTION 
+ 4 must check ntr_best! for bugs 
+ 4 must rewrite ntr_result! 
+ 4 change return value in pml_optimize to be consistent with the rest of Grumps 
+ 2 figure out when to recompute 
+ 4 call delta objective function outside across markets 
  1 document this file 
  3 too much garbage collection for gmm 
- 4 InsideObjective1! needs to be redone for plm 
  
