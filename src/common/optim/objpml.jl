@@ -89,10 +89,11 @@ function ObjectiveFunctionθ!(
     copyto!( s.currentθ, θ )                                        
 
     ranges = Ranges( δ )
-    Kδ = [ d.plmdata.𝒦[ranges[m],:]'δ[m] for m ∈ markets ]
-
+    # Kδ = [ d.plmdata.𝒦[ranges[m],:]'δ[m] for m ∈ markets ]
+    Kδ = sum( d.plmdata.𝒦[ranges[m],:]'δ[m] for m ∈ markets )
     if computeF
-        F = sum( fgh.market[m].outside.F[1] + 0.5 * dot( Kδ[m], Kδ[m] ) for m ∈ markets )
+        # F = sum( fgh.market[m].outside.F[1] + 0.5 * dot( Kδ[m], Kδ[m] ) for m ∈ markets )
+        F = sum( fgh.market[m].outside.F[1] for m ∈ markets ) + 0.5 * dot( Kδ, Kδ ) 
     end
 
     if computeH && !computeG
@@ -126,7 +127,6 @@ function ObjectiveFunctionθ!(
         ntr_find_direction(  δθ,  QG, QK, values,  vectors, zero(T), Z )
 
 
-        # println( "should be zero:  ", sum( δθ[m]' * fgh.market[m].inside.Gδ for m ∈ markets ) )
         G[:] = sum( fgh.market[m].outside.Gθ +  δθ[m]' * fgh.market[m].outside.Gδ for m ∈ markets )
         if computeH
             # H[ : ] = sum( fgh.market[m].outside.Hθθ 
