@@ -30,7 +30,7 @@ function DefaultMicroSampler( n :: Int, T = F64 )
 end
 
 function DefaultMicroSampler( T = F64 )
-    DefaultMicroSampler( 11, T )
+    DefaultMicroSampler( 17, T )
 end
 
 abstract type MacroSampler{T<:Flt} <: GrumpsSampler{T} end
