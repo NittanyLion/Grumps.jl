@@ -15,12 +15,14 @@ const pkgdir    = "packages"
 
 include( "$(commondir)/$(commondir).jl" )
 
+const rootfolder = String( @__DIR__ )
 
 function EstimatorFolders( )
     ests = String[]
-    for fn ∈ readdir( "$(@__DIR__)" )
-        if isdir( fn ) && fn[1] ∉ [ '.', '_' ] && fn ∉ [ commondir, docdir, pkgdir ]
-            @info "loading estimator $fn"
+    for fn ∈ readdir( rootfolder )
+        ffn = "$rootfolder/$fn"
+        if isdir( ffn ) && fn[1] ∉ [ '.', '_' ] && fn ∉ [ commondir, docdir, pkgdir ]
+            @info "loading estimator $fn from $ffn"
             ests = vcat( ests, fn )
         end
     end
@@ -46,7 +48,6 @@ end
 const estdesc = [ Description( Symbol( e ), Val( Symbol( e ) ) ) for e ∈ estfolds ]
 
 
-@info "$estdesc"
 
 
 
