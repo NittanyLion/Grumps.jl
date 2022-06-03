@@ -14,7 +14,7 @@ function Heigen( H :: VMatrix{T} ) where {T<:Flt}
 end
 
 
-function HeigenQgQK( H :: VMatrix{T}, G, K::VMatrix{T}  ) where {T<:Flt}
+function HeigenQgQK( H :: VMatrix{T}, G, K:: Vector{  <: AbstractMatrix{T} }  ) where {T<:Flt}
     M = length( H )
     H_eig = Heigen( H )
     QG = Vector{ Array{T, min( size(G[1],2), 2 ) } }( undef, M )

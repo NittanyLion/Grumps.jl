@@ -1,5 +1,5 @@
 function GrumpsδCallBack( statevec, e, d, o, oldx, repeatx )
-    # return false
+    return false
     state = ( typeof( statevec ) <: Vector ) ? statevec[end] : statevec
     # @glog("Grumps ", e, " iteration ", state.iteration, " completed" )
     if true #o.δ.show_trace

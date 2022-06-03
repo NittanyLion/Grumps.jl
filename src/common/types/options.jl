@@ -134,7 +134,7 @@ struct GrumpsOptimizationOptions <: OptimizationOptions
 end
 
 
-function GrumpsOptimizationOptions(; θopt = OptimOptions( Val( :θ ) ), δopt = OptimOptions( Val( :δ) ), threads = GrumpsThreads(), memsave = false, maxrepeats = 4, probtype = :fast )
+function GrumpsOptimizationOptions(; θopt = OptimOptions( Val( :θ ) ), δopt = OptimOptions( Val( :δ) ), threads = GrumpsThreads(), memsave = false, maxrepeats = 3, probtype = :fast )
     @ensure probtype ∈ [ :fast, :robust ] "only fast and robust choice probabilities are allowed"
     return GrumpsOptimizationOptions( θopt, δopt, threads, memsave, maxrepeats, probtype )
 end

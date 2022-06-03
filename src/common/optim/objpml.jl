@@ -97,31 +97,51 @@ function ObjectiveFunctionθ!(
 
     if computeH && !computeG
         computeG = true
-        G = 𝓏𝓈( T, length(θ) )
+        G = zeros( T, length(θ) )
     end
 
 
 
     if computeG || computeH
-        δθ = Vector{ Matrix{T} }( undef, markets[end] )
-        Kdδθ = Vector{ Matrix{T} }( undef, markets[end] )
-        @threads :dynamic for m ∈ markets
-            δθ[m] = - fgh.market[m].inside.Hδδ \ fgh.market[m].inside.Hδθ
-            Kdδθ[m] = d.plmdata.𝒦[ranges[m],:]'δθ[m]
-        end
-        
-        G[:] = sum( fgh.market[m].outside.Gθ +  δθ[m]' * fgh.market[m].outside.Gδ + Kdδθ[m]'Kδ[m] for m ∈ markets )
+        M = length( markets )
+        # δθ = Vector{ Matrix{T} }( undef, M )
+        # HinvK = Vector{ Matrix{T} }( undef, M )
+        K = [ view( d.plmdata.𝒦, ranges[m], : ) for m ∈ markets ]
+        Hδθ = [ fgh.market[m].outside.Hδθ for m ∈ markets ]
+        Hδδ = [ fgh.market[m].inside.Hδδ for m ∈ markets ]
+        # @threads :dynamic for m ∈ markets
+        #     @ensure fgh.market[m].inside === fgh.market[m].outside "whoops"
+        #     HinvK[m] = Hδδ[m] \ K[m]
+        #     δθ[m] = - Hδδ[m] \ Hδθ[m]
+        # end
+        # ℛ = sum( HinvK[m]'Hδθ[m] for m ∈ markets )
+        # Δ = ( I + sum( K[m]' * HinvK[m] for m ∈ markets ) ) \ ℛ
+        # @threads :dynamic for m ∈ markets
+        #     δθ[m] += HinvK[m] * Δ 
+        # end
+        dδ = dimδm( d );  dθ = dimθ( d )
+        δθ = [ zeros( T, dδ[m], dθ ) for m ∈ markets ]
+        Z = [ zeros( T, size( K[1], 2 ), dδ[m] ) for m ∈ markets ]
+        vectors, values, QG, QK = HeigenQgQK( Hδδ, Hδθ, [ K[m] for m ∈ markets ] )
+        ntr_find_direction(  δθ,  QG, QK, values,  vectors, zero(T), Z )
+
+
+        # println( "should be zero:  ", sum( δθ[m]' * fgh.market[m].inside.Gδ for m ∈ markets ) )
+        G[:] = sum( fgh.market[m].outside.Gθ +  δθ[m]' * fgh.market[m].outside.Gδ for m ∈ markets )
         if computeH
-            prd = Vector{ Matrix{T} }(undef, markets[end] )
-            @threads :dynamic for m ∈ markets
-                prd[m] = δθ[m]' * fgh.market[m].outside.Hδθ
-            end
-            H[ : ] = sum( fgh.market[m].outside.Hθθ 
-                        + prd[m]
-                        + prd[m]'
-                        + δθ[m]' * fgh.market[m].outside.Hδδ * δθ[m] 
-                        + Kdδθ[m]' * Kdδθ[m]
-                            for m ∈ markets ) 
+            # H[ : ] = sum( fgh.market[m].outside.Hθθ 
+            #             + prd[m]
+            #             + prd[m]'
+            #             + δθ[m]' * fgh.market[m].outside.Hδδ * δθ[m] 
+            #             + Kdδθ[m]' * Kdδθ[m]
+            #                 for m ∈ markets ) 
+            # H[ :, : ] = sum( fgh.market[m].outside.Hθθ 
+            #     + prd[m]
+            #     + prd[m]'
+            #     + δθ[m]' * fgh.market[m].outside.Hδδ * δθ[m] 
+            #         for m ∈ markets ) + Kdδθ'Kdδθ
+            H[ :, : ] = sum( fgh.market[m].outside.Hθθ + δθ[m]'Hδθ[m] for m ∈ markets ) 
+            Symmetrize!( H )
         end
         ExponentiationCorrection!( G, H, θ, dimθz( d ) )
 
