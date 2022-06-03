@@ -1,6 +1,5 @@
 
 @todo 2 "not sure if last call to pick up δ is needed"
-@todo 4 "check betahat formula"
 
 function grumps( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstart :: StartingVector{T}, seo :: StandardErrorOptions ) where {T<:Flt}
 
@@ -11,6 +10,8 @@ function grumps( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstart
     
     δ           = [ zeros( T, dimm ) for dimm ∈ dimδm( d )  ]
     # CheckSanity( e, d, o, s )
+    oldx = zeros( T, dimθ( d ) )
+    repeatx = zeros( Int, 1 )
 
     @time result = Optim.optimize(
             Optim.only_fgh!(  ( F, G, H, θ ) ->  ObjectiveFunctionθ!( fgh, F, G, H, θ, δ, e, d, o, s ) ),
@@ -24,7 +25,7 @@ function grumps( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstart
                 f_tol           = o.θ.f_tol,
                 iterations      = o.θ.iterations,
                 store_trace     = o.θ.store_trace,
-                callback        = x->GrumpsθCallBack( x, e, d, o, zeros( T, dimθ( d ) ), [0], solution )
+                callback        = x->GrumpsθCallBack( x, e, d, o, oldx, repeatx, solution )
             )
     )
 
@@ -37,7 +38,6 @@ function grumps( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstart
     δvec = vcat( δ... )
 
     Computeβ!( solution, δvec, d )
-    # SetResult!( solution, e, d, o, seo, result, fgh )
     SetResult!( solution, θ, δvec, nothing )
     return solution
 end

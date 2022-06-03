@@ -76,11 +76,12 @@ function GrumpsθCallBack( statevec, e :: GrumpsEstimator, d :: GrumpsData{T}, o
             for i ∈ eachindex( x )
                 printstyled( @sprintf( "%+7.2f ", θ[i] ); color = :magenta )
             end
-            if x ≠ oldx
-                repeatx .= 0
-            else
+            if isapprox( x, oldx; atol = max( o.θ.x_tol, 1.0e-10 ) )
                 repeatx .+= 1
+            else
+                repeatx .= 0
             end
+            copyto!( oldx, x )
         catch
         end
         # println( "g= ",state.metadata["g(x)"] )

@@ -1,0 +1,1807 @@
+diff --git a/.gitignore b/.gitignore
+index d6b4b1c..51abf5a 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,2 +1,3 @@
+ /Manifest.toml
+ /docs/build/
++test.todo
+\ No newline at end of file
+diff --git a/notes/notes.md b/notes/notes.md
+new file mode 100644
+index 0000000..d093c17
+--- /dev/null
++++ b/notes/notes.md
+@@ -0,0 +1,48 @@
++
++1. **pml_optimize** in *opt.jl* takes arguments
++   * *f* objective function
++   * *xstart* starting values (vec of vecs of T)
++   * *d* GrumpsData{T}
++   * *best* PMLFGH{T}
++   * *options*  NTROptions{T}
++2.  **grumpsδ!** calls *pml_optimize*.  It takes the following arguments:
++    * *InsideObjective!*
++    * *fgh* PMLFGH{T} 
++    * *θ* 
++    * *δstart* vec of vecs of T
++    * *e* GrumpsPML
++    * *d* GrumpsData{T}
++    * *o* OptimizationOptions{T}
++    * *s* GrumpsSpace{T}
++3.  **InsideObjective!** computes the inside objective function.  It takes the following arguments:
++    * *F* FVType{T}
++    * *G* GVType{T}
++    * *H* HVType{T}
++    * *θ* Vec{T}
++    * *δ* Vec{Vec{T}}
++    * *e* GrumpsPML
++    * *d* GrumpsData{T}
++    * *o* OptimizationOptions
++    * *s* GrumpsSpace{T}
++4.  
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+diff --git a/src/_example.jl b/src/_example.jl
+index d1cb91b..239925b 100644
+--- a/src/_example.jl
++++ b/src/_example.jl
+@@ -1,9 +1,9 @@
+ push!(LOAD_PATH, ".")
+-using Grumps
++using Grumps, LinearAlgebra
+ 
+ Grumps.@Imports()
+ 
+-
++BLAS.set_num_threads(8)
+ 
+ function mle(  )
+     @info "setting source files"
+@@ -33,7 +33,7 @@ function mle(  )
+     )
+     println( v )
+     dop = DataOptions( ;micromode = :Hog, macromode = :Ant, balance = :micro )
+-    e = Estimator( "vanilla" )
++    e = Estimator( "pml" )
+     d = Data( e, s, v )
+     # th = Grumps.GrumpsThreads(; markets = 1, inner = 1 )
+     # grumps( e, d )
+diff --git a/src/common/common.jl b/src/common/common.jl
+index c2998f2..0b23e45 100644
+--- a/src/common/common.jl
++++ b/src/common/common.jl
+@@ -1,6 +1,6 @@
+ 
+ 
+-for fn ∈ [ "error", "early", "types", "est", "utils", "io", "sampling", "data", "sol", "space", "threads", "optim", "probs", "array", "imports" ]
++for fn ∈ [ "error", "early", "types", "est", "utils", "io", "sampling", "data", "sol", "space", "threads", "optim", "probs", "array", "imports", "tree" ]
+     include( "$fn/$(fn).jl" )
+ end
+ 
+diff --git a/src/common/data/all.jl b/src/common/data/all.jl
+index c8472db..76bd3db 100644
+--- a/src/common/data/all.jl
++++ b/src/common/data/all.jl
+@@ -37,6 +37,7 @@ function GrumpsData(
+ 
+     # ranges = SplitEqually( M, nthreads() )
+     # process data needed for the micro likelihood
++    println( "****************\n", e, "  ", usesmicrodata( e ),"\n*************" )
+     @warnif !usesmicrodata( e ) && isa( s.consumers, DataFrame ) "ignoring consumer information since it is not used for this estimator type"
+     @ensure !usesmicrodata( e ) || isa( s.consumers, DataFrame ) "this estimator type requires consumer information"
+ 
+diff --git a/src/common/error/macros.jl b/src/common/error/macros.jl
+index d65de6f..b825487 100644
+--- a/src/common/error/macros.jl
++++ b/src/common/error/macros.jl
+@@ -8,7 +8,7 @@ end
+ macro warnif( cond, msg )
+     local lcond = esc( cond )
+     local lmsg = esc( msg )
+-    return :( $lcond ? nothing : @warn $msg )
++    return :( !$lcond ? nothing : @warn $msg  )
+ end
+ 
+ 
+diff --git a/src/common/est/est.jl b/src/common/est/est.jl
+index 1175b5e..b7836cd 100644
+--- a/src/common/est/est.jl
++++ b/src/common/est/est.jl
+@@ -13,7 +13,6 @@ function Estimator( s :: String )
+         fn = findnearest( s, estdesc[e].descriptions, Levenshtein() )
+         val[e] = fn[1] == nothing ? typemax(F64) : Levenshtein()( s, fn[1] )
+     end
+-    @ensure !all( val .== typemax( F64 ) ) "cannot find desired estimator"
+     winner = argmin( val )
+     @info "identified $(estdesc[winner].name) as the estimator intended"
+     return Estimator( Val( estdesc[winner].symbol ) )
+diff --git a/src/common/optim/callbacks.jl b/src/common/optim/callbacks.jl
+index 5297b13..5ca6833 100644
+--- a/src/common/optim/callbacks.jl
++++ b/src/common/optim/callbacks.jl
+@@ -76,11 +76,12 @@ function GrumpsθCallBack( statevec, e :: GrumpsEstimator, d :: GrumpsData{T}, o
+             for i ∈ eachindex( x )
+                 printstyled( @sprintf( "%+7.2f ", θ[i] ); color = :magenta )
+             end
+-            if x ≠ oldx
+-                repeatx .= 0
+-            else
++            if isapprox( x, oldx; atol = max( o.θ.x_tol, 1.0e-10 ) )
+                 repeatx .+= 1
++            else
++                repeatx .= 0
+             end
++            copyto!( oldx, x )
+         catch
+         end
+         # println( "g= ",state.metadata["g(x)"] )
+diff --git a/src/common/optim/delta.jl b/src/common/optim/delta.jl
+index 8d05444..a6e4f6d 100644
+--- a/src/common/optim/delta.jl
++++ b/src/common/optim/delta.jl
+@@ -31,4 +31,31 @@ function grumpsδ!(
+     fgh.F .= InsideObjective1!( zero(T), fgh.Gδ, fgh.Hδδ, fgh.Hδθ, θ, δ, e, d, o, s )
+ 
+     return nothing    
+-end
+\ No newline at end of file
++end
++
++
++
++function grumpsδ!( fgh :: PMLFGH{T}, θ::Vec{T}, δ :: Vec{ Vec{T} }, e :: GrumpsPenalized, d :: GrumpsData{T}, o :: OptimizationOptions, s :: GrumpsSpace{T} ) where {T<:Flt}
++
++    markets = 1:dimM( d )
++
++    ret = pml_optimize( (F,G,H,δ)-> InsideObjective!( F, G, H, θ, δ, e, d, o, s ), 
++            δ, 
++            d, 
++            fgh,
++            NTROptions( T; 
++                x_abs_tol = o.δ.x_tol, 
++                g_abs_tol = o.δ.g_tol, 
++                f_rel_tol = o.δ.f_tol, 
++                iterations = o.δ.iterations, 
++                show_trace = o.δ.show_trace )   
++                )    
++
++    for m ∈ markets
++        copyto!( δ[m], fgh.market[m].δ )
++    end
++    return ret
++end
++
++
++
+diff --git a/src/common/optim/est.jl b/src/common/optim/est.jl
+index 57c219b..6fc8452 100644
+--- a/src/common/optim/est.jl
++++ b/src/common/optim/est.jl
+@@ -1,6 +1,5 @@
+ 
+ @todo 2 "not sure if last call to pick up δ is needed"
+-@todo 4 "check betahat formula"
+ 
+ function grumps( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstart :: StartingVector{T}, seo :: StandardErrorOptions ) where {T<:Flt}
+ 
+@@ -11,6 +10,8 @@ function grumps( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstart
+     
+     δ           = [ zeros( T, dimm ) for dimm ∈ dimδm( d )  ]
+     # CheckSanity( e, d, o, s )
++    oldx = zeros( T, dimθ( d ) )
++    repeatx = zeros( Int, 1 )
+ 
+     @time result = Optim.optimize(
+             Optim.only_fgh!(  ( F, G, H, θ ) ->  ObjectiveFunctionθ!( fgh, F, G, H, θ, δ, e, d, o, s ) ),
+@@ -24,7 +25,7 @@ function grumps( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstart
+                 f_tol           = o.θ.f_tol,
+                 iterations      = o.θ.iterations,
+                 store_trace     = o.θ.store_trace,
+-                callback        = x->GrumpsθCallBack( x, e, d, o, zeros( T, dimθ( d ) ), [0], solution )
++                callback        = x->GrumpsθCallBack( x, e, d, o, oldx, repeatx, solution )
+             )
+     )
+ 
+@@ -37,7 +38,6 @@ function grumps( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstart
+     δvec = vcat( δ... )
+ 
+     Computeβ!( solution, δvec, d )
+-    # SetResult!( solution, e, d, o, seo, result, fgh )
+     SetResult!( solution, θ, δvec, nothing )
+     return solution
+ end
+diff --git a/src/common/optim/objmle.jl b/src/common/optim/objmle.jl
+index 945268b..886bddd 100644
+--- a/src/common/optim/objmle.jl
++++ b/src/common/optim/objmle.jl
+@@ -1,5 +1,7 @@
+    
+ @todo 2 "figure out when to recompute"
++@todo 4 "for all estimators, note that frugal is not compatible with for threads; need spawns"
++@todo 1 "replace 𝓏𝓈 with zeros"
+ 
+ 
+ function ObjectiveFunctionθ1!( 
+diff --git a/src/common/optim/objpml.jl b/src/common/optim/objpml.jl
+new file mode 100644
+index 0000000..7b019b8
+--- /dev/null
++++ b/src/common/optim/objpml.jl
+@@ -0,0 +1,159 @@
++for f ∈ [ "types", "algo", "opt", "ui", "util" ]
++    include( "pmlalgo/$(f).jl" )
++end  
++
++@todo 2 "figure out when to recompute"
++@todo 4 "call delta objective function outside across markets"
++
++function ObjectiveFunctionθ1!( 
++    fgh         :: PMLMarketFGH{T},
++    θ           :: Vec{ T }, 
++    δ           :: Vec{ T },
++    e           :: GrumpsPenalized, 
++    d           :: GrumpsMarketData{T}, 
++    o           :: OptimizationOptions,
++    ms          :: GrumpsMarketSpace{T},
++    computeF    :: Bool,
++    computeG    :: Bool,
++    computeH    :: Bool,
++    m           :: Int                              
++    ) where {T<:Flt}
++
++
++    F = OutsideObjective1!(  fgh.outside, θ, δ, e, d, o, ms, computeF, computeG, computeH )
++    if computeF
++        fgh.outside.F .= F
++    end
++
++    return nothing
++end
++
++
++
++
++function ObjectiveFunctionθ!( 
++    fgh         :: PMLFGH{T}, 
++    F           :: FType{T},
++    G           :: GType{T},
++    H           :: HType{T},      
++    θtr         :: Vec{ T }, 
++    δ           :: Vec{ Vec{T} },
++    e           :: GrumpsPenalized, 
++    d           :: GrumpsData{T}, 
++    o           :: OptimizationOptions,
++    s           :: GrumpsSpace{T} 
++    ) where {T<:Flt}
++
++    θ = getθ( θtr, d )
++
++    computeF, computeG, computeH = computewhich( F, G, H )
++
++
++    
++    SetZero!( true, F, G, H )
++    markets = 1:dimM( d )
++    for m ∈ markets
++        δ[m] .= zero( T )
++    end
++
++    if !memsave( o )
++        for m ∈ markets
++            AθZXθ!( θ, e, d.marketdata[m], o, s, m )
++        end
++    end
++
++    grumpsδ!( fgh, θ, δ, e, d, o, s )
++
++    @threads :dynamic for m ∈ markets
++        local recompute = memsave( o )
++
++        local memslot = recompute ? AθZXθ!( θ, e, d.marketdata[m], o, s, m ) : m
++        ObjectiveFunctionθ1!( 
++            fgh.market[m],
++            θ,
++            δ[m],
++            e, 
++            d.marketdata[m], 
++            o,
++            s.marketspace[memslot],
++            computeF,
++            computeG,
++            computeH,
++            m                              
++            ) 
++        
++        recompute && freeAθZXθ!( e, s, o, memslot )
++
++    end
++
++    copyto!( s.currentθ, θ )                                        
++
++    ranges = Ranges( δ )
++    # Kδ = [ d.plmdata.𝒦[ranges[m],:]'δ[m] for m ∈ markets ]
++    Kδ = sum( d.plmdata.𝒦[ranges[m],:]'δ[m] for m ∈ markets )
++    if computeF
++        # F = sum( fgh.market[m].outside.F[1] + 0.5 * dot( Kδ[m], Kδ[m] ) for m ∈ markets )
++        F = sum( fgh.market[m].outside.F[1] for m ∈ markets ) + 0.5 * dot( Kδ, Kδ ) 
++    end
++
++    if computeH && !computeG
++        computeG = true
++        G = zeros( T, length(θ) )
++    end
++
++
++
++    if computeG || computeH
++        M = length( markets )
++        # δθ = Vector{ Matrix{T} }( undef, M )
++        # HinvK = Vector{ Matrix{T} }( undef, M )
++        K = [ view( d.plmdata.𝒦, ranges[m], : ) for m ∈ markets ]
++        Hδθ = [ fgh.market[m].outside.Hδθ for m ∈ markets ]
++        Hδδ = [ fgh.market[m].inside.Hδδ for m ∈ markets ]
++        # @threads :dynamic for m ∈ markets
++        #     @ensure fgh.market[m].inside === fgh.market[m].outside "whoops"
++        #     HinvK[m] = Hδδ[m] \ K[m]
++        #     δθ[m] = - Hδδ[m] \ Hδθ[m]
++        # end
++        # ℛ = sum( HinvK[m]'Hδθ[m] for m ∈ markets )
++        # Δ = ( I + sum( K[m]' * HinvK[m] for m ∈ markets ) ) \ ℛ
++        # @threads :dynamic for m ∈ markets
++        #     δθ[m] += HinvK[m] * Δ 
++        # end
++        dδ = dimδm( d );  dθ = dimθ( d )
++        δθ = [ zeros( T, dδ[m], dθ ) for m ∈ markets ]
++        Z = [ zeros( T, size( K[1], 2 ), dδ[m] ) for m ∈ markets ]
++        vectors, values, QG, QK = HeigenQgQK( Hδδ, Hδθ, [ K[m] for m ∈ markets ] )
++        ntr_find_direction(  δθ,  QG, QK, values,  vectors, zero(T), Z )
++
++
++        G[:] = sum( fgh.market[m].outside.Gθ +  δθ[m]' * fgh.market[m].outside.Gδ for m ∈ markets )
++        if computeH
++            # H[ : ] = sum( fgh.market[m].outside.Hθθ 
++            #             + prd[m]
++            #             + prd[m]'
++            #             + δθ[m]' * fgh.market[m].outside.Hδδ * δθ[m] 
++            #             + Kdδθ[m]' * Kdδθ[m]
++            #                 for m ∈ markets ) 
++            # H[ :, : ] = sum( fgh.market[m].outside.Hθθ 
++            #     + prd[m]
++            #     + prd[m]'
++            #     + δθ[m]' * fgh.market[m].outside.Hδδ * δθ[m] 
++            #         for m ∈ markets ) + Kdδθ'Kdδθ
++            H[ :, : ] = sum( fgh.market[m].outside.Hθθ + δθ[m]'Hδθ[m] for m ∈ markets ) 
++            Symmetrize!( H )
++        end
++        ExponentiationCorrection!( G, H, θ, dimθz( d ) )
++
++    end
++
++    if !memsave( o )
++        for m ∈ markets
++            freeAθZXθ!( e, s, o, m )
++        end
++    end
++    return F
++end
++
++
++
+diff --git a/src/common/optim/optim.jl b/src/common/optim/optim.jl
+index b8d0b68..5602ec5 100644
+--- a/src/common/optim/optim.jl
++++ b/src/common/optim/optim.jl
+@@ -1,3 +1,3 @@
+-for fn ∈ [ "callbacks", "delta", "est", "micllf", "macllf", "objmle", "objgmm", "start", "util", "expo", "beta" ]
++for fn ∈ [ "callbacks", "delta", "est", "micllf", "macllf", "objmle", "objgmm", "objpml", "start", "util", "expo", "beta" ]
+     include( "$(fn).jl" )
+ end
+\ No newline at end of file
+diff --git a/src/common/optim/pmlalgo/algo.jl b/src/common/optim/pmlalgo/algo.jl
+new file mode 100644
+index 0000000..cb236fa
+--- /dev/null
++++ b/src/common/optim/pmlalgo/algo.jl
+@@ -0,0 +1,445 @@
++
++
++function Heigen( H :: VMatrix{T} ) where {T<:Flt}
++    M = length( H )
++    H_eig = Vector{ Eigen{T, T, Matrix{T}, Vector{T} } }(undef, M)
++    @threads :dynamic for m ∈ 1:M
++        H_eig[m] = eigen( Symmetric( H[m] ) )
++        for j ∈ eachindex( H_eig[m].values )
++            H_eig[m].values[j] ≥ zero( T ) && break
++            H_eig[m].values[j] = zero( T )
++        end
++    end
++    H_eig
++end
++
++
++function HeigenQgQK( H :: VMatrix{T}, G, K:: Vector{  <: AbstractMatrix{T} }  ) where {T<:Flt}
++    M = length( H )
++    H_eig = Heigen( H )
++    QG = Vector{ Array{T, min( size(G[1],2), 2 ) } }( undef, M )
++    QK = Vector{ Matrix{T} }( undef, M )
++    vectors = [ H_eig[m].vectors for m ∈ 1:M ]
++    values = [ H_eig[m].values for m ∈ 1:M ]
++    @threads :dynamic for m ∈ 1:M
++        QG[m] = vectors[m]' * G[m]
++        QK[m] = vectors[m]' * K[m]
++    end
++    vectors, values, QG, QK
++end
++
++
++
++
++
++
++
++function ntr_find_direction!( p :: VVector{ T },  Qg :: VVector{T}, QK :: VMatrix{T}, values::VVector{T},  vectors::VMatrix{T}, λ :: T, Z::VMatrix{T} ) where {T<:Flt}
++    M = length( p )
++    λ ≥ 0.0 || println( λ )
++    @assert( λ ≥ 0.0 )
++    cols_k = size( QK[1], 2 )
++    J = [ length( p[m] ) for m ∈ 1:M ]
++    A = zeros(T, cols_k, cols_k )
++    for m ∈ 1:M
++        for j ∈ 1:J[m]
++            for i ∈ 1:cols_k
++                for t ∈ 1:cols_k
++                    A[i,t] += QK[m][j,i] * QK[m][j,t] / ( λ + values[m][j] )
++                end
++            end
++        end
++    end
++    A += I
++    C = cholesky( Symmetric( A ); check = false )
++    for m ∈ 1:M
++         Z[m] .=  C.U' \ ( QK[m]' ) 
++    end
++    r = zeros( T, cols_k )
++    for m ∈ 1:M
++        for j ∈ 1:J[m]
++            for i ∈ 1:cols_k
++                r[i] += Z[m][i,j] * Qg[m][j] / ( λ + values[m][j] )
++            end
++        end
++    end
++    @threads :dynamic for m ∈ 1:M
++        p[m] .= T(0.0)
++        for j ∈ 1:J[m]
++            mult = ( Qg[m][j] - sum( Z[m][t,j] * r[t] for t ∈ 1:cols_k ) ) / ( λ + values[m][j] )
++            for i ∈ 1:J[m]
++                p[m][i] -= vectors[m][i,j] * mult
++            end
++        end
++    end
++    p
++end 
++
++@todo 2 "REMOVE DUPLICATION WITH PREVIOUS FUNCTION"
++
++function ntr_find_direction(  P :: VMatrix{ T },  QG :: VMatrix{T}, QK :: VMatrix{T}, values::VVector{T},  vectors::VMatrix{T}, λ :: T, Z::VMatrix{T} ) where {T<:Flt}
++    M = length( P )
++    λ ≥ 0.0 || println( λ )
++    @assert( λ ≥ 0.0 )
++    cols_k = size( QK[1], 2 )
++    J = [ size( P[m], 1 ) for m ∈ 1:M ]
++    A = zeros(T, cols_k, cols_k )
++    for m ∈ 1:M
++        for j ∈ 1:J[m]
++            for i ∈ 1:cols_k
++                for t ∈ 1:cols_k
++                    A[i,t] += QK[m][j,i] * QK[m][j,t] / ( λ + values[m][j] )
++                end
++            end
++        end
++    end
++    A += I
++    C = cholesky( Symmetric( A ); check = false )
++    for m ∈ 1:M
++         Z[m] .=  C.U' \ ( QK[m]' ) 
++    end
++    cols_g = size( QG[1], 2 )
++    R = zeros( T, cols_k, cols_g )
++    for m ∈ 1:M
++        for j ∈ 1:J[m]
++            for i ∈ 1:cols_k
++                R[i,:] += Z[m][i,j] * QG[m][j,:] / ( λ + values[m][j] )
++            end
++        end
++    end
++    @threads :dynamic for m ∈ 1:M
++        P[m] .= T(0.0)
++        for j ∈ 1:J[m]
++            local mult = [ ( QG[m][j,i] - sum( Z[m][t,j] * R[t,i] for t ∈ 1:cols_k ) ) / ( λ + values[m][j] ) for i ∈ 1:cols_g ]
++            for i ∈ 1:J[m]
++                P[m][i,:] -= vectors[m][i,j] * mult
++            end
++        end
++    end
++    P
++end 
++
++
++
++
++
++#==
++Returns a tuple of initial safeguarding values for λ. Newton's method might not
++work well without these safeguards when the Hessian is not positive definite.
++==#
++function initial_safeguards(H, gr, Δ, K, λ, plmspace::PLMSpace{T} ) where {T<:Flt}
++    # equations are on p. 560 of [MORESORENSEN]
++    M = length( K );  cols_k = size( K[1], 2 )
++    # they state on the first page that ||⋅|| is the Euclidean norm
++    dδ = [ size( K[m], 1 ) for m ∈ 1:M ]
++    som = plmspace.som
++    function computesom( left, right, U )
++        for m ∈ left:right
++            for c ∈ 1:dδ[m]
++                som[m][c] = zero(T)
++                for r ∈ 1:dδ[m]
++                    som[m][c] += abs( H[m][r,c] + sum( K[m][r,j] * K[m][c,j] for j ∈ 1:cols_k ) )
++                end
++                for mm ∈ 1:M
++                    m == mm && continue
++                    for r ∈ 1:dδ[mm]
++                        som[m][c] += abs( sum( K[mm][r,j] * K[m][c,j] for j ∈ 1:cols_k ) )
++                    end
++                end
++            end
++        end
++    end
++    binaryrun( computesom, 1, M, 1, nothing )
++    Hnorm = maximum( maximum( som[m] ) for m ∈ 1:M )
++    gr_norm = sqrt( sum( dot( gr[m], gr[m] ) for m ∈ 1:M ) )       
++    λL = max( zero(T), gr_norm / Δ - Hnorm)
++    λU = gr_norm / Δ + Hnorm
++    λS = zero(T)
++    λ = min( max(λ, λL), λU )
++    if λ ≤ λS
++        λ = max( T(1) /1000*λU, sqrt(λL*λU) )
++    end
++    λ
++end
++
++
++function ntr_m( H::VMatrix{T}, gr::VVector{T}, x :: VVector{T}, s::VVector{T}, K :: VMatrix{T} ) where {T<:Flt}
++    mval = zero( T )
++    for m ∈ eachindex( s )
++        mval += dot( gr[m], s[m] ) + T(0.5) * dot( s[m], H[m] * s[m] )
++    end
++    Ks  = sum( K[m]' * s[m] for m ∈ eachindex( s ) )
++    mval += T(0.5) * dot( Ks, Ks ) 
++    mval
++end
++
++
++
++
++function ntr_solve_subproblem( 
++    gr              :: VVector{ T },        # full gradient
++    H               :: VMatrix{T},          # Hessian 
++    K               :: VMatrix{T},          # K matrices
++    Δ               :: T,                   # NTR Δ
++    s               :: VVector{T},          # direction
++    x               :: VVector{T},          # current x
++    plmspace        :: PLMSpace{T};         # space
++    tolerance = 1.0e-10,                    # tolerance
++    max_iters = 5                           # maximum number of subproblem iterations
++    ) where {T<:Flt}
++
++    M = length( H )
++    !isfinite( H ) && return T(Inf), false, zero(T), false, false
++
++    # @timeit to "compute eigenvalues" begin
++    # H_eig = Vector{ Eigen{T, T, Matrix{T}, Vector{T} } }(undef, M)
++    # function computestuff( left, right, U )
++    #     local H_eig, H, Qg, QK = U
++    #     for m ∈ left:right
++    #         H_eig[m] = eigen( Symmetric( H[m] ) )
++    #         # we know the objective function is positive definite so negative eigenvalues are roundoff errors
++    #         for j ∈ eachindex( H_eig[m].values )
++    #             H_eig[m].values[j] ≥ zero( T ) && break
++    #             H_eig[m].values[j] = zero( T )
++    #         end
++    #         Qg[m] = H_eig[m].vectors' * gr[m]
++    #         QK[m] = H_eig[m].vectors' * K[m]
++    #     end
++    # end
++
++    # Qg = Vector{ Vector{T} }( undef, M )
++    # QK = Vector{ Matrix{T} }( undef, M )
++    # binaryrun( computestuff, 1, M,  1, (H_eig, H, Qg, QK ) )
++    # end
++
++    ( vectors, values, Qg, QK ) = HeigenQgQK( H, gr, K )
++
++    # end
++
++    min_H_ev, max_H_ev = minmax( values )
++
++    # values = [ H_eig[m].values for m ∈ 1:M ]
++    # vectors = [ H_eig[m].vectors for m ∈ 1:M ]
++
++    if min_H_ev ≥ 1.0e-8
++        ntr_find_direction!( s, Qg, QK, values, vectors, zero(T), plmspace.Z )
++        if dot(s,s) ≤ Δ^2 
++            return ntr_m( H, gr, x, s, K ), true, zero(T), false, true
++        end
++    end
++
++    λlb = T( 0.0 )
++    λ = initial_safeguards( H, gr, Δ, K, zero( T ), plmspace )
++
++    # Algorithim 4.3 of N&W (2006)
++
++    reached_solution = false
++    Qs = [ similar( Qg[m] )  for m ∈ 1:M ]    
++    for iter ∈ 1:max_iters
++        λ_previous = λ
++
++        ntr_find_direction!( s, Qg, QK, values, vectors, λ, plmspace.Z  )
++        ss = deepcopy( s )
++        for m ∈ 1:M
++            Qs[m][:] = vectors[m]' * s[m]  
++        end
++
++        ntr_find_direction!( ss, Qs, QK, values, vectors, λ, plmspace.Z )
++        norm2_s = dot( s, s )
++        λ_update = ( norm2_s / abs( dot( s, ss ) ) ) * ( sqrt( norm2_s ) - Δ ) /  Δ 
++        λ += λ_update
++        if λ < λlb
++            λ = max( 0.5 * ( λ_previous + λlb ), λlb )
++        end
++
++        if abs(λ - λ_previous) < tolerance
++            reached_solution = true
++            break
++        end
++    end
++
++    return ntr_m( H, gr, x, s, K ), false, λ, reached_solution
++end
++
++
++function fulladd!( y, x )
++    for i ∈ eachindex( x )
++        y[i][:] += x[i]
++    end
++end
++
++function fulldiff( y, x )
++    [ y[i] - x[i] for i ∈ eachindex(y) ]
++end
++
++
++
++
++function ntr_update_state!( ntr :: NTR{T}, state :: NTRState{T}, method :: NTRMethod{T}, plmspace :: PLMSpace{T} ) where {T<:Flt}
++    # fine the next step direction
++    ( ℳ, state.interior, state.λ, state.reached_subproblem_solution ) = 
++            ntr_solve_subproblem( gradient( ntr ), hessian( ntr ), ntr.K, state.Δ, state.s, state.x, plmspace )
++
++    # maintain a record of the previous position
++    deepcopyto!( state.x_previous, state.x )
++    state.f_x_previous = value( ntr )
++
++    # update the function value and gradient
++    fulladd!( state.x, state.s )
++    deepcopyto!( state.g_previous, gradient( ntr ) )
++    value_gradient!( ntr, state.x )         
++
++    # update the trust region size (algorithm 4.1 in N&W 2006)
++    f_x_diff = state.f_x_previous - value( ntr )
++    state.ρ = ( abs( ℳ ) ≤ eps( T ) ) ?  1.0 : ( ( ℳ > 0 ) ? -1.0 : f_x_diff / ( 0 - ℳ ) )
++
++    if state.ρ < method.ρ_lower
++        # @info "ρ less than lower bound, reducing Δ"
++        state.Δ *= 0.25
++    elseif state.ρ > method.ρ_upper && !state.interior
++        # @info "ρ above upper and not in the interior "
++        state.Δ = min( 2 * state.Δ, method.Δhat )
++    else
++        # @info "default situation"
++    end
++
++    if state.ρ ≤ state.η
++        # The improvement is too small and we won't take it.
++        # If you reject an interior solution, make sure that the next
++        # delta is smaller than the current step. Otherwise you waste
++        # steps reducing delta by constant factors while each solution
++        # will be the same.
++        x_diff = fulldiff( state.x, state.x_previous )
++        state.Δ = 0.25 * norm( vcat( x_diff... ) )    # **** THIS FIXES WHAT I THINK IS A BUG IN THE OPTIM CODE
++
++        ntr.F = state.f_x_previous
++        deepcopyto!( state.x, state.x_previous )
++        deepcopyto!( ntr.DF, state.g_previous )
++        deepcopyto!( ntr.x_df, state.x_previous )
++    else
++        hessian!( ntr, state.x )
++    end
++
++    nothing
++end
++
++
++
++
++function ntr_loss( x )
++    y = vcat( x... )
++    maximum( abs.( y ) )
++end
++
++
++function ntr_assess_convergence( state::NTRState{T}, ntr::NTR{T}, options::NTROptions{T} ) where {T<:Flt}
++    if state.ρ ≤ state.η 
++        # @info "ρ less than η   $(state.ρ) ≤ $(state.η)"
++        return false, false, false, false
++    end
++    # Accept the point and check convergence
++    x_converged = ( ntr_loss( fulldiff( state.x, state.x_previous ) )  ≤ options.x_abs_tol ) 
++    f_converged = ( abs( value( ntr ) - state.f_x_previous ) ≤ options.f_rel_tol * abs( value( ntr ) ) )
++    f_increased = ( value( ntr ) > state.f_x_previous )
++    g_converged = ( ntr_loss( gradient( ntr ) ) ≤ options.g_abs_tol )
++    # printstyled("convergence measures:\n"; color = :green)
++    # println( "xloss = ", ntr_loss( fulldiff( state.x, state.x_previous ) ) )
++    # println( "floss = ", abs( value( ntr ) - state.f_x_previous ) )
++    # println( "gloss = ", ntr_loss( gradient( ntr ) ) )
++    return x_converged, f_converged, g_converged, f_increased
++end
++
++
++function ntr_initial_state( method :: NTRMethod{T}, ntr :: NTR{T}, initial_x :: VVector{ T } ) where { T<: Flt }
++    n = length(initial_x)
++    # Maintain current gradient in gr
++    @assert( method.Δhat > 0, "Δhat must be strictly positive" )
++    @assert( 0 < method.initial_Δ < method.Δhat, "Δ must be in (0, Δhat)")
++    @assert(0 <= method.η < method.ρ_lower, "η must be in [0, ρ_lower)")
++    @assert(method.ρ_lower < method.ρ_upper, "must have ρ_lower < ρ_upper")
++    @assert(method.ρ_lower ≥ 0.)
++    # Keep track of trust region sizes
++    Δ = method.initial_Δ
++
++    # Record attributes of the subproblem in the trace.
++    reached_subproblem_solution = true
++    interior = true
++    λ = T( NaN )
++
++    value_gradient_hessian!!( ntr, initial_x )
++
++    return NTRState( 
++        deepcopy( initial_x ),
++        deepcopy( initial_x ),
++        T(Inf),
++        deepcopy( gradient( ntr ) ),
++        deepcopy( gradient( ntr ) ),
++        T( Δ ),
++        zero( T ),
++        λ,
++        T( method.η ),
++        interior,
++        reached_subproblem_solution
++        )
++end
++
++
++
++
++
++
++
++function ntr_trace!( tr::NTRTrace{T}, ntr::NTR{T}, state::NTRState{T}, iteration::Int, method::NTRMethod{T}, options::NTROptions{T}, curr_time=time() ) where {T<:Flt}
++    dt = Dict()
++    dt["time"] = curr_time - tr.starttime
++    if options.extended_trace
++        dt["x"] = deepcopy( state.x )
++        dt["g(x)"] = deepcopy( gradient(ntr) )
++        dt["h(x)"] = deepcopy( hessian(ntr) )
++        dt["delta"] = state.Δ
++        dt["interior"] = state.interior
++        dt["hard case"] = false
++        dt["reached_subproblem_solution"] = state.reached_subproblem_solution
++        dt["lambda"] = state.λ
++    end
++    g_norm = ntr_loss( gradient( ntr ) )
++    ntr_update_trace!(tr, iteration, value( ntr ), state.x, g_norm, dt )
++end
++
++
++
++
++
++# function ntr_best!( ntr :: NTR{T}, best :: NTRFGH{T} ) where {T<:Flt}
++#     ntr.F ≤ best.f || return
++#     best.f = ntr.F
++#     best.g[:] = vcat( gradient( ntr )... )
++#     best.H[:,:] = hessian( ntr )
++#     best.x[:] = vcat( ntr.x_f... )
++#     nothing
++# end
++
++
++@todo 4 "must check ntr_best! for bugs"
++
++
++function ntr_best!( ntr :: NTR{T}, best :: PMLFGH{T} ) where {T<:Flt}
++    ntr.F ≤ best.F[1] || return
++    best.F[1] = ntr.F
++    gr = gradient( ntr )
++    H = hessian( ntr )
++    for m ∈ eachindex( best.market )
++        copyto!( best.market[m].inside.Gδ, gr[m] )
++        copyto!( best.market[m].inside.Hδδ, H[m] )
++        copyto!( best.market[m].δ, ntr.x_f[m] )
++    end
++    return nothing
++end
++
++@todo 4 "must rewrite ntr_result!"
++
++function ntr_result!( best :: PMLFGH{T}, status :: Symbol ) where {T<:Flt}
++    # best.status = status
++    # best
++end
++
+diff --git a/src/common/optim/pmlalgo/opt.jl b/src/common/optim/pmlalgo/opt.jl
+new file mode 100644
+index 0000000..e2418ca
+--- /dev/null
++++ b/src/common/optim/pmlalgo/opt.jl
+@@ -0,0 +1,47 @@
++
++
++"""
++    pml_optimize(  
++        f, 
++        xstart, 
++        d, 
++        best, 
++        options
++        )
++
++Does a penalized maximum likelihood optimization using objective function *f*, starting vector *xstart*, data *d*, information on objective function
++and derivatives *best*, and options *options*.  *xstart* should be a vector of vectors of floats of type T, *d* a data structure of type GrumpsData{T},
++*best* a structure of type *NTRFGH{T}* and options a structure of type *NTROptions{T}*.
++
++This function should only be used if you know what you are doing; it is an internal object.
++"""
++function pml_optimize(  f, xstart :: VVector{T}, d::GrumpsData{T}, best :: PMLFGH{T}, options :: NTROptions{T} = NTROptions() ) where {T<:Flt}
++
++    M = length( xstart )
++    markets = 1:M
++    dδ = dimδm( d )
++    ranges = Ranges( dδ )
++    K = [ d.plmdata.𝒦[ranges[m],:] for m ∈ markets ]
++    plmspace = PLMSpace( dδ, size( K[1], 2 ) )
++    ntr = NTR( f, xstart, d.marketdata, K )
++    method = NTRMethod( options.ρ_lower, options.ρ_upper, options.Δhat, options.initial_Δ, options.η )
++    state = ntr_initial_state( method, ntr, xstart )
++    trace = NTRTrace( T )
++
++    ntr_trace!( trace, ntr, state, 0, method, options )
++    ntr_best!( ntr, best )
++
++    
++    for i ∈ 1:options.iterations
++        ntr_update_state!( ntr, state, method, plmspace )
++        ntr_trace!( trace, ntr, state, i, method, options )
++        ntr_best!( ntr, best )
++        x_converged, f_converged, g_converged, f_increased = ntr_assess_convergence( state, ntr, options )
++        x_converged || f_converged || g_converged || continue
++        return ntr_result!( best, :success )
++    end
++    return ntr_result!( best, :out_of_iterations )
++end
++
++
++@todo 4 "change return value in pml_optimize to be consistent with the rest of Grumps"
+\ No newline at end of file
+diff --git a/src/common/optim/pmlalgo/types.jl b/src/common/optim/pmlalgo/types.jl
+new file mode 100644
+index 0000000..26bedf4
+--- /dev/null
++++ b/src/common/optim/pmlalgo/types.jl
+@@ -0,0 +1,152 @@
++# the stored gradients and hessians are the narrow ones, i.e.
++# they do *not* contain the penalty term
++
++const VVector{T} = Vector{ Vector{T} }
++const VMatrix{T} = Vector{ Matrix{T} }
++
++
++struct NTRMethod{T<:Flt}
++    ρ_lower     :: T
++    ρ_upper     :: T
++    Δhat        :: T
++    initial_Δ   :: T
++    η           :: T
++
++    function NTRMethod( ρl :: T2, ρu :: T2, Δh :: T2, iΔ :: T2, η :: T2 ) where {T2<:Flt}
++        new{T2}( ρl, ρu, Δh, iΔ, η )
++    end
++end
++
++const VVector{T} = Vector{ Vector{T} }
++const VMatrix{T} = Vector{ Matrix{T} }
++const FVType{T} = Union{ Nothing, Vector{T} }
++const GVType{T} = Union{ Nothing, VVector{T} }
++const HVType{T} = Union{ Nothing, VMatrix{T} }
++
++mutable struct NTRState{T<:Flt}
++    x_previous      :: VVector{T} 
++    x               :: VVector{T} 
++    f_x_previous    :: T
++    s               :: VVector{T} 
++    g_previous      :: VVector{T} 
++    Δ               :: T
++    ρ               :: T
++    λ               :: T
++    η               :: T
++    interior        :: Bool
++    reached_subproblem_solution :: Bool
++
++    function NTRState( x_previous :: VVector{T2}, x :: VVector{T2}, f_x_previous :: T2, s :: VVector{T2},
++                       g_previous :: VVector{T2}, Δ :: T2, ρ :: T2, λ :: T2, η :: T2, interior :: Bool, rss :: Bool ) where {T2<:Flt}
++        new{T2}( x_previous, x, f_x_previous, s, g_previous, Δ, ρ, λ, η, interior, rss )
++    end
++end
++
++
++struct NTROptions{T<:Flt}
++    initial_Δ    :: T 
++    Δhat        :: T 
++    η           :: T
++    ρ_lower     :: T 
++    ρ_upper     :: T 
++    x_abs_tol   :: T 
++    g_abs_tol   :: T 
++    f_rel_tol   :: T   
++    iterations  :: Int
++    extended_trace :: Bool 
++    show_trace  :: Bool
++
++    function NTROptions( T = Float64; initial_Δ =1.0, Δhat = 100.0, η = 0.1, ρ_lower = 0.25, ρ_upper = 0.75, 
++                         x_abs_tol = 0.0, g_abs_tol = 1.0e-8, f_rel_tol = 0.0, iterations = 50, 
++                         extended_trace = true, show_trace = true )
++        new{T}( T(initial_Δ), T( Δhat ), T( η ), T( ρ_lower ), T( ρ_upper ), 
++                T( x_abs_tol ), T( g_abs_tol ), T( f_rel_tol ), iterations,
++                extended_trace, show_trace )
++    end
++end
++
++
++
++mutable struct NTR{T<:Flt}
++    F               :: T
++    DF              :: VVector{T} 
++    H               :: VMatrix{T} 
++    K               :: VMatrix{T} 
++    x_f             :: VVector{T}     # value at which we last computed the objective function
++    x_df            :: VVector{T}     # value at which we last computed the gradient
++    x_h             :: VVector{T}     # value at which we last computed the Hessian
++    objfun          :: Function
++    ranges          :: Vector{ UnitRange{Int} }
++    data            :: Vector{ GrumpsMarketData{T} }
++    function NTR( f :: Function, xstart :: VVector{T2}, data :: Vector{GrumpsMarketData{T2}}, K :: VMatrix{T2} ) where {T2<:Flt}
++        J = [ length( xstart[m] ) for m ∈ eachindex( xstart ) ]
++        new{T2}( 
++            typemax(T2),
++            ntr_infs( T2, J ),
++            ntr_infs_mat( T2, J),
++            deepcopy( K ),
++            ntr_infs( T2, J ),
++            ntr_infs( T2, J ),
++            ntr_infs( T2, J ),
++            f,
++            Ranges( J ),
++            data
++         )
++    end
++end
++
++
++
++struct PLMSpace{T<:Flt}
++    som         :: VVector{T}
++    Z           :: VMatrix{T}
++
++    function PLMSpace( dδ :: Vector{Int}, dk :: Int, T2 = Float64 )
++        M = length(dδ);  markets = 1:M
++        som = [ zeros( T2, dδ[m] ) for m ∈ markets ] 
++        Z = [ zeros(T2, dk, dδ[m]) for m ∈ markets ]
++        new{T2}( som, Z )
++    end
++end
++
++struct NTRTrace1{T<:Flt} 
++    iteration   :: Int
++    f           :: T
++    x           :: VVector{T}
++    gnorm       :: T
++    dt          :: Dict
++    function NTRTrace1( iteration :: Int, f::T2, x :: VVector{T2}, gnorm :: T2, dt :: Dict ) where {T2<:Flt}
++        new{T2}( iteration, f, x, gnorm, dt )
++    end
++end
++
++
++
++mutable struct NTRTrace{T<:Flt} 
++    tr          :: Vector{ NTRTrace1{T} }
++    starttime   :: Float64
++
++    function NTRTrace( T )
++        new{T}( VVector{ NTRTrace1{T} }(undef, 0), time() )
++    end
++end
++
++
++# mutable struct NTRFGH{T<:Flt}
++#     f           :: T
++#     g           :: Vector{T}        # this is the full one
++#     H           :: VMatrix{T}        
++#     x           :: Vector{T}
++#     # status      :: Symbol
++#     function NTRFGH( ntr :: NTR{T2} ) where {T2<:Flt}
++#         markets = 1:length( ntr.x_f )
++#         dδ = [ length( ntr.x_f[m] ) for m ∈ markets ]
++#         dim = sum( dδ )
++#         new{T2}( typemax(T2),  zeros( T2, dim ), [ zeros( T2, dδ[m], dδ[m] ) for m ∈ markets ], zeros( T2, dim ) )
++#     end
++#     function NTRFGH( T2::Type, dδ :: Int )
++#         new{T2}( typemax(T2),  zeros( T2, dim ), [ zeros( T2, dδ[m], dδ[m] ) for m ∈ markets ], zeros( T2, dim ) )
++#     end
++# end    
++
++
+diff --git a/src/common/optim/pmlalgo/ui.jl b/src/common/optim/pmlalgo/ui.jl
+new file mode 100644
+index 0000000..83f965f
+--- /dev/null
++++ b/src/common/optim/pmlalgo/ui.jl
+@@ -0,0 +1,110 @@
++
++
++
++value( ntr::NTR{T} ) where {T <: Flt} = ntr.F
++gradient( ntr::NTR{T} ) where {T <: Flt} = ntr.DF
++hessian( ntr::NTR{T} ) where {T <: Flt} = ntr.H
++
++
++function value_add_penalty!!( ntr::NTR{T}, x::VVector{T} ) where {T<:Flt}
++    Kx = sum( ntr.K[m]' * x[m] for m ∈ eachindex(x) )
++    ntr.F += dot( Kx, Kx ) * T(0.5)
++end
++
++
++# functions with two exclamation marks set stuff without checking if there is a repetition
++function value!!( ntr::NTR{T}, x::VVector{T} ) where {T<:Flt}
++    # ntr.F = ntr.objfun( T(0.0), nothing, nothing, x, ntr.data ) 
++    ntr.F = ntr.objfun( T(0.0), nothing, nothing, x ) 
++    value_add_penalty!!( ntr, x )
++    deepcopyto!( ntr.x_f, x)
++    ntr.F
++end
++
++function gradient_add_penalty!!( ntr::NTR{T}, x::VVector{T} ) where {T<:Flt}
++    Kx = sum( ntr.K[m]' * x[m] for m ∈ eachindex(x) )
++    for m ∈ eachindex( x )
++        # local Kx  = ntr.K[m]' * x[m]
++        ntr.DF[m][:] +=  ntr.K[m] * Kx
++    end
++end
++
++function gradient!!( ntr::NTR{T}, x::VVector{T} ) where {T<:Flt}
++    deepcopyto!( ntr.x_df, x )
++    ntr.objfun( nothing, ntr.DF, nothing, x )
++    gradient_add_penalty!!( ntr, x )
++    gradient( ntr )
++end
++
++function hessian!!( ntr::NTR{T}, x::VVector{T} ) where {T<:Flt}
++    deepcopyto!( ntr.x_h, x )
++    ntr.objfun( nothing, nothing, ntr.H, x )
++    hessian( ntr )
++end
++
++
++function value_gradient!!( ntr::NTR{T}, x::VVector{T} ) where {T<:Flt}
++    # computes both the value and the gradient
++    deepcopyto!( ntr.x_f, x )
++    deepcopyto!( ntr.x_df, x )
++    ntr.F = ntr.objfun( T(0.0), gradient(ntr), nothing, x )
++    value_add_penalty!!( ntr, x )
++    gradient_add_penalty!!( ntr, x )
++    ( value(ntr), gradient(ntr) )
++end
++
++function value!( ntr::NTR{T}, x::VVector{T} ) where {T<:Flt}
++    fullisequal( x, ntr.x_f ) || value!!( ntr, x )
++    value( ntr )
++end
++
++function gradient!( ntr::NTR{T}, x::VVector{T} ) where {T<:Flt}
++    fullisequal( x, ntr.x_df ) || gradient!!( ntr, x )
++    gradient( ntr )
++end
++
++function hessian!( ntr::NTR{T}, x::VVector{T} ) where {T<:Flt}
++    fullisequal( x, ntr.x_h ) || hessian!!( ntr, x )
++    hessian( ntr )
++end
++
++function value_gradient!( ntr::NTR{T}, x::VVector{T} ) where {T<:Flt}
++    if !fullisequal( x, ntr.x_f) && !fullisequal( x, ntr.x_df )
++        value_gradient!!( ntr, x )
++    elseif !fullisequal( x, ntr.x_f )
++        value!!( ntr, x )
++    elseif !fullisequal( x, ntr.x_df )
++        gradient!!( ntr, x )
++    end
++    ( value(ntr), gradient(ntr) )
++end
++
++function value_gradient_hessian!!( ntr::NTR{T}, x::VVector{T} ) where {T<:Flt}
++    deepcopyto!( ntr.x_f, x )
++    deepcopyto!( ntr.x_df, x )
++    deepcopyto!( ntr.x_h, x )
++    ntr.objfun( T(0.0), ntr.DF, ntr.H, x )
++    value( ntr ), gradient( ntr ), hessian( ntr )
++end
++
++
++
++
++function fullhessian( ntr :: NTR{T} ) where {T<:Flt}
++    dx = [ length( ntr.x_f[m] ) for m ∈ eachindex( ntr.x_f ) ]
++    sumdx = sum( dx )
++    H = zeros( T, sumdx, sumdx )
++    for m ∈ eachindex( ntr.x_f )
++        H[ ntr.ranges[m], ntr.ranges[m] ] = ntr.H[m]
++    end
++    for m ∈ eachindex( ntr.x_f )
++        for mm ∈ eachindex( ntr.x_f )
++            H[ ntr.ranges[m], ntr.ranges[mm] ] += ntr.K[m] * ntr.K[mm]'
++        end
++    end
++    H
++end
++
++
++
++
+diff --git a/src/common/optim/pmlalgo/util.jl b/src/common/optim/pmlalgo/util.jl
+new file mode 100644
+index 0000000..07da2c1
+--- /dev/null
++++ b/src/common/optim/pmlalgo/util.jl
+@@ -0,0 +1,99 @@
++import LinearAlgebra.dot
++
++function dot( u::VVector{T}, v::VVector{T} ) where {T<:Flt}
++    @assert( length( u ) == length( v ) )
++    sum( dot( u[m], v[m] ) for m ∈ eachindex( u ) )
++end
++
++
++function deepcopyto!( dest::VVector{T}, src::VVector{T} ) where {T<:Flt}
++    for i ∈ eachindex( src )
++        copyto!( dest[i], src[i] )
++    end
++end
++
++
++
++
++function fullisequal( x::AbstractArray, y::AbstractArray )
++    length( x ) == length( y ) || return false
++    for i ∈ eachindex( x )
++        x[i] == y[i] || return false
++    end
++    true
++end
++
++
++# function minmax_eigen( E :: Vector{ Eigen{ T, T, Matrix{T}, Vector{T} } } )  where {T<:Flt}
++#     mi, ma = typemax( T ), typemin( T )
++#     for Z ∈ E 
++#         mi = min( mi, minimum( Z.values ) )
++#         ma = max( ma, maximum( Z.values ) )
++#     end 
++#     mi, ma
++# end
++
++function minmax( v::VVector{T} ) where {T<:Flt}
++    mi, ma = typemax( T ), typemin( T )
++    for x ∈ v
++        mi = min( mi, minimum( x ) )
++        ma = max( ma, maximum( x ) )
++    end
++    mi, ma
++end     
++
++
++function ntr_infs( T, J :: Vector{Int} )
++    [ fill( typemax( T ), J[m] ) for m ∈ eachindex( J ) ]
++end
++
++function ntr_infs_mat( T, J :: Vector{Int} )
++    [ fill( typemax(T), J[m], J[m] ) for m ∈ eachindex( J ) ]
++end
++
++import Base.isfinite
++
++function isfinite( H::Vector{Matrix{T}} ) where {T<:Flt}
++    for A ∈ H
++        all( isfinite, A ) || return false
++    end
++    true
++end
++
++
++# to be moved to basics / util.jl
++function binaryrun( f, left, right, units, U )
++    units = max( units, 1 )
++    if right - left < units return f( left, right, U ) end
++    middle = div( left + right, 2)
++    lefty = @spawn binaryrun( f, left, middle, units, U )
++    binaryrun( f, middle+1, right, units, U )
++    fetch( lefty )
++    return nothing
++end
++
++
++
++function ntr_update_trace!( tr :: NTRTrace{T}, iteration, f, x, gnorm, dt ) where {T<:Flt}
++    push!( tr.tr, NTRTrace1( iteration, f, x, gnorm, dt ) )
++end
++
++
++
++function show( io :: IO, ntr :: NTR{T} ) where {T<:Flt}
++    printstyled(" current contents of ntr are\n "; bold=true, color =:magenta)
++    println( ntr.F )
++    println( ntr.x_f )
++    println( ntr.x_df )
++    println( ntr.x_h )
++    println( ntr.DF )
++end
++
++
++function show( io :: IO, state :: NTRState{T} ) where {T<:Flt}
++    printstyled(" current contents of state are\n "; bold=true, color =:magenta)
++    println( state.f_x_previous )
++    println( state.x_previous )
++    println( state.g_previous )
++end
++
+diff --git a/src/common/tree/tree.jl b/src/common/tree/tree.jl
+new file mode 100644
+index 0000000..53a07a4
+--- /dev/null
++++ b/src/common/tree/tree.jl
+@@ -0,0 +1,13 @@
++
++
++print_tree( t ) = println( join( tt( t ), "" ) )
++
++function GrumpsTypes()
++    print_tree( Estimator )
++    print_tree( Data )
++    print_tree( Options )
++    print_tree( Sources )
++    print_tree( OptimizationOptions )
++    print_tree( Variables )
++    print_tree( Solution )
++end
+diff --git a/src/common/types/est.jl b/src/common/types/est.jl
+index f5ad818..9ae9c4a 100644
+--- a/src/common/types/est.jl
++++ b/src/common/types/est.jl
+@@ -32,11 +32,4 @@ struct GrumpsBLPEstimator <: GrumpsPenalized
+     end
+ end
+ 
+-struct GrumpsPLMEstimator <: GrumpsPenalized
+-    function GrumpsPLMEstimator() 
+-        @warn "not yet implemented"
+-        new()
+-    end
+-end
+-
+ 
+diff --git a/src/common/types/fgh.jl b/src/common/types/fgh.jl
+index f14a5a6..5d6c1b6 100644
+--- a/src/common/types/fgh.jl
++++ b/src/common/types/fgh.jl
+@@ -54,6 +54,31 @@ struct GMMMarketFGH{T<:Flt} <: MarketFGH{T}
+ end
+ 
+ 
++@todo 4 "must create a constructor for PMLFGH"
++
++
++struct PMLMarketFGH{T<:Flt} <: MarketFGH{T}
++    inside  :: GrumpsSingleFGH{T}
++    outside :: GrumpsSingleFGH{T}
++    δ       :: Vec{T}
++
++    function PMLMarketFGH( T2 :: Type, e :: GrumpsEstimator, dθ :: Int, dδ :: Int, ::Val{false} )
++        # constructor if inside and outside objective functions are different
++        return new{T2}( GrumpsSingleFGH{T2}( dθ, dδ ), GrumpsSingleFGH{T2}( dθ, dδ ), zeros( T2, dδ ) )
++    end
++    function PMLMarketFGH( T2 :: Type, e :: GrumpsEstimator, dθ :: Int, dδ :: Int, ::Val{true} )
++        # constructor if inside and outside objective functions are the same
++        fgh = GrumpsSingleFGH{T2}( dθ, dδ )
++        return new{T2}( fgh, fgh, zeros( T2, dδ ) )
++    end
++end
++
++struct PMLFGH{T<:Flt} <: FGH{T}
++    market  :: Vec{ PMLMarketFGH{T} }
++    F       :: Vec{T}
++end
++
++
+ 
+ struct GrumpsFGH{T<:Flt} <: FGH{T}
+     market      :: Vec{ GrumpsMarketFGH{T} }
+@@ -73,4 +98,21 @@ function FGH( e :: GrumpsGMM, d :: GrumpsData{T} ) where {T<:Flt}
+ end
+ 
+ 
++# function FGH( e :: GrumpsPML, d :: GrumpsData{T} ) where {T<:Flt}
++#     return PMLFGH{T}( 
++#         zeros( T, 1),
++#         zeros( T, dimδ( d ) ),
++#         [ zeros( T, dimδ( d.marketdata[m] ) ) for m ∈ markets ],
++#         zeros( T, dimθ( d ) ),
++#         [ zeros( T, dimδ( d.marketdata[m] ), dimθ( d )  ) for m ∈ markets ],
++#         [ zeros( T, dimθ( d ), dimθ( d ) ) for m ∈ markets ],
++#         [ zeros( T, dimδ( d.marketdata[m] ) ) for m ∈ markets ]
++#           ) 
++# end
++
++function FGH( e :: GrumpsPenalized, d :: GrumpsData{T} ) where {T<:Flt}
++    return PMLFGH{T}( 
++        [ PMLMarketFGH( T, e, dimθ( d ), dimδ( d.marketdata[m] ),   Val( inisout( e ) ) ) for m ∈ 1:dimM( d ) ], [ typemax( T ) ]
++        )
++end
+ 
+diff --git a/src/common/types/options.jl b/src/common/types/options.jl
+index 7e7bdd2..4a41f8e 100644
+--- a/src/common/types/options.jl
++++ b/src/common/types/options.jl
+@@ -49,7 +49,7 @@ function OptimOptions( ::Val{ :θ}; f_tol = 1.0e-8, g_tol = 1.0e-4, x_tol = 1.0e
+     OptimOptions( f_tol, g_tol, x_tol, iterations, show_trace, store_trace, extended_trace  )
+ end
+ 
+-function OptimOptions( ::Val{ :δ}; f_tol = 1.0e-8, g_tol = 1.0e-8, x_tol = 1.0e-6, iterations = 25, show_trace = false, store_trace = true, extended_trace = false )
++function OptimOptions( ::Val{ :δ}; f_tol = 0.0, g_tol = 1.0e-8, x_tol = 0.0, iterations = 25, show_trace = false, store_trace = true, extended_trace = false )
+     OptimOptions( f_tol, g_tol, x_tol, iterations, show_trace, store_trace, extended_trace  )
+ end
+ 
+@@ -134,7 +134,7 @@ struct GrumpsOptimizationOptions <: OptimizationOptions
+ end
+ 
+ 
+-function GrumpsOptimizationOptions(; θopt = OptimOptions( Val( :θ ) ), δopt = OptimOptions( Val( :δ) ), threads = GrumpsThreads(), memsave = false, maxrepeats = 4, probtype = :fast )
++function GrumpsOptimizationOptions(; θopt = OptimOptions( Val( :θ ) ), δopt = OptimOptions( Val( :δ) ), threads = GrumpsThreads(), memsave = false, maxrepeats = 3, probtype = :fast )
+     @ensure probtype ∈ [ :fast, :robust ] "only fast and robust choice probabilities are allowed"
+     return GrumpsOptimizationOptions( θopt, δopt, threads, memsave, maxrepeats, probtype )
+ end
+diff --git a/src/includes.jl b/src/includes.jl
+index 27acbee..5f80e5b 100644
+--- a/src/includes.jl
++++ b/src/includes.jl
+@@ -5,6 +5,9 @@ include( "packages/packages.jl" )
+ import Base.show, Base.Threads.@threads, Base.Threads.nthreads, Base.Threads.threadid, Base.Threads.@spawn
+ 
+ 
++# for fn ∈ [ "common", "mixedlogit", "vanilla" ]
++#     include( "$fn/$(fn).jl" )
++# end
+ 
+ const commondir = "common"
+ const docdir    = "doc"
+@@ -12,17 +15,16 @@ const pkgdir    = "packages"
+ 
+ include( "$(commondir)/$(commondir).jl" )
+ 
+-const rootfolder = String( @__DIR__ )
+ 
+ function EstimatorFolders( )
+     ests = String[]
+-    for fn ∈ readdir( rootfolder )
+-        ffn = "$rootfolder/$fn"
+-        if isdir( ffn ) && fn[1] ∉ [ '.', '_' ] && fn ∉ [ commondir, docdir, pkgdir ]
+-            @info "loading estimator $fn from $ffn"
++    for fn ∈ readdir( "$(@__DIR__)" )
++        if isdir( fn ) && fn[1] ∉ [ '.', '_' ] && fn ∉ [ commondir, docdir, pkgdir ]
++            @info "loading estimator $fn"
+             ests = vcat( ests, fn )
+         end
+     end
++    @info "estimators = $ests" 
+     return ests
+ end
+ 
+@@ -44,6 +46,7 @@ end
+ const estdesc = [ Description( Symbol( e ), Val( Symbol( e ) ) ) for e ∈ estfolds ]
+ 
+ 
++@info "$estdesc"
+ 
+ 
+ 
+diff --git a/src/packages/packages.jl b/src/packages/packages.jl
+index f22be04..fbecfea 100644
+--- a/src/packages/packages.jl
++++ b/src/packages/packages.jl
+@@ -3,4 +3,4 @@
+ const minimumversion = v"1.8.0-beta3"
+ @assert VERSION ≥ minimumversion  "need at least Julia $minimumversion"
+ 
+-using DataFrames, CSV, Printf, Random123, Random, FastGaussQuadrature, StatsBase, Optim, StatsFuns, LinearAlgebra, StringDistances
++using DataFrames, CSV, Printf, Random123, Random, FastGaussQuadrature, StatsBase, Optim, StatsFuns, LinearAlgebra, StringDistances, TypeTree
+diff --git a/src/pml/delta.jl b/src/pml/delta.jl
+new file mode 100644
+index 0000000..a5b4971
+--- /dev/null
++++ b/src/pml/delta.jl
+@@ -0,0 +1,128 @@
++# @todo 4 "InsideObjective! needs to be redone for plm"
++
++
++# struct Anything
++# end
++
++# AnyNothing = Union{Anything, Nothing}
++
++
++# isanything( x ) =  typeof(x) == Anything
++
++# ifanything( x, y) = isanything( x ) ? y : nothing
++
++
++# this just computes the LLF and its δ derivatives for use with the Grumps estimator
++# function  InsideObjective!( 
++#     F       :: AnyNothing, 
++#     G       :: AnyNothing, 
++#     Hδδ     :: AnyNothing, 
++#     Hδθ     :: AnyNothing,
++#     fgh     :: GrumpsMarketFGH{T}
++#     θ       :: Vec{T},
++#     δ       :: Vec{ Vec{T} }, 
++#     e       :: GrumpsPML, 
++#     d       :: GrumpsData{T}, 
++#     o       :: OptimizationOptions, 
++#     s       :: GrumpsSpace{T} 
++#     ) where {T<:Flt}
++   
++#     @ensure isanything( Hδθ ) == false  "cannot compute Hδθ here"
++
++#     if F ≠ nothing
++#         F .= zero( T )
++#     end
++
++#     markets = 1:dimM(d)
++    
++#     @threads :dynamic for m ∈ markets
++#         local fullδ = vcat( δ[m], T(0.0) )
++
++#         local memslot = memsave( o ) ?  AθZXθ!( θ, e, d.marketdata[m], o, s, m ) : m        
++
++#         local fval = MacroObjectiveδ!( T(0.0),  
++#             ifanything( G, fgh[m].inside.G ), 
++#             ifanything( Hδδ, fgh[m].inside.Hδδ ), 
++#             fullδ, data[m].macrodata, s.marketspace[memslot].macrospace, options; 
++#             setzero = true 
++#             )  
++#         fval += MicroObjectiveδ!( T(0.0), 
++#             ifanything( G, fgh[m].inside.G ), 
++#             ifanything( Hδδ, fgh[m].inside.Hδδ ), 
++#             fullδ, data[m].microdata, s.marketspace[memslot].microspace, options; 
++#             setzero = false 
++#             )  
++
++#         if isanything( F )
++#             fgh[m].inside.F .= fval
++#         end
++
++#         memsave( o ) &&  freeAθZXθ!( e, s, o, memslot )
++#     end
++
++#     return isnothing( F ) ? nothing : sum( fgh[m].insde.F for m ∈ markets )
++# end
++ 
++
++@info 2 "need to incorporate memory save mode here"
++
++
++function easy( x, m )
++    if x == nothing return nothing end
++    if typeof( x ) <: Vector
++        @ensure (1 ≤ m ≤ length( x ))  "element out of bounds"
++        return x[m]
++    end
++    @ensure false "not a vector"
++end
++
++
++function InsideObjective!( 
++    F       :: FType{T}, 
++    G       :: GVType{T}, 
++    H       :: HVType{T}, 
++    θ       :: Vec{T},
++    δ       :: Vec{ Vec{T} }, 
++    e       :: GrumpsPenalized, 
++    d       :: GrumpsData{T}, 
++    o       :: OptimizationOptions, 
++    s       :: GrumpsSpace{T} 
++    ) where {T<:Flt}
++   
++
++    markets = 1:dimM(d)
++    Fm = zeros( dimM(d) )
++
++    @threads :dynamic for m ∈ markets
++
++        memslot = memsave(o) ? AθZXθ!( θ, e, d.marketdata[m], o, s, m ) : m
++
++        local fval = MacroObjectiveδ!( T(0.0),  
++            easy( G, m ), 
++            easy( H, m ), 
++            δ[m], 
++            d.marketdata[m].macrodata, 
++            s.marketspace[memslot].macrospace, 
++            o,
++            true 
++            )  
++        fval += MicroObjectiveδ!( T(0.0), 
++            easy( G, m ), 
++            easy( H, m ), 
++            δ[m], 
++            d.marketdata[m].microdata, 
++            s.marketspace[memslot].microspace, 
++            o, 
++            false 
++            )  
++
++        if !isnothing( F )
++            Fm[m] = fval
++        end
++
++        memsave( o ) &&  freeAθZXθ!( e, s, o, memslot )
++    end
++
++    return isnothing( F ) ? nothing : sum( Fm )
++end
++    
+\ No newline at end of file
+diff --git a/src/pml/description.jl b/src/pml/description.jl
+new file mode 100644
+index 0000000..bc8b0b1
+--- /dev/null
++++ b/src/pml/description.jl
+@@ -0,0 +1,9 @@
++name( ::Val{:pml} ) = "Grumps Penalized MLE"
++
++
++function Description( e :: Symbol, v ::Val{ :pml } )
++    @ensure e == :pml "oops!"
++    return EstimatorDescription( e, name( Val( :pml ) ), 
++      [ "pmle", "grumps penalized mle", "penalized likelihood", "grumps penalized maximum likelihood", "pml", "penmaxlik" ]
++      )
++end
+diff --git a/src/pml/pml.jl b/src/pml/pml.jl
+new file mode 100644
+index 0000000..73cf888
+--- /dev/null
++++ b/src/pml/pml.jl
+@@ -0,0 +1,7 @@
++
++
++
++for fn ∈ ["types", "delta", "theta" ]
++    include( "$(fn).jl")
++end
++
+diff --git a/src/pml/theta.jl b/src/pml/theta.jl
+new file mode 100644
+index 0000000..b348552
+--- /dev/null
++++ b/src/pml/theta.jl
+@@ -0,0 +1,66 @@
++
++
++"""
++OutsideObjective1!(  
++    fgh         :: GrumpsSingleFGH{T}, 
++    θ           :: Vec{T},
++    δ           :: Vec{T},
++    e           :: GrumpsPMLEstimator, 
++    d           :: GrumpsMarketData{T}, 
++    o           :: OptimizationOptions, 
++    s           :: GrumpsMarketSpace{T}, 
++    computeF    :: Bool, 
++    computeG    :: Bool, 
++    computeH    :: Bool 
++    )
++
++Outside single market objective function for the PML Estimator.  
++Since the inside and outside objective functions coincide there is no
++reason to recompute Ωδδ, Ωδθ
++"""
++function  OutsideObjective1!(  
++    fgh         :: GrumpsSingleFGH{T}, 
++    θ           :: Vec{T},
++    δ           :: Vec{T},
++    e           :: GrumpsPenalized, 
++    d           :: GrumpsMarketData{T}, 
++    o           :: OptimizationOptions, 
++    s           :: GrumpsMarketSpace{T}, 
++    computeF    :: Bool, 
++    computeG    :: Bool, 
++    computeH    :: Bool 
++    ) where {T<:Flt}
++
++
++    F1 = MacroObjectiveθ!( 
++        grif( computeF, fgh.F[1] ),
++        grif( computeG, fgh.Gθ ),
++        grif( computeH, fgh.Hθθ ),
++        grif( computeH, fgh.Hδθ ),
++        θ,
++        δ,
++        d.macrodata,
++        s.macrospace,
++        o,
++        true
++         ) 
++
++    F2 = MicroObjectiveθ!( 
++        F1,
++        grif( computeG, fgh.Gθ ),
++        grif( computeH, fgh.Hθθ ),
++        grif( computeH, fgh.Hδθ ),
++        θ,
++        δ,
++        d.microdata,
++        s.microspace,
++        o,
++        false
++        ) 
++    
++    if computeF
++        fgh.F .= F2
++    end
++
++    return F2
++end
+diff --git a/src/pml/types.jl b/src/pml/types.jl
+new file mode 100644
+index 0000000..3d7b69e
+--- /dev/null
++++ b/src/pml/types.jl
+@@ -0,0 +1,15 @@
++struct GrumpsPMLEstimator <: GrumpsPenalized
++    function GrumpsPMLEstimator() 
++        new()
++    end
++end
++
++
++name( ::GrumpsPMLEstimator ) = name( Val( :pml ) )
++
++inisout( ::GrumpsPMLEstimator ) = true
++
++Estimator( ::Val{ :pml } ) = GrumpsPMLEstimator()
++
++
++
+diff --git a/src/test.todo b/src/test.todo
+index 56f6593..e63db69 100644
+--- a/src/test.todo
++++ b/src/test.todo
+@@ -1,5 +1,6 @@
+ 2 need to increase exports 
+  1 these estimator definitions should be moved to their respective folders 
++ 4 must create a constructor for PMLFGH 
+  3 still have to define the GrumpsSolution type 
+  1 remember: only stick stuff in space structs that gets reused 
+  4 must reset lastδ every time a new θ is computed 
+@@ -18,12 +19,19 @@
+  2 SetStatus! not written yet 
+  2 save log and results to file 
+  2 not sure if last call to pick up δ is needed 
+- 4 check betahat formula 
+  1 move sizes elsewhere 
+  1 document micllf 
+  2 parallelize MicroObjectiveθ! 
+  2 parallelize MacroObjectiveθ! 
+  2 figure out when to recompute 
++ 4 for all estimators, note that frugal is not compatible with for threads; need spawns 
++ 1 replace 𝓏𝓈 with zeros 
++ 2 REMOVE DUPLICATION WITH PREVIOUS FUNCTION 
++ 4 must check ntr_best! for bugs 
++ 4 must rewrite ntr_result! 
++ 4 change return value in pml_optimize to be consistent with the rest of Grumps 
++ 2 figure out when to recompute 
++ 4 call delta objective function outside across markets 
+  1 document this file 
+  3 too much garbage collection for gmm 
+  
+\ No newline at end of file
+diff --git a/src/vanilla/description.jl b/src/vanilla/description.jl
+index 0224449..ab33b1d 100644
+--- a/src/vanilla/description.jl
++++ b/src/vanilla/description.jl
+@@ -4,6 +4,6 @@ name( ::Val{:vanilla} ) = "Grumps MLE"
+ function Description( e :: Symbol, v ::Val{ :vanilla} )
+     @ensure e == :vanilla "oops!"
+     return EstimatorDescription( e, name( Val( :vanilla ) ), 
+-      [ "mle", "grumps mle", "maximum likelihood", "grumps maximum likelihood", "ml", "maxlik", "vanilla" ]
++      [ "mle", "grumps mle", "maximum likelihood", "grumps maximum likelihood", "ml", "maxlik" ]
+       )
+ end
+diff --git a/test.todo b/test.todo
+new file mode 100644
+index 0000000..69ac834
+--- /dev/null
++++ b/test.todo
+@@ -0,0 +1,27 @@
++1 these estimator definitions should be moved to their respective folders 
++ 3 still have to define the GrumpsSolution type 
++ 1 remember: only stick stuff in space structs that gets reused 
++ 4 must reset lastδ every time a new θ is computed 
++ 2 GrumpsSpace frugal memspace not yet implemented 
++ 1 balancing scheme is different from before in that I now subtract out the mean; need to think about whether that's a good idea 
++ 2 make CreateK more efficient 
++ 2 there is duplication in CreateK versus the function below 
++ 3 the functions in this file should be checked carefully, especially CreateK 
++ 2 get rid of estimator version BS 
++ 4 make sure dataframes are sorted in the right order 
++ 2 data processing takes longer than it probably should 
++ 3 currently only saving θ coefficients 
++ 2 still need to compute standard errors 
++ 4 still need to do penalized estimator 
++ 2 SetHighWaterMark! not written yet 
++ 2 SetStatus! not written yet 
++ 2 save log and results to file 
++ 2 not sure if last call to pick up δ is needed 
++ 4 check betahat formula 
++ 1 move sizes elsewhere 
++ 1 document micllf 
++ 2 parallelize MicroObjectiveθ! 
++ 2 parallelize MacroObjectiveθ! 
++ 2 figure out when to recompute 
++ 1 document this file 
++ 
+\ No newline at end of file

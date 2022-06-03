@@ -54,6 +54,31 @@ struct GMMMarketFGH{T<:Flt} <: MarketFGH{T}
 end
 
 
+@todo 4 "must create a constructor for PMLFGH"
+
+
+struct PMLMarketFGH{T<:Flt} <: MarketFGH{T}
+    inside  :: GrumpsSingleFGH{T}
+    outside :: GrumpsSingleFGH{T}
+    δ       :: Vec{T}
+
+    function PMLMarketFGH( T2 :: Type, e :: GrumpsEstimator, dθ :: Int, dδ :: Int, ::Val{false} )
+        # constructor if inside and outside objective functions are different
+        return new{T2}( GrumpsSingleFGH{T2}( dθ, dδ ), GrumpsSingleFGH{T2}( dθ, dδ ), zeros( T2, dδ ) )
+    end
+    function PMLMarketFGH( T2 :: Type, e :: GrumpsEstimator, dθ :: Int, dδ :: Int, ::Val{true} )
+        # constructor if inside and outside objective functions are the same
+        fgh = GrumpsSingleFGH{T2}( dθ, dδ )
+        return new{T2}( fgh, fgh, zeros( T2, dδ ) )
+    end
+end
+
+struct PMLFGH{T<:Flt} <: FGH{T}
+    market  :: Vec{ PMLMarketFGH{T} }
+    F       :: Vec{T}
+end
+
+
 
 struct GrumpsFGH{T<:Flt} <: FGH{T}
     market      :: Vec{ GrumpsMarketFGH{T} }
@@ -73,4 +98,21 @@ function FGH( e :: GrumpsGMM, d :: GrumpsData{T} ) where {T<:Flt}
 end
 
 
+# function FGH( e :: GrumpsPML, d :: GrumpsData{T} ) where {T<:Flt}
+#     return PMLFGH{T}( 
+#         zeros( T, 1),
+#         zeros( T, dimδ( d ) ),
+#         [ zeros( T, dimδ( d.marketdata[m] ) ) for m ∈ markets ],
+#         zeros( T, dimθ( d ) ),
+#         [ zeros( T, dimδ( d.marketdata[m] ), dimθ( d )  ) for m ∈ markets ],
+#         [ zeros( T, dimθ( d ), dimθ( d ) ) for m ∈ markets ],
+#         [ zeros( T, dimδ( d.marketdata[m] ) ) for m ∈ markets ]
+#           ) 
+# end
+
+function FGH( e :: GrumpsPenalized, d :: GrumpsData{T} ) where {T<:Flt}
+    return PMLFGH{T}( 
+        [ PMLMarketFGH( T, e, dimθ( d ), dimδ( d.marketdata[m] ),   Val( inisout( e ) ) ) for m ∈ 1:dimM( d ) ], [ typemax( T ) ]
+        )
+end
 

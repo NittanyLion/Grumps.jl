@@ -32,11 +32,4 @@ struct GrumpsBLPEstimator <: GrumpsPenalized
     end
 end
 
-struct GrumpsPLMEstimator <: GrumpsPenalized
-    function GrumpsPLMEstimator() 
-        @warn "not yet implemented"
-        new()
-    end
-end
-
 
