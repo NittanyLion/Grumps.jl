@@ -18,6 +18,8 @@ macro Imports()
     Grumps.gettstat,
     Grumps.BothSamplers,
     Grumps.DefaultMacroSampler,
-    Grumps.DefaultMicroSampler
+    Grumps.DefaultMicroSampler,
+    Grumps.MicroSampler,
+    Grumps.MacroSampler
     )
 end

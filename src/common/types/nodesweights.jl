@@ -26,9 +26,9 @@ struct DefaultMicroSampler{T<:Flt} <: MicroSampler{T}
 end
 
 """
-    DefaultMicroSampler( n :: Int, T = Float64 )
+    DefaultMicroSampler( n :: Int, T :: Type )
 
-Creates a basic quadrature sampler using n nodes in each dimension.
+Creates a basic quadrature sampler using n nodes in each dimension.  Type T can be omitted, in which case it is Float64.
 """
 function DefaultMicroSampler( n :: Int, T = F64 )
     @ensure n > 0  "n must be positive"
@@ -36,9 +36,9 @@ function DefaultMicroSampler( n :: Int, T = F64 )
 end
 
 """
-    DefaultMicroSampler( T = Float64 )
+    DefaultMicroSampler( T :: Type )
 
-Creates a basic quadrature sampler using 11 nodes in each dimension.  This number is likely too small, so use the other method to pick your number.
+Creates a basic quadrature sampler using 11 nodes in each dimension.  This number is likely too small, so use the other method to pick your number.  Type T can be omitted, in which case it is Float64.
 """
 function DefaultMicroSampler( T = F64 )
     DefaultMicroSampler( 11, T )
@@ -51,18 +51,18 @@ struct DefaultMacroSampler{T<:Flt} <: MacroSampler{T}
 end
 
 """
-    DefaultMacroSampler( n :: Int, T::Type = Float64 )
+    DefaultMacroSampler( n :: Int, T :: Type )
 
-Creates a basic Monte Carlo sampler using n draws.
+Creates a basic Monte Carlo sampler using n draws.  Type T can be omitted, in which case it is Float64.
 """
 function DefaultMacroSampler( n :: Int, T::Type = F64 )
     DefaultMacroSampler{T}( n )
 end
 
 """
-    DefaultMacroSampler( T::Type = Float64 )
+    DefaultMacroSampler( T )
 
-Creates a basic Monte Carlo sampler using 10 000 draws.  This is less than recommended, so use the other method to set a number of your choosing.
+Creates a basic Monte Carlo sampler using 10 000 draws.  This is less than recommended, so use the other method to set a number of your choosing.  Type T can be omitted, in which case it is Float64.
 """
 function DefaultMacroSampler( T::Type = F64 )
     DefaultMacroSampler( 10_000, T )
@@ -76,12 +76,12 @@ struct BothSamplers{T} <: GrumpsSamplers{T}
 end
 
 """
-    BothSamplers( microsampler :: MicroSampler{T}, macrosampler :: MacroSampler{T} ) where {T<:Flt}
+    BothSamplers( microsampler :: MicroSampler{T}, macrosampler :: MacroSampler{T} )  
 
 Creates the type BothSamplers containing both the indicated microsampler and macrosampler.  
 
 Either argument can be omitted.  If both arguments are omitted then one can pass the floating point
-type instead.  If no floating point type is passed then a Float64 is assumed.
+type T instead.  If no floating point type is passed then a Float64 is assumed.
 """
 function BothSamplers( microsampler :: MicroSampler{T}, macrosampler :: MacroSampler{T} ) where {T<:Flt}
     return BothSamplers{T}( microsampler, macrosampler )
