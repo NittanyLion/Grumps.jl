@@ -15,6 +15,9 @@ macro Imports()
     Grumps.getname,
     Grumps.getcoef,
     Grumps.getstde,
-    Grumps.gettstat
+    Grumps.gettstat,
+    Grumps.BothSamplers,
+    Grumps.DefaultMacroSampler,
+    Grumps.DefaultMicroSampler
     )
 end
