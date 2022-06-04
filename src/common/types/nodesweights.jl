@@ -25,10 +25,21 @@ struct DefaultMicroSampler{T<:Flt} <: MicroSampler{T}
     n   :: Int
 end
 
+"""
+    DefaultMicroSampler( n :: Int, T = Float64 )
+
+Creates a basic quadrature sampler using n nodes in each dimension.
+"""
 function DefaultMicroSampler( n :: Int, T = F64 )
+    @ensure n > 0  "n must be positive"
     DefaultMicroSampler{T}( n )
 end
 
+"""
+    DefaultMicroSampler( T = Float64 )
+
+Creates a basic quadrature sampler using 11 nodes in each dimension.  This number is likely too small, so use the other method to pick your number.
+"""
 function DefaultMicroSampler( T = F64 )
     DefaultMicroSampler( 11, T )
 end
@@ -39,10 +50,20 @@ struct DefaultMacroSampler{T<:Flt} <: MacroSampler{T}
     n   :: Int
 end
 
+"""
+    DefaultMacroSampler( n :: Int, T::Type = Float64 )
+
+Creates a basic Monte Carlo sampler using n draws.
+"""
 function DefaultMacroSampler( n :: Int, T::Type = F64 )
     DefaultMacroSampler{T}( n )
 end
 
+"""
+    DefaultMacroSampler( T::Type = Float64 )
+
+Creates a basic Monte Carlo sampler using 10 000 draws.  This is less than recommended, so use the other method to set a number of your choosing.
+"""
 function DefaultMacroSampler( T::Type = F64 )
     DefaultMacroSampler( 10_000, T )
 end

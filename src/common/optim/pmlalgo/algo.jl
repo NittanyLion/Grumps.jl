@@ -310,7 +310,7 @@ function ntr_update_state!( ntr :: NTR{T}, state :: NTRState{T}, method :: NTRMe
         # steps reducing delta by constant factors while each solution
         # will be the same.
         x_diff = fulldiff( state.x, state.x_previous )
-        state.Δ = 0.25 * norm( vcat( x_diff... ) )    # **** THIS FIXES WHAT I THINK IS A BUG IN THE OPTIM CODE
+        state.Δ = 0.25 * norm( vcat( x_diff... ) )    
 
         ntr.F = state.f_x_previous
         deepcopyto!( state.x, state.x_previous )

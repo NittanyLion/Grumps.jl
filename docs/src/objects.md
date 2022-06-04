@@ -36,6 +36,21 @@ Estimator( s :: String )
 Estimator( s :: Symbol )
 ```
 
+## Choice of integration method (samplers)
+
+Grumps uses separate integration methods for the micro and macro components. The default choices are simple with small numbers of nodes and draws. For micro, it is Hermitian quadrature, for macro it's Monte Carlo draws. One gets the defaults if the choices are omitted.
+
+The procedure is to create the samplers using a call to BothSamplers with the desired samplers as arguments and then pass this in your call to *GrumpsData*.
+```@docs
+BothSamplers(  microsampler :: MicroSampler{T}, macrosampler :: MacroSampler{T} ) )
+DefaultMicroSampler( n :: Int, T = Float64 )
+DefaultMicroSampler( T = Float64 )
+DefaultMacroSampler( n :: Int, T::Type = Float64 )
+DefaultMacroSampler( T::Type = Float64 )
+```
+
+
+
 ## Data object creation
 
 **to be done**
