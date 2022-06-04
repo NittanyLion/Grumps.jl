@@ -42,7 +42,7 @@ Grumps uses separate integration methods for the micro and macro components. The
 
 The procedure is to create the samplers using a call to BothSamplers with the desired samplers as arguments and then pass this in your call to *GrumpsData*.
 ```@docs
-BothSamplers(  microsampler :: MicroSampler{T}, macrosampler :: MacroSampler{T} ) )
+BothSamplers(  microsampler :: MicroSampler{T}, macrosampler :: MacroSampler{T} ) 
 DefaultMicroSampler( n :: Int, T = Float64 )
 DefaultMicroSampler( T = Float64 )
 DefaultMacroSampler( n :: Int, T::Type = Float64 )
