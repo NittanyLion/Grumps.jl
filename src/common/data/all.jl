@@ -1,8 +1,27 @@
 
+"""
+    GrumpsData( 
+        e                   :: GrumpsEstimator,
+        ss                  :: Sources,
+        v                   :: Variables,
+        samplers            :: GrumpsSamplers = BothSamplers(),
+        T                   :: Type = F64,
+        u                   :: UserEnhancement = DefaultUserEnhancement();
+        options             :: DataOptions = GrumpsDataOptions()
+        )
 
+Takes user inputs and converts them into an object that Grumps can understand.  This is synonymous with Data(...).
 
+*GrumpsData* takes the following arguments, of which the first three are mandatory:
 
-
+* *e*:                   estimator; see *Estimator*
+* *ss*:                  cata sources; see *Sources*
+* *v*:                   variables to be used; see *Variables*
+* *samplers*:            see *BothSamplers*, *DefaultMicroSampler*, and *DefaultMacroSampler*
+* *T*:                   floating point type; not heavily tested
+* *u*:                   not yet implemented
+* *options*:             data options to be used, see *DataOptions*
+"""
 function GrumpsData( 
     e                   :: GrumpsEstimator,
     ss                  :: Sources,
@@ -122,4 +141,27 @@ end
 #     ) = GrumpsData( Version( e ), x... )
 
 
+"""
+    Data( 
+        e                   :: GrumpsEstimator,
+        ss                  :: Sources,
+        v                   :: Variables,
+        samplers            :: GrumpsSamplers = BothSamplers(),
+        T                   :: Type = F64,
+        u                   :: UserEnhancement = DefaultUserEnhancement();
+        options             :: DataOptions = GrumpsDataOptions()
+        )
+
+Takes user inputs and converts them into an object that Grumps can understand.  This is synonymous with GrumpsData(...).
+
+*Data* takes the following arguments, of which the first three are mandatory:
+
+* *e*:                   estimator; see *Estimator*
+* *ss*:                  cata sources; see *Sources*
+* *v*:                   variables to be used; see *Variables*
+* *samplers*:            see *BothSamplers*, *DefaultMicroSampler*, and *DefaultMacroSampler*
+* *T*:                   floating point type; not heavily tested
+* *u*:                   not yet implemented
+* *options*:             data options to be used, see *DataOptions*
+"""
 Data(x...) = GrumpsData(x...)

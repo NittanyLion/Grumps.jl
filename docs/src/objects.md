@@ -51,7 +51,12 @@ DefaultMacroSampler( ::Int, ::Type )
 
 ## Data object creation
 
-**to be done**
+The data stored in spreadsheets or other objects have to be converted into a form that Grumps understands.  The call to *Data* achieves that.  
+It takes as inputs the various choices made by the user and then creates an appropriate data object that is subsequently passed to the optimization call.
+
+```@docs
+Data()
+```
 
 ## Algorithm call
 
