@@ -20,7 +20,17 @@ struct GrumpsDataOptions <: DataOptions
     GrumpsDataOptions(; micromode = :Hog, macromode = :Ant, balance = :micro, σ2 = 1.0 ) = new( micromode, macromode, balance, σ2 )
 end
 
+"""
+    Dataoptions(; 
+        micromode   = :Hog
+        macromode   = :Ant
+        balance     = :micro
+        σ2          = 1.0
+    )
 
+Specifies how Grumps should store its data and what it should store.  The first three options are best left alone, unless you know what it
+is you're doing.  The last option is the variance of ξ, i.e. the error variance in the product level moments.
+"""
 DataOptions( x...; kwargs... ) = GrumpsDataOptions( x...; kwargs... )
 
 abstract type OptimizationOptions end

@@ -22,14 +22,23 @@ OptimOptionsδ()
 
 ## Data storage options
 
-The default data storage options are sensible, but some space can be saved by tinkering with the settings, which are **to be described below**  
-
+The default data storage options are sensible, but some space can be saved by tinkering with the settings.  However, the only parameter that is worth changing is
+σ2, which is the variance of ξ, the product level error term.  This is of no relevance for two-stage estimators like unpenalized mle.
+```@docs
+DataOptions()
+```
 
 ## Estimator choice
 
 Grumps can compute quite a few estimators and one can specify which estimator to use by passing the return value of a call to *Estimator* to the optimization routine.
 
-The easiest way to call *Estimator* is by passing it a string that describes what it is that you want to do.  The following estimators are defined: **to be completed; don't use the Symbol argument call yet, because something funky's going on; may drop it altogether**
+The easiest way to call *Estimator* is by passing it a string that describes what it is that you want to do.  The following estimators are currently defined:
+* the full Grumps estimator
+* Grumps-style maximum likelihood, i.e Grumps without penalty
+* ditto, but imposing share constraints
+* GMM estimator that uses both micro and macro moments and uses quadrature instead of Monte Carlo draws in the micro moments.  The micro moments are `smart' in that they condition on $z_{im}$ instead of integrating it out.
+* a mixed logit estimator
+
 
 ```@docs
 Estimator( s :: String )
@@ -60,7 +69,10 @@ Data()
 
 ## Algorithm call
 
-**to be done**
+Once all data structures have been put together, one can call the algorithm.  This is straightforward.
+```@docs
+    grumps( ::Estimator, ::Data{T}, ::OptimizationOptions, ::Grumps.StartingVector{T}, ::StandardErrorOptions ) where {T<:Grumps.Flt}
+```
 
 ## Retrieving results
 

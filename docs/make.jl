@@ -10,10 +10,12 @@ makedocs( sitename = "Grumps.jl",
     authors = "Joris Pinkse",
     pages = [
     "Home" => "index.md",
-    "Quick Start" => "quickstart.md",
-    "User Interface" => "objects.md",
+    "Quick start" => "quickstart.md",
+    "User interface" => "objects.md",
     "Spreadsheet format" => "spreadsheet.md",
     "Example program" => "example.md",
+    "Directory structure" => "structure.md",
+    "Algorithm flow" => "flow.md",
     "Extending Grumps" => "extending.md"
     ]
     )

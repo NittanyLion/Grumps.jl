@@ -1,6 +1,19 @@
 
 @todo 2 "not sure if last call to pick up δ is needed"
 
+
+"""
+    grumps( 
+        e       :: Estimator,
+        d       :: Data{T},
+        o       :: OptimizationOptions = OptimizationOptions(),
+        θstart  :: StartingVector{T} = nothing,
+        seo     :: StandardErrorOptions = StandardErrorOptions()
+    )
+
+Conducts the optimization.  You typically just want to set θstart to nothing, i.e. have a starting vector 
+picked automatically.  
+"""
 function grumps( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstart :: StartingVector{T}, seo :: StandardErrorOptions ) where {T<:Flt}
 
     θstart      = StartingValues( θstart, e, d, o )

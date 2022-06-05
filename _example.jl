@@ -5,7 +5,7 @@ Grumps.@Imports()
 
 BLAS.set_num_threads(8)
 
-function mle(  )
+function myprogram(  )
     @info "setting source files"
     s = Sources(
       consumers = "_example_consumers.csv",
@@ -35,12 +35,10 @@ function mle(  )
     dop = DataOptions( ;micromode = :Hog, macromode = :Ant, balance = :micro )
     e = Estimator( "pml" )
     d = Data( e, s, v )
-    # th = Grumps.GrumpsThreads(; markets = 1, inner = 1 )
-    # grumps( e, d )
 
-    @time println( grumps(e, d, OptimizationOptions(), nothing, Grumps.StandardErrorOptions() ) )
+    grumps( e, d )
     # @time grumps(e, d, OptimizationOptions(), nothing, Grumps.StandardErrorOptions() ) 
 end
 
-mle()
+myprogram()
 
