@@ -48,3 +48,19 @@ Possible choices include:
 *:mixedlogit* mixed logit maximum likelihood estimator
 """
 Estimator( s :: Symbol ) = Estimator( Val( s ) )
+
+
+"""
+    Estimators( )
+
+Prints a list of available estimators.
+"""
+function Estimators()
+    printstyledln( "Available estimators:\n"; bold = true )
+    for e ∈ eachindex( estdesc )
+        printstyled( @sprintf( "%30s", estdesc[e].name ); color = :red )
+        printstyledln( "  :", estdesc[e].symbol; color = :blue)
+    end
+    return nothing
+end
+

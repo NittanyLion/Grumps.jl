@@ -5,7 +5,7 @@ Grumps.@Imports()
 
 BLAS.set_num_threads(8)
 
-function myprogram(  )
+function myprogram( nodes, draws  )
     @info "setting source files"
     s = Sources(
       consumers = "_example_consumers.csv",
@@ -13,7 +13,7 @@ function myprogram(  )
       marketsizes = "_example_marketsizes.csv",
       draws = "_example_draws.csv"  
     )
-    println( s )
+    # println( s )
     v = Variables(
         interactions =  [
             :income :constant; 
@@ -31,14 +31,24 @@ function myprogram(  )
             ],
         outsidegood = "product 11"
     )
-    println( v )
+    # println( v )
     dop = DataOptions( ;micromode = :Hog, macromode = :Ant, balance = :micro )
+
+    ms = DefaultMicroSampler( nodes )
+    Ms = DefaultMacroSampler( draws )
     e = Estimator( "pml" )
-    d = Data( e, s, v )
+    d = Data( e, s, v, BothSamplers( ms, Ms ) )
 
     grumps( e, d )
     # @time grumps(e, d, OptimizationOptions(), nothing, Grumps.StandardErrorOptions() ) 
 end
 
-myprogram()
+for nodes ∈ [ 11, 17, 25]
+    for draws ∈ [10_000 ]  
+        @info "$nodes $draws"
+        println( getcoef.( getθ( myprogram( nodes, draws ) ) ) )
+    end
+end
+
+
 
