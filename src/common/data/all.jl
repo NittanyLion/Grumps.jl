@@ -4,7 +4,7 @@
         e                   :: GrumpsEstimator,
         ss                  :: Sources,
         v                   :: Variables,
-        samplers            :: GrumpsSamplers = BothSamplers(),
+        integrators         :: GrumpsIntegrators = BothIntegrators(),
         T                   :: Type = F64,
         u                   :: UserEnhancement = DefaultUserEnhancement();
         options             :: DataOptions = GrumpsDataOptions()
@@ -17,7 +17,7 @@ Takes user inputs and converts them into an object that Grumps can understand.  
 * *e*:                   estimator; see *Estimator*
 * *ss*:                  cata sources; see *Sources*
 * *v*:                   variables to be used; see *Variables*
-* *samplers*:            see *BothSamplers*, *DefaultMicroSampler*, and *DefaultMacroSampler*
+* *integrators*:            see *BothIntegrators*, *DefaultMicroIntegrator*, and *DefaultMacroIntegrator*
 * *T*:                   floating point type; not heavily tested
 * *u*:                   not yet implemented
 * *options*:             data options to be used, see *DataOptions*
@@ -26,7 +26,7 @@ function GrumpsData(
     e                   :: GrumpsEstimator,
     ss                  :: Sources,
     v                   :: Variables,
-    samplers            :: GrumpsSamplers = BothSamplers(),
+    integrators            :: GrumpsIntegrators = BothIntegrators(),
     T                   :: Type = F64,
     u                   :: UserEnhancement = DefaultUserEnhancement();
     options             :: DataOptions = GrumpsDataOptions()
@@ -63,14 +63,14 @@ function GrumpsData(
     @info "estimator = $e"
     if isa( s.consumers, DataFrame ) && usesmicrodata( e )
         MustBeInDF( [ v.market, v.choice ], s.consumers, "consumers" )
-        nwgmic = NodesWeightsGlobal( microsampler( samplers ), dθν, rngs[1]  )
+        nwgmic = NodesWeightsGlobal( microintegrator( integrators ), dθν, rngs[1]  )
         # @threads for th ∈ eachindex( ranges )
             # for m ∈ ranges[th]
             @threads :dynamic for m ∈ 1:M
                 local th = threadid()
                 local fac = findall( x->x == markets[m], s.consumers[:, v.market] )
                 if fac ≠ nothing
-                    local nw = NodesWeightsOneMarket( microsampler( samplers ), dθν, rngs[ th ], nwgmic  )
+                    local nw = NodesWeightsOneMarket( microintegrator( integrators ), dθν, rngs[ th ], nwgmic  )
                     mic[m] = GrumpsMicroData( markets[m], view( s.consumers, fac, : ), view( s.products, fap[m], : ), v, nw, rngs[th], options, usesmicromoments( e ), T, u )
                 else
                     mic[m] = GrumpsMicroNoData( markets[m] )
@@ -88,7 +88,7 @@ function GrumpsData(
     @ensure !usesmacrodata( e ) || isa( s.marketsizes, DataFrame ) "this estimator type requires market size information"
     if isa( s.marketsizes, DataFrame ) && usesmacrodata( e )
         MustBeInDF( [ v.market, v.marketsize ], s.marketsizes, "market sizes" )
-        nwgmac = NodesWeightsGlobal( macrosampler( samplers ), dθ, s.draws, v, rngs[1] )
+        nwgmac = NodesWeightsGlobal( macrointegrator( integrators ), dθ, s.draws, v, rngs[1] )
         # @threads for th ∈ eachindex( ranges )
             # for m ∈ ranges[th]
         @threads :dynamic for m ∈ 1:M
@@ -101,7 +101,7 @@ function GrumpsData(
                             @ensure fad ≠ nothing  "cannot find market $(markets[m])"
                             view( s.draws, fad, : )
                         end
-                    local nw = NodesWeightsOneMarket( macrosampler( samplers ), dθν, draws, v, rngs[ th ], nwgmac  )
+                    local nw = NodesWeightsOneMarket( macrointegrator( integrators ), dθν, draws, v, rngs[ th ], nwgmac  )
                     mac[m] = GrumpsMacroData( markets[m], s.marketsizes[fam, v.marketsize], view( s.products, fap[m], : ), v, nw, isassigned( mic, m ) ? mic[m] : nothing, options, T, u )
                 else
                     mac[m] = GrumpsMacroNoData( markets[m] )
@@ -146,7 +146,7 @@ end
         e                   :: GrumpsEstimator,
         ss                  :: Sources,
         v                   :: Variables,
-        samplers            :: GrumpsSamplers = BothSamplers(),
+        integrators            :: GrumpsIntegrators = BothIntegrators(),
         T                   :: Type = F64,
         u                   :: UserEnhancement = DefaultUserEnhancement();
         options             :: DataOptions = GrumpsDataOptions()
@@ -159,7 +159,7 @@ Takes user inputs and converts them into an object that Grumps can understand.  
 * *e*:                   estimator; see *Estimator*
 * *ss*:                  cata sources; see *Sources*
 * *v*:                   variables to be used; see *Variables*
-* *samplers*:            see *BothSamplers*, *DefaultMicroSampler*, and *DefaultMacroSampler*
+* *integrators*:            see *BothIntegrators*, *DefaultMicroIntegrator*, and *DefaultMacroIntegrator*
 * *T*:                   floating point type; not heavily tested
 * *u*:                   not yet implemented
 * *options*:             data options to be used, see *DataOptions*

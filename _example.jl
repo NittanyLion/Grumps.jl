@@ -34,10 +34,10 @@ function myprogram( nodes, draws  )
     # println( v )
     dop = DataOptions( ;micromode = :Hog, macromode = :Ant, balance = :micro )
 
-    ms = DefaultMicroSampler( nodes )
-    Ms = DefaultMacroSampler( draws )
+    ms = DefaultMicroIntegrator( nodes )
+    Ms = DefaultMacroIntegrator( draws )
     e = Estimator( "pml" )
-    d = Data( e, s, v, BothSamplers( ms, Ms ) )
+    d = Data( e, s, v, BothIntegrators( ms, Ms ) )
 
     grumps( e, d )
     # @time grumps(e, d, OptimizationOptions(), nothing, Grumps.StandardErrorOptions() ) 

@@ -16,10 +16,10 @@ macro Imports()
     Grumps.getcoef,
     Grumps.getstde,
     Grumps.gettstat,
-    Grumps.BothSamplers,
-    Grumps.DefaultMacroSampler,
-    Grumps.DefaultMicroSampler,
-    Grumps.MicroSampler,
-    Grumps.MacroSampler
+    Grumps.BothIntegrators,
+    Grumps.DefaultMacroIntegrator,
+    Grumps.DefaultMicroIntegrator,
+    Grumps.MicroIntegrator,
+    Grumps.MacroIntegrator
     )
 end

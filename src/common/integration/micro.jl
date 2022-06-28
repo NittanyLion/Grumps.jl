@@ -1,12 +1,12 @@
 
 
 
-function show( io :: IO, ms :: DefaultMicroSampler )
-   print( "default micro sampler") 
+function show( io :: IO, ms :: DefaultMicroIntegrator )
+   print( "default micro integrator") 
 end
 
 
-function NodesWeightsGlobal( ms :: DefaultMicroSampler{T}, d :: Int,  rng :: AbstractRNG ) where {T<:Flt}
+function NodesWeightsGlobal( ms :: DefaultMicroIntegrator{T}, d :: Int,  rng :: AbstractRNG ) where {T<:Flt}
    nodes1 = ms.n
    (n1, w1 ) = gausshermite( nodes1 );  n1 .*= sqrt(2.0);  w1 ./= sqrt(π)                                                  # compute Gauss Hermite nodes and weights in a single dimension
    nodes = nodes1 ^ d                                                                                                      # total number of nodes
@@ -34,6 +34,6 @@ end
 
 
 
-function NodesWeightsOneMarket( ms :: DefaultMicroSampler{T}, d :: Int, rng :: AbstractRNG, nwgmic :: GrumpsNodesWeights{T} ) where {T<:Flt}
+function NodesWeightsOneMarket( ms :: DefaultMicroIntegrator{T}, d :: Int, rng :: AbstractRNG, nwgmic :: GrumpsNodesWeights{T} ) where {T<:Flt}
    return nwgmic
 end
