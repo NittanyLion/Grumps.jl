@@ -61,13 +61,13 @@ struct GrumpsMacroSpace{T<:Flt} <: MacroSpace{T}
 
     function GrumpsMacroSpace( R :: Int, J :: Int, dθ :: Int, mustrecompute :: Bool, T2 :: Type = F64 )
         return new{T2}( 
-            𝓏𝓈( T2, R, J ),     # Aθ
-            𝓏𝓈( T2, R, J ),     # πrj
-            𝓏𝓈( T2, J ),        # πj
-            𝓏𝓈( T2, J ),        # ρ
-            𝓏𝓈( T2, R ),        # ρπ
-            𝓏𝓈( T2, J - 1 ),
-            𝓏𝓈( T2, dθ ),
+            zeros( T2, R, J ),     # Aθ
+            zeros( T2, R, J ),     # πrj
+            zeros( T2, J ),        # πj
+            zeros( T2, J ),        # ρ
+            zeros( T2, R ),        # ρπ
+            zeros( T2, J - 1 ),
+            zeros( T2, dθ ),
             mustrecompute
         )
     end
@@ -133,7 +133,8 @@ end
 @todo 2 "GrumpsSpace frugal memspace not yet implemented"
 
 function GrumpsSpace( d :: GrumpsData{T}, ::Val{ true }, nth :: Int ) where {T<:Flt}
-    @warn "GrumpsSpace frugal memspace not yet implemented"
+        @warn "still working on the frugal space option"
+        
 end
 
 
