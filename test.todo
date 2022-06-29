@@ -4,7 +4,6 @@
  3 still have to define the GrumpsSolution type 
  1 remember: only stick stuff in space structs that gets reused 
  4 must reset lastδ every time a new θ is computed 
- 2 GrumpsSpace frugal memspace not yet implemented 
  1 balancing scheme is different from before in that I now subtract out the mean; need to think about whether that's a good idea 
  2 make CreateK more efficient 
  2 there is duplication in CreateK versus the function below 

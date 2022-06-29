@@ -38,12 +38,13 @@ function myprogram( nodes, draws  )
     Ms = DefaultMacroIntegrator( draws )
     e = Estimator( "pml" )
     d = Data( e, s, v, BothIntegrators( ms, Ms ) )
-
-    grumps( e, d )
+    th = Grumps.GrumpsThreads( ; markets = 1 )
+    o = Grumps.OptimizationOptions(; memsave = true, threads = th )
+    grumps( e, d, o  )
     # @time grumps(e, d, OptimizationOptions(), nothing, Grumps.StandardErrorOptions() ) 
 end
 
-for nodes ∈ [ 11, 17, 25]
+for nodes ∈ [ 11 ] # , 17, 25]
     for draws ∈ [10_000 ]  
         @info "$nodes $draws"
         println( getcoef.( getθ( myprogram( nodes, draws ) ) ) )

@@ -35,8 +35,11 @@ function AθZXθ!(
     m :: Int 
     ) where {T<:Flt}
 
-    memslot = GiveMeSpace!( s, m )
-    sm = s.marketspace[memslot]
+    sm = s.marketspace[m]
+
+    acquire( s.semas, sm.memblockindex )
+
+
 
     FillAθ!( θ, e, d.macrodata, o, sm.macrospace )
     FillZXθ!( θ, e, d.microdata, o, sm.microspace )
@@ -64,11 +67,12 @@ function AθZXθ!(
     end
     
     
-    return memslot
+    return m
 end
 
 
-function freeAθZXθ!( e :: GrumpsEstimator, s :: GrumpsSpace{T}, o :: OptimizationOptions, memslot :: Int ) where {T<:Flt}
-    ReleaseSpace!( s, memslot )
+function freeAθZXθ!( e :: GrumpsEstimator, s :: GrumpsSpace{T}, o :: OptimizationOptions, m :: Int ) where {T<:Flt}
+    # ReleaseSpace!( s, memslot )
+    release( s.semas, s.marketspace[m].memblockindex )
     return nothing
 end

@@ -95,14 +95,14 @@ function InsideObjective!(
 
     @threads :dynamic for m ∈ markets
 
-        memslot = memsave(o) ? AθZXθ!( θ, e, d.marketdata[m], o, s, m ) : m
+        mustrecompute(s) && AθZXθ!( θ, e, d.marketdata[m], o, s, m ) 
 
         local fval = MacroObjectiveδ!( T(0.0),  
             easy( G, m ), 
             easy( H, m ), 
             δ[m], 
             d.marketdata[m].macrodata, 
-            s.marketspace[memslot].macrospace, 
+            s.marketspace[m].macrospace, 
             o,
             true 
             )  
@@ -111,7 +111,7 @@ function InsideObjective!(
             easy( H, m ), 
             δ[m], 
             d.marketdata[m].microdata, 
-            s.marketspace[memslot].microspace, 
+            s.marketspace[m].microspace, 
             o, 
             false 
             )  
@@ -120,7 +120,7 @@ function InsideObjective!(
             Fm[m] = fval
         end
 
-        memsave( o ) &&  freeAθZXθ!( e, s, o, memslot )
+        mustrecompute( s ) &&  freeAθZXθ!( e, s, o, m )
     end
 
     return isnothing( F ) ? nothing : sum( Fm )

@@ -149,6 +149,7 @@ function GrumpsOptimizationOptions(; θopt = OptimOptions( Val( :θ ) ), δopt =
     return GrumpsOptimizationOptions( θopt, δopt, threads, memsave, maxrepeats, probtype )
 end
 
+OptimizationOptions(; x...) = GrumpsOptimizationOptions(; x...)
 
 inthreads( o :: GrumpsOptimizationOptions )     = inthreads( o.gth )
 mktthreads( o :: GrumpsOptimizationOptions )    = mktthreads( o.gth )

@@ -18,29 +18,29 @@ function ObjectiveFunctionθ1!(
     m           :: Int                              
     ) where {T<:Flt}
 
-    recompute =  s.currentθ ≠ θ || memsave( o )
-    memslot = recompute ? AθZXθ!( θ, e, d, o, s, m ) : m
-    ms = s.marketspace[memslot]
+    recompute =  s.currentθ ≠ θ || mustrecompute( s.marketspace[m] )
+    recompute && AθZXθ!( θ, e, d, o, s, m ) 
+
     # δ = 𝓏𝓈( dimδ( d ) )
     δ .= zero( T )
 
     # if recompute
         ms.microspace.lastδ .= typemax( T )
         ms.macrospace.lastδ .= typemax( T )
-        grumpsδ!( fgh.inside, θ, δ, e, d, o, ms, m )      # compute δs in the inner loop and store them in s.δ
+        grumpsδ!( fgh.inside, θ, δ, e, d, o, s.marketspace[m], m )      # compute δs in the inner loop and store them in s.δ
     # else
         # @warn "did not recompute δ"
     # end
     
 
     # if computeG || computeH || !inisout( e )
-        F = OutsideObjective1!(  fgh.outside, θ, δ, e, d, o, ms, computeF, computeG, computeH )
+        F = OutsideObjective1!(  fgh.outside, θ, δ, e, d, o, s.marketspace[m], computeF, computeG, computeH )
         if computeF
             fgh.outside.F .= F
         end
     # end
 
-    freeAθZXθ!( e, s, o, memslot )
+    freeAθZXθ!( e, s, o, m )
     return nothing
 end
 
@@ -92,7 +92,7 @@ function ObjectiveFunctionθ!(
 
     if computeH && !computeG
         computeG = true
-        G = 𝓏𝓈( T, length(θ) )
+        G = zeros( T, length(θ) )
     end
 
 

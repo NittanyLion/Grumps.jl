@@ -56,7 +56,7 @@ function ObjectiveFunctionθ!(
         δ[m] .= zero( T )
     end
 
-    if !memsave( o )
+    if !memsave( s )
         for m ∈ markets
             AθZXθ!( θ, e, d.marketdata[m], o, s, m )
         end
@@ -65,9 +65,7 @@ function ObjectiveFunctionθ!(
     grumpsδ!( fgh, θ, δ, e, d, o, s )
 
     @threads :dynamic for m ∈ markets
-        local recompute = memsave( o )
-
-        local memslot = recompute ? AθZXθ!( θ, e, d.marketdata[m], o, s, m ) : m
+        mustrecompute(s) && AθZXθ!( θ, e, d.marketdata[m], o, s, m ) : m
         ObjectiveFunctionθ1!( 
             fgh.market[m],
             θ,
@@ -75,14 +73,14 @@ function ObjectiveFunctionθ!(
             e, 
             d.marketdata[m], 
             o,
-            s.marketspace[memslot],
+            s.marketspace[m],
             computeF,
             computeG,
             computeH,
             m                              
             ) 
         
-        recompute && freeAθZXθ!( e, s, o, memslot )
+        mustrecompute(s) && freeAθZXθ!( e, s, o, m )
 
     end
 
@@ -147,7 +145,7 @@ function ObjectiveFunctionθ!(
 
     end
 
-    if !memsave( o )
+    if !memsave( s )
         for m ∈ markets
             freeAθZXθ!( e, s, o, m )
         end

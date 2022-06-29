@@ -10,9 +10,13 @@ const commondir = "common"
 const docdir    = "doc"
 const pkgdir    = "packages"
 const estdir    = "estimators"
+const intdir = "integrators"
 
 include( "$(commondir)/$(commondir).jl" )
 
 const rootfolder = String( @__DIR__ )
 
-include( "$(estdir)/includes.jl")
+for dr ∈ [ estdir, intdir ]
+    include( "$(dr)/includes.jl" )
+end
+
