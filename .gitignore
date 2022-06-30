@@ -1,4 +1,6 @@
 /Manifest.toml
 /docs/build/
 test.todo
+_example.jl
 _*
+
