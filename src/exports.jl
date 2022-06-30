@@ -27,5 +27,6 @@ export grumps,
             DefaultMacroIntegrator,
             DefaultMicroIntegrator,
             MicroIntegrator,
-            MacroIntegrator
+            MacroIntegrator,
+            GrumpsThreads
         

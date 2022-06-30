@@ -45,13 +45,13 @@ To use **Grumps.jl** consider the following program, which computes the unpenali
 
 
 
-To see what is happening in the code, consider the function myprogram.  It first describes where data on consumers, products, market sizes, and random draws can be found.  This happens in the **Sources** call. In this example, all sources are files, but DataFrames are ok, also.  In addition, not all sources are needed for all estimators and options.  Indeed, only products data are required.
+To see what is happening in the code, consider the function myprogram.  It first describes where data on consumers, products, market sizes, and random draws can be found.  This happens in the `Sources` call. In this example, all sources are files, but DataFrames are ok, also.  In addition, not all sources are needed for all estimators and options.  Indeed, only products data are required.
 
-Next, in **Variables** it describes what variables to include.  In this case, there are three interactions between demographic characteristics (in the first column) and product characteristics (in the second column).  There are moreover random coefficients on the ibu and abv variables.  The product-level regressors and instruments that go into $\hat \Pi$ are also entered.  Finally, the outsidegood argument indicates which value in the consumers spreadsheet is used to indicate that a product is the outside good.  There are many other choices; please see the User Interface section.
+Next, in `Variables` it describes what variables to include.  In this case, there are three interactions between demographic characteristics (in the first column) and product characteristics (in the second column).  There are moreover random coefficients on the ibu and abv variables.  The product-level regressors and instruments that go into $\hat \Pi$ are also entered.  Finally, the outsidegood argument indicates which value in the consumers spreadsheet is used to indicate that a product is the outside good.  There are many other choices; please see the User Interface section.
 
-It then tells Grumps that it wants to use the full Grumps maximum likelihood estimator with penalized deviations from the macro moments in **Estimator**.  You could also have entered another descriptive string; **Grumps** is pretty good at figuring out what you want.  Or you can use a symbol, like :mle.  In the **Data** call, it reads the data needed from the sources indicated in the **Sources** call using the information specified in the **Variables** call.
+It then tells Grumps that it wants to use the full Grumps maximum likelihood estimator with penalized deviations from the macro moments in `Estimator`.  You could also have entered another descriptive string; **Grumps** is pretty good at figuring out what you want.  Or you can use a symbol, like :mle.  In the `Data` call, it reads the data needed from the sources indicated in the `Sources` call using the information specified in the `Variables` call.
 
-The **grumps!** call then asks Grumps to compute the estimates.  The exclammation mark (`bang') signifies that **grumps!** can change its arguments, including the starting value.
+The `grumps!` call then asks Grumps to compute the estimates.  The exclammation mark (`bang') signifies that `grumps!` can change its arguments, including the starting value.
 
 Note that there are many other options and calls.  The main ones are described in the [User Interface](@ref) tab.
 

@@ -22,7 +22,7 @@ There is one exception, however, and that exception pertains to using less memor
 OptimizationOptions()
 OptimOptionsθ()
 OptimOptionsδ()
-GrumpsThreads()
+GrumpsThreads(; blas = 0, markets = 0, inner = 0 )
 ```
 
 ## Data storage options
@@ -35,9 +35,9 @@ DataOptions()
 
 ## Estimator choice
 
-Grumps can compute quite a few estimators and one can specify which estimator to use by passing the return value of a call to *Estimator* to the optimization routine.
+Grumps can compute quite a few estimators and one can specify which estimator to use by passing the return value of a call to `Estimator` to the optimization routine.
 
-The easiest way to call *Estimator* is by passing it a string that describes what it is that you want to do.  The following estimators are currently defined:
+The easiest way to call `Estimator` is by passing it a string that describes what it is that you want to do.  The following estimators are currently defined:
 * the full Grumps estimator
 * Grumps-style maximum likelihood, i.e Grumps without penalty
 * ditto, but imposing share constraints
@@ -54,7 +54,7 @@ Estimators()
 
 Grumps uses separate integration methods for the micro and macro components. The default choices are simple with small numbers of nodes and draws. For micro, it is Hermitian quadrature, for macro it's Monte Carlo draws. One gets the defaults if the choices are omitted.
 
-The procedure is to create the integrators using a call to BothIntegrators with the desired integrators as arguments and then pass this in your call to *GrumpsData*.
+The procedure is to create the integrators using a call to BothIntegrators with the desired integrators as arguments and then pass this in your call to `Data`.
 ```@docs
 BothIntegrators( :: MicroIntegrator{T}, ::MacroIntegrator{T} ) where {T<:AbstractFloat}
 DefaultMicroIntegrator( ::Int, ::Type )
@@ -65,7 +65,7 @@ DefaultMacroIntegrator( ::Int, ::Type )
 
 ## Data object creation
 
-The data stored in spreadsheets or other objects have to be converted into a form that Grumps understands.  The call to *Data* achieves that.  
+The data stored in spreadsheets or other objects have to be converted into a form that Grumps understands.  The call to `Data` achieves that.  
 It takes as inputs the various choices made by the user and then creates an appropriate data object that is subsequently passed to the optimization call.
 
 ```@docs
@@ -81,7 +81,7 @@ Once all data structures have been put together, one can call the algorithm.  Th
 
 ## Retrieving results
 
-As noted above, Grumps will return its results in a *GrumpsSolution* variable that can be queried as follows.  **to be expanded**
+As noted above, Grumps will return its results in a `GrumpsSolution` variable that can be queried as follows.  **to be expanded**
 
 ```@docs
 getθ( sol :: GrumpsSolution )
@@ -93,14 +93,16 @@ gettstat( e :: GrumpsEstimate )
 getname( e :: GrumpsEstimate )
 ```
 
-GrumpsThreads(; blas = 0, markets = 0, inner = 0 )
+
 ## Memory conservation
 
 **stub; this section to be completed**
 
-By default, Grumps loads all data and then creates space for all markets for things like choice probabilities, objective functions and their derivatives, intermediate objects, etcetera.  This saves computation time, but eats memory.
+By default, Grumps loads all data and then creates space for all markets for things like choice probabilities, objective functions and their derivatives, intermediate objects, etcetera.  This saves computation time, but eats memory, especially as the number of random coefficients increases.
 
-To conserve memory, one can set *memsave* in [`OptimizationOptions()`](@ref) to *true*.  What this does is that it shares space for choice probabilities
+To conserve memory, one can set `memsave` in [`OptimizationOptions()`](@ref) to `true`.  What this does is that it shares space for choice probabilities
 and related objects across a number of markets.  For instance, if there are ten markets and the number of market threads in [`OptimizationOptions()`](@ref) is set to two then the space for choice probabilities is shared across five markets.  These choices will have no effect if the number of market threads is no less than the number of markets.  The downside of doing this is that it slows down computation since choice probabilities need to be recomputed.  This is especially true for estimators that use the penalty term.
+
+There are less impactful ways of reducing memory usage, such as choosing the option `:Ant` for the micro data, also.  *** not yet implemented ***
 
 
