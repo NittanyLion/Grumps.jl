@@ -36,4 +36,7 @@ This is still a preliminary version of Grumps, so please advise [Joris Pinkse](m
 6. traditional GMM; see [Grieco, Murry, Pinkse, and Sagl (2022)](http://joris.pinkse.org/paper/grumps/) for details
 7. standard errors for some of the estimators
 8. detailed sanity checks
-9. 
+
+## License
+
+All of this code is subject to the MIT license.  This code includes a modified version of the Newton Method with Trust Regions code in the Optim package, which is also subject to the MIT license.
