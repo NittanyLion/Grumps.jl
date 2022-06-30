@@ -1,7 +1,6 @@
    
 @todo 2 "figure out when to recompute"
 @todo 4 "for all estimators, note that frugal is not compatible with for threads; need spawns"
-@todo 1 "replace 𝓏𝓈 with zeros"
 
 
 function ObjectiveFunctionθ1!( 
@@ -21,20 +20,20 @@ function ObjectiveFunctionθ1!(
     recompute =  s.currentθ ≠ θ || mustrecompute( s.marketspace[m] )
     recompute && AθZXθ!( θ, e, d, o, s, m ) 
 
-    # δ = 𝓏𝓈( dimδ( d ) )
     δ .= zero( T )
 
+    ms = s.marketspace[m]
     # if recompute
         ms.microspace.lastδ .= typemax( T )
         ms.macrospace.lastδ .= typemax( T )
-        grumpsδ!( fgh.inside, θ, δ, e, d, o, s.marketspace[m], m )      # compute δs in the inner loop and store them in s.δ
+        grumpsδ!( fgh.inside, θ, δ, e, d, o, ms, m )      # compute δs in the inner loop and store them in s.δ
     # else
         # @warn "did not recompute δ"
     # end
     
 
     # if computeG || computeH || !inisout( e )
-        F = OutsideObjective1!(  fgh.outside, θ, δ, e, d, o, s.marketspace[m], computeF, computeG, computeH )
+        F = OutsideObjective1!(  fgh.outside, θ, δ, e, d, o, ms, computeF, computeG, computeH )
         if computeF
             fgh.outside.F .= F
         end

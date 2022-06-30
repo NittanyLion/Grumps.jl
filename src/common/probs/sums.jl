@@ -4,13 +4,6 @@ function ComputeΣππ(
     o       :: OptimizationOptions 
     ) where {T<:Flt}
 
-    # J = dimJ( d )
-    # Σππ = zeros( J, J )
-    # for ind ∈ CartesianIndices( ( 1:dimS( d ), 1:J ) )
-    #     local i, k = Tuple( ind )
-    #     Σππ[i,k] = sum( d.w[r] * s.πri[r,i] * s.πrij[r,i,k] for r ∈ eachindex( d.w ) )
-    # end
-    # return Σππ
 
     weights, consumers, products, insides, = RSJ( d )
     return [ sum( d.w[r] * s.πri[r,i] * s.πrij[r,i,k] for r ∈ weights ) for i ∈ consumers, k ∈ products ]
@@ -28,20 +21,7 @@ end
 
 
 
-# """
-#     WeightedDifference!( C::AA2{T}, A::AA2{T}, π::AA1{T}  ) where {T<:Flt}
 
-# computes A[i,j] - sum A[i,t] * π[t]
-# """
-# function WeightedDifference!( C::AA2{T}, A::AA2{T}, π::AA1{T}, nth :: Int = 1  ) where {T<:Flt}
-#     for t ∈ axes( C, 2 ) 
-#         local avg = sum( π[v] * A[v,t] for v ∈ eachindex( π ) )
-#         for j ∈ axes( C, 1)  
-#             C[j,t] = A[j,t] - avg  
-#         end
-#     end
-#     return nothing
-# end
 
 
 
@@ -81,7 +61,7 @@ end
 function ComputeΔa!( Δa :: AA2{T}, s :: MacroSpace{T}, d :: GrumpsMacroDataAnt{T}, o :: OptimizationOptions, r :: Int ) where {T<:Flt}
     weights, products, insides, parameters = RJ( d )
 
-    Δa .= 𝓏( T )
+    Δa .= zero( T )
     for k ∈ parameters
         avg = sum( s.πrj[r,j] * d.𝒳[j,k] for j ∈ products )
         for j ∈ products

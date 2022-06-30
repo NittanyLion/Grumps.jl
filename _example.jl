@@ -5,7 +5,7 @@ Grumps.@Imports()
 
 BLAS.set_num_threads(8)
 
-function myprogram( nodes, draws  )
+function myprogram( nodes, draws, meth  )
     @info "setting source files"
     s = Sources(
       consumers = "_example_consumers.csv",
@@ -36,7 +36,7 @@ function myprogram( nodes, draws  )
 
     ms = DefaultMicroIntegrator( nodes )
     Ms = DefaultMacroIntegrator( draws )
-    e = Estimator( "pml" )
+    e = Estimator( meth )
     d = Data( e, s, v, BothIntegrators( ms, Ms ) )
     th = Grumps.GrumpsThreads( ; markets = 4 )
     o = Grumps.OptimizationOptions(; memsave = true, threads = th )
@@ -46,8 +46,10 @@ end
 
 for nodes ∈ [ 11 ] # , 17, 25]
     for draws ∈ [10_000 ]  
-        @info "$nodes $draws"
-        println( getcoef.( getθ( myprogram( nodes, draws ) ) ) )
+        for meth ∈ [ :gmm, :mixedlogit, :pml, :shareconstraint, :vanilla ]
+            @info "$nodes $draws $meth"
+            println( getcoef.( getθ( myprogram( nodes, draws, meth ) ) ) )
+        end
     end
 end
 

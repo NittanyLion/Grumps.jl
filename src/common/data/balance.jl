@@ -6,7 +6,6 @@ function computeμσ( μ :: T, σ :: T, count :: Int ) where {T<:Flt}
 end
 
 
-@todo 1  "balancing scheme is different from before in that I now subtract out the mean; need to think about whether that's a good idea"
 
 
 function Balance!( gd :: GrumpsData{T}, scheme :: Val{ :micro } ) where {T<:Flt}

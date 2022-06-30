@@ -14,46 +14,6 @@ function SumNormalize!( x :: AbstractVector{T} ) where {T<:Flt}
     return nothing
 end
 
-# @todo 1 "add robust choice probabilities"
-
-# """
-#     single threaded micro version for fast choice probabilities
-# """
-# function ChoiceProbabilities!( 
-#     π       :: AA3{T}, 
-#     ZXθ     :: AA3{T}, 
-#     δ       :: Vec{T},                  # must be full vector δ
-#     nth     :: Int,
-#             :: Val{ :fast }
-#     ) where {T<:Flt}
-
-#     softmaxδ = softmax( vcat( δ, zero( T ) ) )
-#     for ind  ∈ CartesianIndices( ( axes( π, 1 ), axes( π, 2 ) ) )
-#         for j ∈ eachindex( softmaxδ )
-#             π[ind,j] = ZXθ[ind,j] * softmaxδ[j] 
-#         end
-#         SumNormalize!( @view π[ ind, : ] )
-#     end
-
-#     return nothing
-# end
-
-
-
-
-# function ChoiceProbabilities!( 
-#     π       :: AA3{T}, 
-#     ZXθ     :: AA3{T}, 
-#     δ       :: Vec{T}, 
-#     o       :: OptimizationOptions 
-#     ) where {T<:Flt}
-#     return ChoiceProbabilities!( π, ZXθ, δ, inthreads( o ), Val( probtype( o ) ) )
-# end
-
-# @todo 4 "add mustrecompute boolean to MicroSpace and MacroSpace and set them to true if memsave is on"
-# @todo 4 "add lastδ, lastθ to MicroSpace and MacroSpace"
-
-
 
 
 """
@@ -68,17 +28,11 @@ function ChoiceProbabilities!(
     δ       :: Vec{T}
     ) where {T<:Flt}
 
-    # if s.lastδ == δ && !s.mustrecompute
-    #     @info "no need to recompute δ = $δ"
-    #     return nothing
-    # end
-    # copyto!( s.lastδ, δ )
-    
+
     weights, consumers, products, insides, = RSJ( d )
 
-    # ChoiceProbabilities!( s.πrij, s.ZXθ, δ, o )
     softmaxδ = softmax( vcat( δ, zero( T ) ) )
-    s.πi .= 𝓏( T )
+    s.πi .= zero( T )
     @threads :dynamic for i ∈ consumers
         for r ∈ weights 
             for j ∈ eachindex( softmaxδ )

@@ -17,20 +17,20 @@ function Momentθ1!(
     recompute =  s.currentθ ≠ θ || mustrecompute( s )
 
     recompute && AθZXθ!( θ, e, d, o, s, m ) 
-    # δ = 𝓏𝓈( T, dimδ( d ) )
+    # δ = zeros( T, dimδ( d ) )
     δ .= zero( T )
-
+    ms = s.marketspace[m]
     # if recompute
         ms.microspace.lastδ .= typemax( T )
         ms.macrospace.lastδ .= typemax( T )
-        grumpsδ!( fgh.inside, θ, δ, e, d, o, s.marketspace[m], m )      # compute δs in the inner loop and store them in s.δ
+        grumpsδ!( fgh.inside, θ, δ, e, d, o, ms, m )      # compute δs in the inner loop and store them in s.δ
     # else
         # @warn "did not recompute δ"
     # end
     
 
     # if computeG || computeH || !inisout( e )
-       F = OutsideMoment1!(  fgh, θ, δ, e, d, 𝒦m, o, s.marketspace[m], computeF, computeG )
+       F = OutsideMoment1!(  fgh, θ, δ, e, d, 𝒦m, o, ms, computeF, computeG )
     # end
 
     freeAθZXθ!( e, s, o, m )

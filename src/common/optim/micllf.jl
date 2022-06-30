@@ -128,11 +128,11 @@ function MicroObjectiveθ!(
         return F                      
     end
 
-    Σπb = 𝓏𝓈( T, dθ )
-    Δb =  𝓏𝓈( T, J, dθ )
+    Σπb = zeros( T, dθ )
+    Δb =  zeros( T, J, dθ )
 
     for i ∈ consumers                                   
-        Σπb .= 𝓏𝓈( T )
+        Σπb .= zeros( T )
         for r ∈ weights                             
             ComputeΔb!( Δb, s, d, o, r, i )
             for t ∈ parameters        

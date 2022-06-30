@@ -92,8 +92,6 @@ end
 
 
 
-@todo 2 "get rid of estimator version BS"
-@todo 4 "make sure dataframes are sorted in the right order"
 
 function GrumpsPLMData( s :: Sources, v :: Variables, fap :: Vec{ Vec{Int} }, usepenaltyterm :: Bool, σ2 :: T ) where {T<:Flt}
     @ensure isa( s.products, DataFrame )   "was expecting a DataFrame for product data"
@@ -137,7 +135,6 @@ function GrumpsPLMData( s :: Sources, v :: Variables, fap :: Vec{ Vec{Int} }, us
     
     𝒳̂ = 𝒵 * ( 𝒵 \ 𝒳 )
 
-    # 𝒦 = CreateK( s, v, dδ, T(σ2), Val( usepenaltyterm ), fap )
     𝒦 = CreateK( s, v, dδ, T(σ2), Val( true ), fap )
     return GrumpsPLMData( 𝒳, 𝒳̂, vcat( String.( v.regressors ), dumbnames ), size(𝒵,2), 𝒦,  σ2 )
 end

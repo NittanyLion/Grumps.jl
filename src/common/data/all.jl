@@ -104,13 +104,13 @@ function GrumpsData(
                     local nw = NodesWeightsOneMarket( macrointegrator( integrators ), dθν, draws, v, rngs[ th ], nwgmac  )
                     mac[m] = GrumpsMacroData( markets[m], s.marketsizes[fam, v.marketsize], view( s.products, fap[m], : ), v, nw, isassigned( mic, m ) ? mic[m] : nothing, options, T, u )
                 else
-                    mac[m] = GrumpsMacroNoData( markets[m] )
+                    mac[m] = GrumpsMacroNoData{T}( markets[m] )
                 end
             end
         # end
     else
         for m ∈ 1:M
-            mac[m] = GrumpsMacroNoData( markets[m] )
+            mac[m] = GrumpsMacroNoData{T}( markets[m] )
         end
     end
 

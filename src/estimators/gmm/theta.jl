@@ -51,7 +51,7 @@ function GMMMoment1!(
         return nothing
     end
 
-    Δb =  𝓏𝓈( T, J, dθ )
+    Δb =  zeros( T, J, dθ )
 
     if momdθ ≠ nothing
         momdθ .= zero( T )

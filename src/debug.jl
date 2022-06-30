@@ -1,4 +1,4 @@
-const todofile = "test.todo"
+const todofile = "_test.todo"
 const todofp = [ open( todofile, "w" ) ]
 const clr = [ :green, :blue, :magenta, :red ]
 

@@ -120,12 +120,12 @@ function MacroObjectiveθ!(
     # ΣπΔ :: Matrix{T}
     # if computeHδθ
     Jalloc = J * computeHδθ
-    Δ =  𝓏𝓈( T, Jalloc, Jalloc )
-    ΣπΔ = 𝓏𝓈( T, Jalloc, Jalloc )
+    Δ =  zeros( T, Jalloc, Jalloc )
+    ΣπΔ = zeros( T, Jalloc, Jalloc )
     # end
 
-    ΣπA = 𝓏𝓈( T, J, dθ )
-    Δa  = 𝓏𝓈( T, J, dθ )
+    ΣπA = zeros( T, J, dθ )
+    Δa  = zeros( T, J, dθ )
 
     for r ∈ weights
         ComputeΔa!( Δa, s, d, o, r )

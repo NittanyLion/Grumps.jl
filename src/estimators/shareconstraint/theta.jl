@@ -34,7 +34,7 @@ function  OutsideObjective1!(
 
 
     F = MicroObjectiveθ!( 
-        grif( computeF, 𝓏(T) ),
+        grif( computeF, zero(T) ),
         grif( computeG, fgh.Gθ ),
         grif( computeH, fgh.Hθθ ),
         grif( computeH, fgh.Hδθ ),

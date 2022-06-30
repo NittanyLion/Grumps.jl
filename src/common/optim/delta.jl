@@ -13,7 +13,7 @@ function grumpsδ!(
 
     result = Optim.optimize(
         Optim.only_fgh!( (F,G,H,δc)-> InsideObjective1!( F, G, H, nothing, θ, δc, e, d, o, s ) ), 
-            𝓏𝓈( T, length( δ ) ), 
+            zeros( T, length( δ ) ), 
             NewtonTrustRegion(), 
             Optim.Options(
             show_trace      = false,
