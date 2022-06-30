@@ -19,7 +19,7 @@ TypeTree = "04da0e3b-1cad-4b2c-a963-fc1602baf1af"
 PointerArithmetic = "c94a8726-515c-4ee5-9c02-6a0d0dc456e9"
 
 [compat]
-julia = "~1.8.0-0"
+julia = "1.8"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
