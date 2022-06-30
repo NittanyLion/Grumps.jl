@@ -10,6 +10,7 @@ makedocs( sitename = "Grumps.jl",
     authors = "Joris Pinkse",
     pages = [
     "Home" => "index.md",
+    "Installation" => "installation.md",
     "Quick start" => "quickstart.md",
     "User interface" => "objects.md",
     "Spreadsheet format" => "spreadsheet.md",

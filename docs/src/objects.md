@@ -1,5 +1,7 @@
 # User Interface
 
+The sections below describe the main calls needed to use Grumps.  For any functions that are not documented here, simply use ? in the REPL, e.g. ?Variables.
+
 ## Data entry
 
 The methods below are used to enter data into Grumps.
@@ -13,6 +15,8 @@ Variables()
 ## Optimization options
 
 The default optimization options are sensible, in which case this section can be skipped.  But for those who want to play with tolerances and such, have at it.
+
+There is one exception, however, and that exception pertains to using less memory.  There is a separate section dedicated to that possibility, namely [Memory conservation](@ref)
 
 ```@docs
 OptimizationOptions()
@@ -45,15 +49,15 @@ Estimator( s :: Symbol )
 Estimators()
 ```
 
-## Choice of integration method (samplers)
+## Choice of integration method (integrators)
 
 Grumps uses separate integration methods for the micro and macro components. The default choices are simple with small numbers of nodes and draws. For micro, it is Hermitian quadrature, for macro it's Monte Carlo draws. One gets the defaults if the choices are omitted.
 
-The procedure is to create the samplers using a call to BothSamplers with the desired samplers as arguments and then pass this in your call to *GrumpsData*.
+The procedure is to create the integrators using a call to BothIntegrators with the desired integrators as arguments and then pass this in your call to *GrumpsData*.
 ```@docs
-BothSamplers( :: MicroSampler{T}, ::MacroSampler{T} ) where {T<:AbstractFloat}
-DefaultMicroSampler( ::Int, ::Type )
-DefaultMacroSampler( ::Int, ::Type )
+BothIntegrators( :: MicroIntegrator{T}, ::MacroIntegrator{T} ) where {T<:AbstractFloat}
+DefaultMicroIntegrator( ::Int, ::Type )
+DefaultMacroIntegrator( ::Int, ::Type )
 ```
 
 
@@ -71,7 +75,7 @@ Data()
 
 Once all data structures have been put together, one can call the algorithm.  This is straightforward.
 ```@docs
-    grumps( ::Estimator, ::Data{T}, ::OptimizationOptions, ::Grumps.StartingVector{T}, ::StandardErrorOptions ) where {T<:Grumps.Flt}
+    grumps!( ::Estimator, ::Data{T}, ::OptimizationOptions, ::Grumps.StartingVector{T}, ::StandardErrorOptions ) where {T<:Grumps.Flt}
 ```
 
 ## Retrieving results
@@ -88,3 +92,7 @@ gettstat( e :: GrumpsEstimate )
 getname( e :: GrumpsEstimate )
 ```
 
+
+## Memory conservation
+
+*stub; this section to be written*
