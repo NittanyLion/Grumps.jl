@@ -8,9 +8,8 @@ module Grumps
 
 include( "debug.jl" )
 
-@todo 2 "need to increase exports"
-export grumps, GrumpsSources, GrumpsEstimate, GrumpsSolution, OptimOptionsθ, OptimOptionsδ, GrumpsTypes, Estimators
 
+include( "exports.jl" )
 include( "includes.jl" )
 @info "loaded all code"
 
