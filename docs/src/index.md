@@ -15,7 +15,7 @@
 
 It can handle problems of the form
 
-$$(\hat\delta,\hat\theta,\hat\beta) = \argmin_{\delta,\theta,\beta} \big( - \log \hat L(\delta,\theta) + \hat\Pi(\delta,\beta) \big),$$
+$$(\hat\delta,\hat\theta,\hat\beta) = \text{argmin}_{\delta,\theta,\beta} \big( - \log \hat L(\delta,\theta) + \hat\Pi(\delta,\beta) \big),$$
 
 where $\log \hat L$ is the sum of a micro loglikelihood and a macro loglikelihood and $\hat\Pi$ is a quadratic penalty term.  Any of the three components can be omitted if so desired. 
 

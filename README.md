@@ -18,13 +18,6 @@
 5. Mixed logit models
 6. Multinomial logit models
 
-It can handle problems of the form
-
-$$(\hat\delta,\hat\theta,\hat\beta) = \argmin_{\delta,\theta,\beta} \big( - \log \hat L(\delta,\theta) + \hat\Pi(\delta,\beta) \big),$$
-
-where $\log \hat L$ is the sum of a micro loglikelihood and a macro loglikelihood and $\hat\Pi$ is a quadratic penalty term.  Any of the three components can be omitted if so desired. 
-
-Typically, $\log \hat L$ is a sum over markets, products, and consumers whereas $\hat\Pi$ is a GMM-style squared norm of a vector-valued sum over markets.  Please see [Grieco, Murry, Pinkse, and Sagl (2022)](http://joris.pinkse.org/paper/grumps/) for details.
 
 ## Documentation
 
