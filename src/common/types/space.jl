@@ -4,7 +4,6 @@ abstract type MicroSpace{T<:Flt} end
 abstract type MacroSpace{T<:Flt} end 
 
 
-using PointerArithmetic
 
 struct GrumpsMicroNoSpace{T<:Flt} <: MicroSpace{T}
 end

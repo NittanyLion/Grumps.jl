@@ -16,6 +16,7 @@ Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 TypeTree = "04da0e3b-1cad-4b2c-a963-fc1602baf1af"
+PointerArithmetic = "c94a8726-515c-4ee5-9c02-6a0d0dc456e9"
 
 [compat]
 julia = "1.8"
