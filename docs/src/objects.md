@@ -22,6 +22,7 @@ There is one exception, however, and that exception pertains to using less memor
 OptimizationOptions()
 OptimOptionsθ()
 OptimOptionsδ()
+GrumpsThreads()
 ```
 
 ## Data storage options
@@ -92,7 +93,14 @@ gettstat( e :: GrumpsEstimate )
 getname( e :: GrumpsEstimate )
 ```
 
-
+GrumpsThreads(; blas = 0, markets = 0, inner = 0 )
 ## Memory conservation
 
-*stub; this section to be written*
+**stub; this section to be completed**
+
+By default, Grumps loads all data and then creates space for all markets for things like choice probabilities, objective functions and their derivatives, intermediate objects, etcetera.  This saves computation time, but eats memory.
+
+To conserve memory, one can set *memsave* in [`OptimizationOptions()`](@ref) to *true*.  What this does is that it shares space for choice probabilities
+and related objects across a number of markets.  For instance, if there are ten markets and the number of market threads in [`OptimizationOptions()`](@ref) is set to two then the space for choice probabilities is shared across five markets.  These choices will have no effect if the number of market threads is no less than the number of markets.  The downside of doing this is that it slows down computation since choice probabilities need to be recomputed.  This is especially true for estimators that use the penalty term.
+
+
