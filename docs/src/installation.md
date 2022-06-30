@@ -9,6 +9,6 @@ Package installation is achieved in the usual way, i.e. by typing *]add Grumps* 
 
 ## Invocation
 
-Fire up Julia using *julia -t 4* replacing the number 4 with whatever number of threads you wish to use.  The recommended number is the number of physical cores in your computer.  As a permanent solution, one can set the JULIA\_NUM\_THREADS environment variable.
+Fire up Julia using *julia -t 4* replacing the number 4 with whatever number of threads you wish to use.  The recommended number is the number of physical cores in your computer.  As a permanent solution, one can set the JULIA\\_NUM\\_THREADS environment variable.
 
 Grumps can then be loaded with *using Grumps*.  That's it: you're ready to go.
