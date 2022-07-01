@@ -16,7 +16,7 @@ function NodesWeightsOneMarket( ms :: DefaultMacroIntegrator{T}, dθν :: Int, d
     n = randn( rng, T, ms.n, dθ )
     if df ≠ nothing
         MustBeInDF( v.interactions[:,1], df, "draws" )
-        @ensure ms.n ≤ nrow( df ) "insufficient random draws"
+        @ensure ms.n ≤ nrow( df ) "Too few demographics draws.  This typically happens if the number of random draws specified for macro integration exceeds the number of demographics draws you have provided in the draws source"
         for j ∈ axes( v.interactions, 1 )
             n[ :, j ] = df[ 1:ms.n, v.interactions[j] ]
         end
