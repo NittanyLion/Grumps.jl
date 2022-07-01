@@ -13,12 +13,13 @@ makedocs( sitename = "Grumps.jl",
     "Installation" => "installation.md",
     "Quick start" => "quickstart.md",
     "User interface" => "objects.md",
-    "Spreadsheet format" => "spreadsheet.md",
+    "Spreadsheet formats" => "spreadsheet.md",
     "Example program" => "example.md",
     "Things to bear in mind" => "bearinmind.md",
     "Directory structure" => "structure.md",
     "Algorithm flow" => "flow.md",
-    "Extending Grumps" => "extending.md"
+    "Extending Grumps" => "extending.md",
+    "Languages other than Julia" => "aliens.md"
     ]
     )
     
