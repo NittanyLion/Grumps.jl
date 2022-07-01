@@ -8,7 +8,7 @@ function CreateChoices( dfc :: AbstractDataFrame, v :: Variables, products :: Ve
     J = length( products )
     Y = fill( false, S, J )
     for i ∈ 1:S
-        y[i] = findinarray( dfc[i,:choice], products, "cannot find product $(dfc[i,:choice]) in list of products" )
+        y[i] = findstringinarray( dfc[i,:choice], products, "cannot find product $(dfc[i,:choice]) in list of products" )
         Y[i,y[i]] = true
     end
     return y, Y

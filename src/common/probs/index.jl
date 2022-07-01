@@ -1,6 +1,7 @@
 
 
 FillAθ!( θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMacroNoData{T}, o :: OptimizationOptions, s :: GrumpsMacroSpace{T}  ) where {T<:Flt} = nothing
+FillAθ!( θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMacroNoData{T}, o :: OptimizationOptions, s :: GrumpsMacroNoSpace{T}  ) where {T<:Flt} = nothing
 
 function FillAθ!( θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMacroDataAnt{T}, o :: OptimizationOptions, s :: GrumpsMacroSpace{T}  ) where {T<:Flt}
     weights, products, insides, parameters = RJ( d )
@@ -13,6 +14,7 @@ function FillAθ!( θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMacroDataAn
 end
 
 FillZXθ!(  θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMicroNoData{T}, o :: OptimizationOptions, s :: GrumpsMicroSpace{T}  ) where {T<:Flt} = nothing
+FillZXθ!(  θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMicroNoData{T}, o :: OptimizationOptions, s :: GrumpsMicroNoSpace{T}  ) where {T<:Flt} = nothing
 
 
 function FillZXθ!(  θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMicroDataHog{T}, o :: OptimizationOptions, s :: GrumpsMicroSpace{T}  ) where {T<:Flt}

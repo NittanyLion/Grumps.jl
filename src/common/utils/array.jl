@@ -20,3 +20,12 @@ function findinarray( needle, haystack, message )
     ff == nothing && throwargerr( message ) 
     return ff
 end
+
+
+function findstringinarray( needle, haystack, message )
+    typeof( needle ) == String || return findinarray( string(needle), haystack, message )
+    eltype( haystack ) == String && return findinarray( needle, haystack, message )
+    ff = findfirst( x->string(x) == needle, haystack )
+    ff == nothing && throwargerr( message ) 
+    return ff
+end

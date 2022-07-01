@@ -22,18 +22,16 @@ function ObjectiveFunctionθ1!(
 
     δ .= zero( T )
 
-    ms = s.marketspace[m]
     # if recompute
-        ms.microspace.lastδ .= typemax( T )
-        ms.macrospace.lastδ .= typemax( T )
-        grumpsδ!( fgh.inside, θ, δ, e, d, o, ms, m )      # compute δs in the inner loop and store them in s.δ
+    initializelastδ!( s, m )
+    grumpsδ!( fgh.inside, θ, δ, e, d, o, s.marketspace[m], m )      # compute δs in the inner loop and store them in s.δ
     # else
         # @warn "did not recompute δ"
     # end
     
 
     # if computeG || computeH || !inisout( e )
-        F = OutsideObjective1!(  fgh.outside, θ, δ, e, d, o, ms, computeF, computeG, computeH )
+        F = OutsideObjective1!(  fgh.outside, θ, δ, e, d, o, s.marketspace[m], computeF, computeG, computeH )
         if computeF
             fgh.outside.F .= F
         end

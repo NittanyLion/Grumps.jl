@@ -48,7 +48,7 @@ function GrumpsData(
 
     mic = Vec{ GrumpsMicroData{T} }( undef, M )
     mac = Vec{ GrumpsMacroData{T} }( undef, M )
-    fap = [ findall( x->x == markets[m], s.products[:, v.market ] ) for m ∈ 1:M ]
+    fap = [ findall( x->string(x) == markets[m], s.products[:, v.market ] ) for m ∈ 1:M ]
 
 
     dθν = length( v.randomcoefficients ) + dim( u, :randomcoefficients )
@@ -68,7 +68,7 @@ function GrumpsData(
             # for m ∈ ranges[th]
             @threads :dynamic for m ∈ 1:M
                 local th = threadid()
-                local fac = findall( x->x == markets[m], s.consumers[:, v.market] )
+                local fac = findall( x->string(x) == markets[m], s.consumers[:, v.market] )
                 if fac ≠ nothing
                     local nw = NodesWeightsOneMarket( microintegrator( integrators ), dθν, rngs[ th ], nwgmic  )
                     mic[m] = GrumpsMicroData( markets[m], view( s.consumers, fac, : ), view( s.products, fap[m], : ), v, nw, rngs[th], options, usesmicromoments( e ), T, u )
@@ -93,11 +93,11 @@ function GrumpsData(
             # for m ∈ ranges[th]
         @threads :dynamic for m ∈ 1:M
             local th = threadid()
-                local fam = findfirst( x->x == markets[m], s.marketsizes[:, v.market] )
+                local fam = findfirst( x->string(x) == markets[m], s.marketsizes[:, v.market] )
                 if fam ≠ nothing
                     local draws = s.draws == nothing ? nothing : 
                         begin
-                            local fad = findall( x-> x == markets[m], s.draws[:, v.market] )
+                            local fad = findall( x-> string(x) == markets[m], s.draws[:, v.market] )
                             @ensure fad ≠ nothing  "cannot find market $(markets[m])"
                             view( s.draws, fad, : )
                         end
@@ -120,6 +120,7 @@ function GrumpsData(
 
     # now create variable labels
     marketproductstrings = vcat( [ [ ( c == 1 ) ? markets[m] : string( s.products[ fap[m][r], v.product ] ) for r ∈ 1:length( fap[m] ), c ∈ 1:2 ] for m ∈ 1:M ] ... )
+        
     varnames = VariableNames( 
         v.interactions,                 # names of interaction variables
         v.randomcoefficients,           # names of random coefficients

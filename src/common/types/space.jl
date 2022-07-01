@@ -136,11 +136,16 @@ GrumpsMacroSpace( d :: GrumpsMacroData{T}, mustrecompute :: Bool = false ) where
 const NoMemblockIndex = typemin( Int )
 
 struct GrumpsMarketSpace{T<:Flt} <: MarketSpace{T}
-    microspace     :: GrumpsMicroSpace{T}
-    macrospace     :: GrumpsMacroSpace{T}
+    microspace     :: MicroSpace{T}
+    macrospace     :: MacroSpace{T}
     memblockindex  :: Int
 end
 
+# struct GrumpsMarketSpace{T<:Flt} <: MarketSpace{T}
+#     microspace     :: GrumpsMicroSpace{T}
+#     macrospace     :: GrumpsMacroSpace{T}
+#     memblockindex  :: Int
+# end
 
 function GrumpsMarketSpace( d :: GrumpsMarketData{T}, memblock :: MemBlock{T}, m :: Int ) where {T<:Flt}
     b = memblock.revdiv[m]          # which memory block are we using?
