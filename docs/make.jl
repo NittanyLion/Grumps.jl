@@ -15,6 +15,7 @@ makedocs( sitename = "Grumps.jl",
     "User interface" => "objects.md",
     "Spreadsheet format" => "spreadsheet.md",
     "Example program" => "example.md",
+    "Things to bear in mind" => "bearinmind.md",
     "Directory structure" => "structure.md",
     "Algorithm flow" => "flow.md",
     "Extending Grumps" => "extending.md"
