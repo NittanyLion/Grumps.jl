@@ -92,7 +92,7 @@ function BothIntegrators( microIntegrator :: MicroIntegrator{T} ) where {T<:Flt}
 end
 
 function BothIntegrators( macroIntegrator :: MacroIntegrator{T} ) where {T<:Flt}
-    return BothIntegrators( DefaultmicroIntegrator{T}, macroIntegrator )
+    return BothIntegrators( DefaultMicroIntegrator{T}, macroIntegrator )
 end
 
 function BothIntegrators( T = F64 ) 
