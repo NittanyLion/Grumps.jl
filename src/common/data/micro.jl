@@ -58,7 +58,7 @@ function CreateRandomCoefficients( dfp :: AbstractDataFrame, v :: Variables, nw 
     MustBeInDF( v.randomcoefficients, dfp, "product data frame" )
     R = length( nw.weights )
     dθν = length( v.randomcoefficients )
-    @ensure size( nw.nodes, 2 ) ≥ dθν  "fewer nodes than random coefficients"
+    @ensure size( nw.nodes, 2 ) ≥ dθν  "you have specified fewer nodes than there are random coefficients; this is a bad idea, make the difference big"
     J = nrow( dfp ) + 1
     X = zeros( R, J, dθν )
     for t ∈ 1:dθν, j ∈ 1:J - 1, r ∈ 1:R
