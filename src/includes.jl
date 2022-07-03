@@ -6,17 +6,20 @@ import Base.show, Base.Threads.@threads, Base.Threads.nthreads, Base.Threads.thr
 
 
 
-const commondir = "common"
-const docdir    = "doc"
-const pkgdir    = "packages"
-const estdir    = "estimators"
-const intdir = "integrators"
+const commondir  = "common"
+const docdir     = "doc"
+const pkgdir     = "packages"
+const estdir     = "estimators"
+const intdir     = "integrators"
+const rootfolder = String( @__DIR__ )
+
+# @info "$rootfolder"
+    
+
 
 include( "$(commondir)/$(commondir).jl" )
 
-const rootfolder = String( @__DIR__ )
 
 for dr ∈ [ estdir, intdir ]
     include( "$(dr)/includes.jl" )
 end
-

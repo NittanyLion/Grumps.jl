@@ -195,8 +195,16 @@ struct StandardErrorOptions
     computeθ        :: Bool
     computeδ        :: Bool
     computeβ        :: Bool
+    type            :: Symbol
+
+    function StandardErrorOptions( θ :: Bool, δ :: Bool, β :: Bool, tp = :hetero )
+        if tp ∉ [ :homo, :hetero ] 
+            @warn "only :homo and :hetero are allowed types right now; assuming :homo"
+            tp = :homo 
+        end
+        new( θ, δ, β, tp )
+    end
 end
 
-StandardErrorOptions() = StandardErrorOptions( true, true, true )
-
+StandardErrorOptions(; θ = true, δ = true, β = true, setype = :homo ) = StandardErrorOptions( θ, δ, β, setype )
 

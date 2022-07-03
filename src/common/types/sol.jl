@@ -90,3 +90,9 @@ gettstat( e :: GrumpsEstimate ) = e.tstat
 Returns the variable name.
 """
 getname( e :: GrumpsEstimate ) = e.name
+
+
+getθcoef( sol ) = getcoef.( getθ( sol) )
+getδcoef( sol ) = getcoef.( getδ( sol) )
+getβcoef( sol ) = getcoef.( getβ( sol) )
+

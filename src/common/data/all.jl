@@ -33,9 +33,11 @@ function GrumpsData(
     )
 
     # read data from file if not already done
+    @info "reading data"
     s = readfromfile( ss )
 
     # initialize random numbers
+    @info "creating random number generators"
     rngs = RandomNumberGenerators( nthreads() )
 
     @ensure isa( s.products, DataFrame )   "was expecting a DataFrame for product data"
@@ -56,11 +58,9 @@ function GrumpsData(
 
     # ranges = SplitEqually( M, nthreads() )
     # process data needed for the micro likelihood
-    println( "****************\n", e, "  ", usesmicrodata( e ),"\n*************" )
-    @warnif !usesmicrodata( e ) && isa( s.consumers, DataFrame ) "ignoring consumer information since it is not used for this estimator type"
-    @ensure !usesmicrodata( e ) || isa( s.consumers, DataFrame ) "this estimator type requires consumer information"
+    @warnif !usesmicrodata( e ) && isa( s.consumers, DataFrame ) "ignoring the consumer information you specified since it is not used for this estimator type"
+    @ensure !usesmicrodata( e ) || isa( s.consumers, DataFrame ) "this estimator type requires consumer information; please pass consumer info in Sources"
 
-    @info "estimator = $e"
     if isa( s.consumers, DataFrame ) && usesmicrodata( e )
         MustBeInDF( [ v.market, v.choice ], s.consumers, "consumers" )
         nwgmic = NodesWeightsGlobal( microintegrator( integrators ), dθν, rngs[1]  )
@@ -84,8 +84,8 @@ function GrumpsData(
     end
 
     # process data needed for the macro likelihood
-    @warnif !usesmacrodata( e ) && isa( s.marketsizes, DataFrame ) "ignoring market size information since it is not used for this estimator type"
-    @ensure !usesmacrodata( e ) || isa( s.marketsizes, DataFrame ) "this estimator type requires market size information"
+    @warnif !usesmacrodata( e ) && isa( s.marketsizes, DataFrame ) "ignoring the market size information you provided since it is not used for this estimator type"
+    @ensure !usesmacrodata( e ) || isa( s.marketsizes, DataFrame ) "this estimator type requires market size information; please pass market size information in Sources"
     if isa( s.marketsizes, DataFrame ) && usesmacrodata( e )
         MustBeInDF( [ v.market, v.marketsize ], s.marketsizes, "market sizes" )
         nwgmac = NodesWeightsGlobal( macrointegrator( integrators ), dθ, s.draws, v, rngs[1] )
@@ -131,7 +131,9 @@ function GrumpsData(
     
     nrm = Vec{ GrumpsNormalization{T} }(undef, dθ )
     dims = Dimensions( dθ, dθ - dθν, dθν, length( plm.names ), length.( fap ), dimmom( plm ) + size( v.microinstruments, 1 ) )
+    @info "creating data objects"
     gd = GrumpsData{T}( mic, mac, plm, varnames, nrm, dims )
+    @info "balancing"
     Balance!( gd, Val( options.balance ) )
     return gd
 end

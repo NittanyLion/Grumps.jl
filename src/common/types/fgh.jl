@@ -2,8 +2,8 @@
 
 
 abstract type FGH{T<:Flt} end
-abstract type MarketFGH{T<:Flt} <: FGH{T} end
-abstract type SingleFGH{T<:Flt} <: FGH{T} end
+abstract type MarketFGH{T<:Flt} end
+abstract type SingleFGH{T<:Flt} end
 
 struct GrumpsSingleFGH{T<:Flt} <: SingleFGH{T}
     F       :: Vec{T} 

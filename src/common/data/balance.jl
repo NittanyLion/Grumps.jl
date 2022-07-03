@@ -119,6 +119,37 @@ function Unbalance!( θ :: Vector{T}, gd :: GrumpsData{T} ) where {T<:Flt}
     end
     return nothing
 end
+
+
+function Unbalance!( fgh :: GrumpsSingleFGH{T}, gd :: GrumpsData{T} ) where {T<:Flt}
+    for t ∈ 1:dimθ( gd )
+        fgh.Gθ[t] *= gd.balance[t].σ
+        fgh.Hθθ[t,:] *= gd.balance[t].σ
+        fgh.Hθθ[:,t] *= gd.balance[t].σ
+        fgh.Hδθ[:,t] *= gd.balance[t].σ
+    end
+    return nothing
+end
+
+function Unbalance!( fgh :: MarketFGH{T}, gd :: GrumpsData{T} ) where {T<:Flt}
+    fgh.inside === fgh.outside || Unbalance!( fgh.outside, gd )
+    return Unbalance!( fgh.inside, gd )
+end
+
+function Unbalance!( fgh :: GMMMarketFGH{T}, gd :: GrumpsData{T} ) where {T<:Flt}
+    Unbalance!( fgh.inside, gd )
+    @warn "unbalance incomplete for GMM; this only affects standard error computation"
+    return nothing
+end
+
+
+function Unbalance!( fgh :: FGH{T}, gd :: GrumpsData{T} ) where {T<:Flt} 
+    for m ∈ fgh.market
+       Unbalance!( m, gd )
+    end
+    return nothing
+end
+
 # function Balance!( scheme :: BalancingScheme, gd :: GrumpsData{T} ) where {T<:Flt}
 #     if usemicro 
 #         @ensure anymicrodata( gd ) "there are no micro data to balance with"

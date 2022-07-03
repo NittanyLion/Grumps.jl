@@ -43,7 +43,7 @@ end
 
 @todo 2 "save log and results to file"
 
-const tcritval = 1.96
+const tcritval = 1.9599639845400576
 
 
 
@@ -52,7 +52,7 @@ function show( io :: IO, e :: GrumpsEstimate{T}, s :: String = ""; adorned = tru
     prstyled( adorned, @sprintf( "%+12.6f ", e.coef ) )
     if printstde
         signif = :normal
-        if e.stde ≠ nothing && abs( e.coef ) ≥ tcritval * e.ste
+        if e.stde ≠ nothing && abs( e.coef ) ≥ tcritval * e.stde
             signif = :red
         end
         wtp = "(unavailable ) "
@@ -64,7 +64,7 @@ function show( io :: IO, e :: GrumpsEstimate{T}, s :: String = ""; adorned = tru
     if printtstat
         if e.tstat ≠ nothing 
             signif = :normal
-            if abs( e.tstat ) ≥ tcritval * e.ste
+            if abs( e.coef ) ≥ tcritval * e.stde
                 signif = :red
             end
             prstyled( adorned, e.tstat ≠ nothing ? @sprintf( "%+12.6f ", e.tstat) : "unavailable  "; color = signif )
