@@ -43,9 +43,9 @@ function myprogram( nodes, draws, meth  )
     @info "processing data"
     d = Data( e, s, v, BothIntegrators( ms, Ms ) )
     @info "setting threads"
-    th = Grumps.GrumpsThreads( ; markets = 4 )
+    th = Grumps.GrumpsThreads( ; markets = 36 )
     @info "setting optimization options"
-    o = Grumps.OptimizationOptions(; memsave = false, threads = th )
+    o = Grumps.OptimizationOptions(; memsave = true, threads = th )
     seo = StandardErrorOptions(; δ = true )
     @info "running grumps"
     grumps!( e, d, o, nothing, seo  )

@@ -2,6 +2,8 @@
 
 The sections below describe the main calls needed to use Grumps.  For any functions that are not documented here, simply use ? in the REPL, e.g. ?Variables.
 
+The way that Grumps works is that one first specifies where the data are stored, what specification to use, which estimator to use, etcetera, before calling the functions that actually perform work.  All sections below up to and including the choice of integration method specify things, data object creation and algorithm call create and compute things, and the remainder deals with the retrieval of estimation results and memory conservation.
+
 ## Data entry
 
 The methods below are used to enter data into Grumps.

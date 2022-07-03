@@ -36,7 +36,7 @@ struct GrumpsVariables <: Variables
         user                :: Mat{Symbol} 
         )
 
-        @ensure length( regressors ) ≤ length( instruments )   "underidentified (#regressors > #increuments)"
+        @ensure length( regressors ) ≤ length( instruments )   "underidentified (#regressors > #increments)"
         @ensure size( interactions, 1 ) ≥ 1   "need at least one interaction"
         new( market, product, choice, interactions, randomcoefficients, outsidegood, share, marketsize, regressors,      instruments, dummies, nuisancedummy, microinstruments, user )
     end
@@ -60,20 +60,36 @@ end
       user                :: Mat{Symbol} = []
         )  
 
-This method creates an object of type GrumpsVariables.  It contains references to the variables that Grumps uses to create variables from
-the data sources specified by the call to the **Sources** function. 
+This method is used to specify regressors, instruments, random coefficients, interactions, etcetera, variable labels, etcetera, from
+the sources you have specified in [`Sources()`](@ref). It creates an object of type *GrumpsVariables*.
 
-For instance, *market* is the column heading in the source spreadsheets for the market indicator.  This get's passed as a symbol,
-so the default (:market) says that the column heading is *market*, which is both case and spaces sensititve.  The same column heading 
-is used across all sources.  All entries with the exception of *outsidegood* refer to the column heading: *outsidegood* refers to the
-label used for the outside good, which should be the same across both spreadsheets and markets.
+For instance, the option *market* specifies the column heading of the column containing the market descriptor (name).  The same is true
+for all other arguments, except *outsidegood* which describes the spreadsheet entry that indicates the product is an outside good.  The 
+same label for the outside good should be used in all spreadsheets and all markets. Outside good entries 
+should only be used in the consumer micro data and then only if there actually are consumers in the micro data choosing the outside good.
+All descriptors are case and space sensitive.
 
+There is a separation between variables that go into the individual consumer utility and ones that only go into "mean utility".  For instance,
+*interactions* tells Grumps which interaction terms to use and *randomcoefficients* which product level regressors are hit with a random
+coefficient.  By contrast, *regressors* go into the mean utility component and are regressors in the "second stage" (where β is recovered).
+One can use the special symbol *:constant* to indicate a constant is to be used; the spreadsheet need not include a column with that heading.
 
-*market* refers to the variable containing the market indicator in all input datasets
+Note that there are three ways that dummy variables can be entered as second stage regressors.  The first is via *regressors*, in which case
+the onus is on the user to ensure that they have the correct numerical values.  The second possibility is via the *dummies* argument.  For 
+each symbol passed via the *dummies* argument, Grumps will examine the corresponding column of the product data set (which can contain descriptive
+entries that need not be numerical) and turn it into dummy variables.  If the coefficient on the dummies is of no interest then it is better to
+pass one via the *nuisancedummy* argument since it saves both computation time and memory.  There can only be at most one categorical variable that can
+be converted to nuisance dummies, but there can be arbitrarily many categories.  These dummies and nuisance dummies are automatically assumed to be
+exogenous and will be included in the instruments, also.
 
-*product* refers to the variable containing the product indicator in the product dataset
+*market* refers to the variable containing the market indicator in all input datasets.  Strings work best for the market indicators themselves,
+but it is not a requirement.
 
-*choice* refers to the variable indicating the choice indicator in the consumer level datasets
+*product* refers to the variable containing the product indicator in the product dataset. Strings work best for the product indicators themselves,
+but it is not a requirement.
+
+*choice* refers to the variable indicating the choice indicator in the consumer level datasets.  Strings work best for the choice indicators themselves,
+but it is not a requirement.
 
 *interactions* refers to the variables indicating consumer and product variable interactions (each row contains consumer variable, product variable)
 
@@ -81,7 +97,7 @@ label used for the outside good, which should be the same across both spreadshee
 
 *outsidegood* refers to the label used for the outside good
 
-*share* refers to the label used for the product level share
+*share* refers to the label used for the product level share; these are shares where the denominator includes the outside good
 
 *marketsize* refers to the size of the market (number of people)
 

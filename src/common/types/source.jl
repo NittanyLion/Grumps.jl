@@ -55,7 +55,7 @@ By default, the entries can be nothing, a string, a DataFrame, or a SourceFileTy
 
 The *consumers* variable specifies where consumer-level data can be found, the *products* variable is for the product-level data, *marketsizes* is for market sizes, and *draws* is for demographic draws; *user* has not been implemented yet.
 
-Use the **Variables** method to specify the way the data sources are formatted and the specification to estimate.
+Use the [`Variables()`](@ref) method to specify the way the data sources are formatted and the specification to estimate.
 """
 function Sources( 
     T2          = DefaultSourceTypes; 
