@@ -1,6 +1,19 @@
 
+"""
+    GrumpsMacroData( 
+        mkt         :: AbstractString,
+        N           :: Real,
+        dfp         :: AbstractDataFrame,
+        v           :: Variables,
+        nw          :: NodesWeights,
+        mic         :: Union{Nothing, GrumpsMicroData},
+        options     :: DataOptions,
+        T           :: sType = F64,
+        u           :: UserEnhancement = DefaultUserEnhancement()
+        )
 
-
+Creates the macro data object to be used by Grumps.  This function should not be called directly.  Just call `Data` or `GrumpsData` (which are synonymous) instead.
+"""
 function GrumpsMacroData( mkt :: AbstractString, N :: Real, dfp :: AbstractDataFrame, v :: Variables, nw :: NodesWeights, mic :: Union{Nothing, GrumpsMicroData}, options :: DataOptions, T::Type = F64, u :: UserEnhancement = DefaultUserEnhancement() )
     @ensure typeof( u ) == DefaultUserEnhancement  "cannot yet deal with $(typeof(u))"
 
