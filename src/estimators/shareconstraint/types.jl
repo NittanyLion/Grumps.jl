@@ -11,5 +11,4 @@ inisout( ::GrumpsShareConstraintEstimator ) = false
 
 Estimator( ::Val{ :shareconstraint } ) = GrumpsShareConstraintEstimator()
 
-
-# Version( ::GrumpsShareConstraintEstimator ) = GrumpsVersionMLE()
+seprocedure( ::GrumpsShareConstraintEstimator ) = :notyetimplemented

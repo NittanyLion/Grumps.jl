@@ -56,7 +56,7 @@ function grumps!( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstar
     Computeβ!( solution, δvec, d )
     SetResult!( solution, θ, δvec, nothing )
     Unbalance!( fgh, d )
-    ses!( solution, e, d, fgh, seo )
+    @time ses!( solution, e, d, fgh, seo )
     return solution
 end
 

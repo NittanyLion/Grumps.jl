@@ -1,7 +1,7 @@
 
 
 
-for fn ∈ ["types", "delta", "theta", "ses" ]
+for fn ∈ ["types", "delta", "theta" ]
     include( "$(fn).jl")
 end
 

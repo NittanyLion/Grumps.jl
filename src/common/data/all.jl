@@ -116,7 +116,7 @@ function GrumpsData(
 
 
     # create product level data
-    plm = GrumpsPLMData( s, v, fap, usespenalty( e ), T( options.σ2 ) )
+    plm = GrumpsPLMData( e, s, v, fap, usespenalty( e ), T( options.σ2 ) )
 
     # now create variable labels
     marketproductstrings = vcat( [ [ ( c == 1 ) ? markets[m] : string( s.products[ fap[m][r], v.product ] ) for r ∈ 1:length( fap[m] ), c ∈ 1:2 ] for m ∈ 1:M ] ... )

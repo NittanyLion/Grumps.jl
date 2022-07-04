@@ -4,7 +4,6 @@ abstract type GrumpsMLE <: GrumpsEstimator end
 abstract type GrumpsPenalized <: GrumpsEstimator end
 abstract type GrumpsGMM <: GrumpsEstimator end
 
-@todo 1 "these estimator definitions should be moved to their respective folders"
 
 
 # set some sensible defaults
@@ -17,6 +16,8 @@ usespenalty( ::GrumpsPenalized ) = true
 usespenalty( ::GrumpsGMM ) = true
 usespenalty( ::GrumpsMLE ) = false
 
+seprocedure( ::GrumpsEstimator ) = :defaultseprocedure
+seprocedure( ::GrumpsGMM ) = :notyetimplemented
 
 struct GrumpsMultinomialLogitEstimator <: GrumpsMLE
     function GrumpsMultinomialLogitEstimator() 
