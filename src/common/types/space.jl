@@ -141,11 +141,6 @@ struct GrumpsMarketSpace{T<:Flt} <: MarketSpace{T}
     memblockindex  :: Int
 end
 
-# struct GrumpsMarketSpace{T<:Flt} <: MarketSpace{T}
-#     microspace     :: GrumpsMicroSpace{T}
-#     macrospace     :: GrumpsMacroSpace{T}
-#     memblockindex  :: Int
-# end
 
 function GrumpsMarketSpace( d :: GrumpsMarketData{T}, memblock :: MemBlock{T}, m :: Int ) where {T<:Flt}
     b = memblock.revdiv[m]          # which memory block are we using?
@@ -176,17 +171,6 @@ struct GrumpsSpace{T<:Flt, S<:Semaphorian} <: Space{T}
     currentθ        :: Vec{ T }
     memsave         :: Bool
     semas           :: S
-
-    # function GrumpsSpace( T2, M :: Int,  dθ :: Int, memsave :: Bool ) 
-    #     @ensure T2<: Flt   "T must be a Float of some sort"
-    #     @ensure M ≥ 0 && dθ ≥ 0   "negative length vectors are not permitted"
-
-    #     g = GrumpsSpace{T2}{ Vector{ GrumpsMarketSpace{T2} }( undef, M ), fill( typemax( T2 ), dθ ),  memsave )
-    #     g .marketspace .= nothing
-    #     return g
-    # end
-
-
 end
 
 
@@ -198,29 +182,6 @@ mustrecompute( s :: GrumpsSpace{T,S} ) where {T<:Flt,S<:Semaphorian} = s.memsave
 memsave( s :: GrumpsSpace ) = s.memsave
 marketspace( s :: GrumpsSpace, m :: Int ) = s.marketspace[m]
 
-# struct GrumpsSpaceGreedy{T<:Flt} <: GrumpsSpace{T}
-#     spc     :: A1{ GrumpsMarketSpace{T} }
-
-#     function GrumpsSpaceGreedy( spc :: A1{ GrumpsMarketSpace{T2} } ) where {T2<:Flt}
-#         return new{T2}( spc )
-#     end
-# end
-
-
-# struct GrumpsSpaceFrugal{T<:Flt} <: GrumpsSpace{T}
-#     spc     :: A1{ GrumpsMarketSpace{T} }
-#     taken   :: A1{ Bool } 
-# end
-
-
-
-# function GrumpsSpace( d :: GrumpsData{T}, ::Val{ false }, nth :: Int ) where {T<:Flt}
-#     return GrumpsSpaceGreedy( 
-#         [ GrumpsMarketSpace{T}( 
-#             GrumpsMicroSpace( d.microdata[m] ), 
-#             GrumpsMacroSpace( d.macrodata[m] ) 
-#             ) for m ∈ 1:dimM( d ) ] )
-# end
 
 function GrumpsSpace( d :: GrumpsData{T}, ::Val{ false } ) where {T<:Flt}
     return GrumpsSpace{T,GrumpsNoSemaphores}( [ GrumpsMarketSpace{T}( 
@@ -251,7 +212,5 @@ end
 
 GrumpsSpace( e :: GrumpsEstimator, d :: GrumpsData{T}, o :: OptimizationOptions, memblock :: MemBlockian{T} ) where {T<:Flt} = GrumpsSpace( d, memblock )
 
-
-# GrumpsSpace( e :: GrumpsEstimator, d :: GrumpsData{T}, o :: GrumpsOptimizationOptions ) where {T<:Flt} = GrumpsSpace( d, Val( memsave( o ) ) )
 
 

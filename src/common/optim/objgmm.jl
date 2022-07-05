@@ -14,22 +14,15 @@ function Momentθ1!(
     m                                   :: Int
     ) where {T<:Flt}
 
-    recompute =  s.currentθ ≠ θ || mustrecompute( s )
+    recompute =  s.currentθ ≠ θ || mustrecompute( s.marketspace[m] )
 
     recompute && AθZXθ!( θ, e, d, o, s, m ) 
-    # δ = zeros( T, dimδ( d ) )
     δ .= zero( T )
-    # if recompute
+
     initializelastδ!( s, m )
     grumpsδ!( fgh.inside, θ, δ, e, d, o, s.marketspace[m], m )      # compute δs in the inner loop and store them in s.δ
-    # else
-        # @warn "did not recompute δ"
-    # end
-    
 
-    # if computeG || computeH || !inisout( e )
     F = OutsideMoment1!(  fgh, θ, δ, e, d, 𝒦m, o, s.marketspace[m], computeF, computeG )
-    # end
 
     freeAθZXθ!( e, s, o, m )
     return nothing

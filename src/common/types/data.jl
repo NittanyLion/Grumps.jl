@@ -24,6 +24,7 @@ struct GrumpsMicroDataHog{T<:Flt} <: GrumpsMicroData{T}
         # sanity checking
         S, J, dθz = size( Z )
         R, dθν = size( X, 1 ), size( X, 3 )
+        @info "micro market size $name = $R $S $J $dθz $dθν"
         @ensure size( X,2 ) == J  "number of products mismatch X"
         @ensure size( Y, 2 ) == J  "number of products mismatch Y"
         @ensure length( y ) == S "number of consumers mismatch y"
@@ -75,6 +76,7 @@ struct GrumpsMacroDataAnt{T<:Flt} <: GrumpsMacroData{T}
         # sanity checking
         J, dθ = size( 𝒳 )
         R = size( 𝒟, 1 )
+        @info "macro market size $name = $R $J $dθ"
         @ensure size( 𝒟, 2 ) == dθ  "number of coefficients mismatch 𝒟 in market $name"
         @ensure length( s ) == J  "number of products mismatch s in market $name"
         @ensure length( w ) == R "number of nodes mismatch w in market $name"

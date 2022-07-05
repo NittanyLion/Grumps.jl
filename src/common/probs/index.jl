@@ -40,7 +40,7 @@ function AθZXθ!(
     sm = s.marketspace[m]
 
     acquire( s.semas, sm.memblockindex )
-
+    
 
 
     FillAθ!( θ, e, d.macrodata, o, sm.macrospace )

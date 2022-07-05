@@ -24,10 +24,9 @@ function MemoryNeeded( d :: GrumpsData{T}, divvy :: Divvy ) where {T<:Flt}
     n = length( divvy )
     needed = fill( 0, n )
     for i ∈ 1 : n
-        for m ∈ eachindex( divvy[i] )
+        for m ∈ divvy[i] 
             needed[i] = max( needed[i], MemoryNeeded( d.marketdata[m] ) )
         end
-        println( "needed for block $i  is ", needed[i] )
     end
     return needed
 end
@@ -60,7 +59,6 @@ struct MemBlock{T<:Flt} <: MemBlockian{T}
         # now find out how much memory is needed
         needed = MemoryNeeded( d, divvy )
         memm = [ fill( typemax( T2 ), needed[i]  ) for i ∈ eachindex( needed ) ]
-        println( "allocated = ",  length.( memm ) )
         return new{T2}( memm, divvy, revdivv )
     end
 
