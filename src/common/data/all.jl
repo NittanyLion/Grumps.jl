@@ -98,7 +98,7 @@ function GrumpsData(
                     local draws = s.draws == nothing ? nothing : 
                         begin
                             local fad = findall( x-> string(x) == markets[m], s.draws[:, v.market] )
-                            @ensure fad ≠ nothing  "cannot find market $(markets[m])"
+                            @ensure fad ≠ nothing  "cannot find market $(markets[m]) in the draws spreadsheet even though it is listed in the products spreadsheet"
                             view( s.draws, fad, : )
                         end
                     local nw = NodesWeightsOneMarket( macrointegrator( integrators ), dθν, draws, v, rngs[ th ], nwgmac  )

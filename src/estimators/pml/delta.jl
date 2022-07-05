@@ -64,7 +64,6 @@
 # end
  
 
-@info 2 "need to incorporate memory save mode here"
 
 
 function easy( x, m )

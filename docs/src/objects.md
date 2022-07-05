@@ -2,11 +2,12 @@
 
 The sections below describe the main calls needed to use Grumps.  For any functions that are not documented here, simply use ? in the REPL, e.g. ?Variables.
 
-The way that Grumps works is that one first specifies where the data are stored, what specification to use, which estimator to use, etcetera, before calling the functions that actually perform work.  All sections below up to and including the choice of integration method specify things, data object creation and algorithm call create and compute things, and the remainder deals with the retrieval of estimation results and memory conservation.
+The way that Grumps works is that one first specifies where the data are stored, what specification to use, which estimator to use, etcetera, before calling the functions that actually perform work with these choices.  All sections below up to and including the choice of integration method specify things, data object creation and algorithm call create and compute things, and the remainder deals with the retrieval of estimation results and memory conservation.
 
 ## Data entry
 
-The methods below are used to enter data into Grumps.
+The methods below are used to enter data into Grumps.  With [`Sources()`](@ref) one specifies where the data can be found and with [`Variables()`](@ref) which
+variables to use from those data sources.
 
 ```@docs
 Sources()
@@ -43,7 +44,7 @@ The easiest way to call `Estimator` is by passing it a string that describes wha
 * the full Grumps estimator
 * Grumps-style maximum likelihood, i.e Grumps without penalty
 * ditto, but imposing share constraints
-* GMM estimator that uses both micro and macro moments and uses quadrature instead of Monte Carlo draws in the micro moments.  The micro moments are `smart' in that they condition on $z_{im}$ instead of integrating it out.
+* GMM estimator that uses both micro and macro moments and uses quadrature instead of Monte Carlo draws in the micro moments.  The micro moments are smart in that they condition on $z_{im}$ instead of integrating it out.
 * a mixed logit estimator
 
 ```@docs
@@ -54,7 +55,9 @@ Estimators()
 
 ## Choice of integration method (integrators)
 
-Grumps uses separate integration methods for the micro and macro components. The default choices are simple with small numbers of nodes and draws. For micro, it is Hermitian quadrature, for macro it's Monte Carlo draws. One gets the defaults if the choices are omitted.
+Grumps uses separate integration methods for the micro and macro components. The default choices are simple with small numbers of nodes and draws. For micro, it is Hermitian quadrature, for macro it's Monte Carlo draws. One gets the defaults if the choices are omitted.  The defaults chosen here are small in the sense that they emphasize speed / storage over accuracy.   To change the number of nodes or draws, simply call BothIntegrators with as argument(s), whichever of the two you
+wish to change.  For instance, `integ = BothIntegrators( DefaultMicroIntegrator( 19 ) )` uses the default micro integrator with 19 nodes per dimension and the
+default macro integrator with the default number of draws.
 
 The procedure is to create the integrators using a call to BothIntegrators with the desired integrators as arguments and then pass this in your call to `Data`.
 ```@docs
@@ -93,6 +96,9 @@ getcoef( e :: GrumpsEstimate )
 getstde( e :: GrumpsEstimate )
 gettstat( e :: GrumpsEstimate )
 getname( e :: GrumpsEstimate )
+getθcoef( sol :: GrumpsSolution )
+getδcoef( sol :: GrumpsSolution )
+getβcoef( sol :: GrumpsSolution )
 ```
 
 

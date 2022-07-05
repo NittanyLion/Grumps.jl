@@ -24,6 +24,8 @@ Then type:
 
 Now you're good to go.  You can alternatively invoke Julia from the command line with the name of the file containing your code, which should have the above two lines at the top.
 
+In lieu of specifying `LOAD_PATH` on every call, one can set the `JULIA_LOAD_PATH` environment variable in one's operating system.
+
 Please do not try to install or invoke Grumps any other way until it is in the Julia package ecosystem.
 
 
