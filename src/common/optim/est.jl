@@ -1,8 +1,6 @@
 
 
-@warn "remove TimerOutputs"
-using TimerOutputs
-const to = TimerOutput()
+
 
 @todo 2 "not sure if last call to pick up δ is needed"
 

@@ -1,14 +1,15 @@
-
+using TimerOutputs
+const to = TimerOutput()
 
 
 
 
 # these are defaults and may be overwritten elsewhere
-Meat( :: GrumpsEstimator, ::Val{:θθ}, ing :: GrumpsIngredients{T} ) where {T<:Flt} = ing.Ωθθ
-Meat( :: GrumpsEstimator, ::Val{:δθ}, m :: Int, ing :: GrumpsIngredients{T}  ) where {T<:Flt} = ing.Ωδθ[m]
-Meat( e, ::Val{:θδ}, m, ing ) = Meat( e, Val(:δθ), m, ing )'
+Meat( :: GrumpsEstimator, ::Val{:θ}, ::Val{:θ}, m :: Int, m2 :: Int, ing :: GrumpsIngredients{T} ) where {T<:Flt} = ing.Ωθθ
+Meat( :: GrumpsEstimator, ::Val{:δ}, ::Val{:θ}, m :: Int, m2 :: Int, ing :: GrumpsIngredients{T}  ) where {T<:Flt} = ing.Ωδθ[m]
+Meat( e, ::Val{:θ}, ::Val{:δ}, m, m2, ing ) = Meat( e, Val(:δ), Val(:θ), m2, m, ing )'
 
-function Meat( :: GrumpsEstimator, ::Val{:δδ}, m :: Int, m2 :: Int, ing :: Ingredients{T}  ) where {T<:Flt} 
+function Meat( :: GrumpsEstimator, ::Val{:δ}, ::Val{:δ}, m :: Int, m2 :: Int, ing :: Ingredients{T}  ) where {T<:Flt} 
     R = ing.K[m] * ing.KVK * ing.K[m2]'
     m == m2 || return R
     return R + ing.Ωδδ[m]
@@ -17,14 +18,14 @@ end
 
 
 
-Bread( :: GrumpsEstimator, ::Val{:θθ}, ing :: GrumpsIngredients{T} ) where {T<:Flt} = ing.Hinvθθ
+Bread( :: GrumpsEstimator, ::Val{:θ}, ::Val{:θ}, m :: Int, m2 :: Int, ing :: GrumpsIngredients{T} ) where {T<:Flt} = ing.Hinvθθ
 
-function Bread( :: GrumpsEstimator, ::Val{:δθ}, m :: Int, ing :: GrumpsIngredients{T} ) where {T<:Flt}
+function Bread( :: GrumpsEstimator, ::Val{:δ}, ::Val{:θ}, m :: Int, m2 :: Int, ing :: GrumpsIngredients{T} ) where {T<:Flt}
     Q = sum( ing.K[m2]' * ing.ΩδδinvΩδθ[m2] for m2 ∈  eachindex( ing.K ) )
     return - ( ing.ΩδδinvΩδθ[m] - ing.Ωδδinv[m] * ing.K[m] * ing.Δ * Q ) * ing.Hinvθθ
 end
 
-function Bread( :: GrumpsEstimator, ::Val{:δδ}, m :: Int, m2 :: Int, ing :: GrumpsIngredients{T} ) where {T<:Flt}
+function Bread( :: GrumpsEstimator, ::Val{:δ}, ::Val{:δ}, m :: Int, m2 :: Int, ing :: GrumpsIngredients{T} ) where {T<:Flt}
     R = ing.AinvB[m] * ing.Xstar * ing.AinvB[m2]' -
         ing.AinvC[m] * ing.Ystar * ing.AinvC[m2]' -
         ing.AinvB[m] * ing.Zstar * ing.AinvC[m2]' -
@@ -33,28 +34,21 @@ function Bread( :: GrumpsEstimator, ::Val{:δδ}, m :: Int, m2 :: Int, ing :: Gr
     return R + ing.Ωδδinv[m]
 end
 
-Bread( e, ::Val{:θδ}, m, ing  ) = Bread( e, Val(:δθ), m, ing )'
+Bread( e, ::Val{:θ}, ::Val{:δ}, m, m2, ing  ) = Bread( e, Val(:δ), Val(:θ), m2, m, ing )'
 
 
-
-
-function Meat( e, m :: Int, m2 :: Int, ing :: GrumpsIngredients{T} ) where {T<:Flt}
-    m == 0 && m2 == 0 && return Meat( e, Val( :θθ ), ing )
-    m == 0 && 1 ≤ m2 ≤ dimM( ing ) && return Meat( e, Val( :θδ ), m2, ing )
-    1 ≤ m ≤ dimM( ing ) && 1 ≤ m2 ≤ dimM( ing ) && return Meat( e, Val( :δδ ), m, m2, ing )
-    1 ≤ m ≤ dimM( ing ) && m2 == 0 && return Meat( e, Val( :δθ ), m, ing )
-    @ensure false "internal error:  m should be between 0 and M  inclusive" 
+function GrumpsVal( m :: Int, ing :: GrumpsIngredients{T} ) where {T<:Flt}
+    m == 0 && return Val(:θ)
+    m == dimM(ing) + 1 && return Val(:β)
+    return Val(:δ)
 end
 
-function Bread( e :: GrumpsEstimator, m :: Int, m2 :: Int, ing :: GrumpsIngredients{T} ) where {T<:Flt}
-    m == 0 && m2 == 0 && return Bread( e, Val( :θθ ), ing )
-    m == 0 && 1 ≤ m2 ≤ dimM( ing ) && return Bread( e, Val( :θδ ), m2, ing )
-    1 ≤ m ≤ dimM( ing ) && 1 ≤ m2 ≤ dimM( ing ) && return Bread( e, Val( :δδ ), m, m2, ing )
-    1 ≤ m ≤ dimM( ing ) && m2 == 0 && return Bread( e, Val( :δθ ), m, ing )
-    @ensure false "internal error:  m should be between 0 and M inclusive" 
-end
 
-function VarEst( e :: GrumpsEstimator, ::Val{ :ββ }, ing :: GrumpsIngredients{T} ) where {T<:Flt}
+Meat( e, m, m2, ing ) = Meat( e, GrumpsVal( m, ing ), GrumpsVal( m2,ing ), m, m2, ing )
+Bread( e, m, m2, ing ) = Bread( e, GrumpsVal( m, ing ), GrumpsVal( m2, ing ), m, m2, ing )
+
+
+function VarEst( e :: GrumpsEstimator, ::Val{ :β }, ::Val{:β}, 𝓂 :: Int, 𝓂2 :: Int, ing :: GrumpsIngredients{T} ) where {T<:Flt}
     markets = 1:dimM( ing );  markets0 = 0:dimM( ing )
     ΞAδθ = sum( ing.Ξ[m] * Bread( e, m, 0, ing ) for m ∈ markets )
     ΞAδδ = [ sum( ing.Ξ[m] * Bread( e, m, m2, ing ) for m ∈ markets ) for m2 ∈ markets ]
@@ -76,35 +70,35 @@ end
 
 
 
-function VarEstβhelper( e :: GrumpsEstimator, mstar :: Int , ing :: GrumpsIngredients{T} ) where {T<:Flt}
+function VarEstβhelper( e :: GrumpsEstimator, 𝓂 :: Int , ing :: GrumpsIngredients{T} ) where {T<:Flt}
     return  sum(   
-        sum( Bread( e, mstar, m, ing ) * Meat( e, m, m2, ing ) for m ∈ 0 : dimM( ing ) ) * 
+        sum( Bread( e, 𝓂, m, ing ) * Meat( e, m, m2, ing ) for m ∈ 0 : dimM( ing ) ) * 
         sum( Bread( e, m2, m, ing ) * ing.Ξ[m]' for m ∈ 0 : dimM( ing ) )
         for m2 ∈ 0 : dimM( ing )
         )
 end
 
 
-VarEst( e :: GrumpsEstimator, ::Val{:θβ}, ing :: GrumpsIngredients{T} ) where {T<:Flt} = VarEstβhelper( e, 0, ing )
-VarEst( e :: GrumpsEstimator, ::Val{:δβ}, mstar :: Int, ing :: GrumpsIngredients{T} ) where {T<:Flt} = VarEstβhelper( e, mstar, ing ) - sum( Bread( e, mstar, m, ing ) * ing.K[m] for m ∈ 1:dimM( ing ) ) * ing.ΞVK'
-VarEst( e, ::Val{:βδ}, m, ing ) = VarEst( e, Val( :δβ ), m, ing )'
+VarEst( e :: GrumpsEstimator, ::Val{:θ}, ::Val{:β}, 𝓂 :: Int, 𝓂2 :: Int, ing :: GrumpsIngredients{T} ) where {T<:Flt} = VarEstβhelper( e, 0, ing )
+VarEst( e :: GrumpsEstimator, ::Val{:δ}, ::Val{:β}, 𝓂 :: Int, 𝓂2 :: Int, ing :: GrumpsIngredients{T} ) where {T<:Flt} = VarEstβhelper( e, 𝓂, ing ) - sum( Bread( e, 𝓂, m, ing ) * ing.K[m] for m ∈ 1:dimM( ing ) ) * ing.ΞVK'
+VarEst( e :: GrumpsEstimator, ::Val{:β}, ::Val{:δ}, 𝓂, 𝓂2, ing ) = VarEst( e, Val( :δ ), Val( :β ), 𝓂2, 𝓂, ing )'
 
 
 
 function VarEst( e :: GrumpsEstimator, m :: Int, m2 :: Int, ing :: GrumpsIngredients{T} )  where {T<:Flt}
-    M = dimM( ing )
-    m2 < m && return VarEst( e, m2, m, ing )'
-    0 ≤ m ≤ m2 ≤ M && return sum( Bread( e, m, i, ing ) * Meat( e, i, j, ing ) * Bread( e, j, m, ing ) for i ∈ 0:M, j ∈ 0:M ) 
-    m == m2 == M + 1 && return VarEst( e, Val( :ββ ), ing ) 
-    0 == m && m2 == M + 1 && return VarEst( e, Val( :θβ ), ing ) 
-    1 ≤ m ≤ M && m2 == M + 1 && return VarEst( e, Val( :δβ ), ing ) 
-    @ensure false "m and m2 should be between 0 and M+1 inclusive"
+    VarEst( e, GrumpsVal( m, ing ), GrumpsVal( m2, ing ), m, m2, ing )
+    # M = dimM( ing )
+    # m2 < m && return VarEst( e, m2, m, ing )'
+    # 0 ≤ m ≤ m2 ≤ M && return sum( Bread( e, m, i, ing ) * Meat( e, i, j, ing ) * Bread( e, j, m, ing ) for i ∈ 0:M, j ∈ 0:M ) 
+    # m == m2 == M + 1 && return VarEst( e, Val( :ββ ), ing ) 
+    # 0 == m && m2 == M + 1 && return VarEst( e, Val( :θβ ), ing ) 
+    # 1 ≤ m ≤ M && m2 == M + 1 && return VarEst( e, Val( :δβ ), ing ) 
+    # @ensure false "m and m2 should be between 0 and M+1 inclusive"
 end
 
 
-VarEst( e :: GrumpsEstimator, ::Val{:θθ}, ing ::GrumpsIngredients{T} ) where {T<:Flt} = VarEst( e, 0, 0, ing )
-VarEst( e :: GrumpsEstimator, ::Val{:δθ}, m :: Int, ing ::GrumpsIngredients{T} ) where {T<:Flt} = VarEst( e, m, 0, ing )
-VarEst( e :: GrumpsEstimator, ::Val{:θδ}, m :: Int, ing ::GrumpsIngredients{T} ) where {T<:Flt} = VarEst( e, 0, m, ing )
+VarEst( e :: GrumpsEstimator, ::Union{ Val{:θ}, Val{:δ} }, ::Union{ Val{:θ}, Val{:δ} }, 𝓂 :: Int, 𝓂2 :: Int, ing ::GrumpsIngredients{T} ) where {T<:Flt} = sum( Bread( e, 𝓂, i, ing ) * Meat( e, i, j, ing ) * Bread( e, j, 𝓂, ing ) for i ∈ 0:dimM( ing ), j ∈ 0:dimM( ing ) )
+
 
 function sqrt_robust( v :: T ) where {T<:Flt}
     try sqrt( v )
@@ -126,14 +120,15 @@ se( e, ing :: GrumpsIngredients{T}, ::Val{:δ} ) where {T<:Flt} = vcat( [ se( e,
 
 function ses!( sol :: Solution{T}, e :: GrumpsEstimator, d :: GrumpsData{T}, f :: FGH{T}, seo :: StandardErrorOptions ) where {T<:Flt}
     seo.computeβ || seo.computeθ || seo.computeδ || return nothing
-    @time ing = Ingredients( sol, Val( seprocedure( e ) ), d , f, seo  ); println( "(ingredients computation) ");
+    @timeit to "ingredients" begin ing = Ingredients( sol, Val( seprocedure( e ) ), d , f, seo  ) end
+    println( "(ingredients computation) ")
     ing == nothing && return nothing
     
-    @time for ( ψ, computeψ, solψ ) ∈ [ (:θ, seo.computeθ, sol.θ), (:β,seo.computeβ,sol.β), (:δ,seo.computeδ,sol.δ) ]
+    @timeit to "for loop" for ( ψ, computeψ, solψ ) ∈ [ (:θ, seo.computeθ, sol.θ), (:β,seo.computeβ,sol.β), (:δ,seo.computeδ,sol.δ) ]
         computeψ || continue
-        local seψ = se( e, ing, Val( ψ ) )
+        @timeit to "se computation" local seψ = se( e, ing, Val( ψ ) )
         @assert length( seψ ) == length( solψ )
-        for j ∈ eachindex( seψ )
+        @timeit to "inner loop" for j ∈ eachindex( seψ )
             solψ[j].stde = seψ[j]
             solψ[j].tstat = solψ[j].coef / solψ[j].stde
         end

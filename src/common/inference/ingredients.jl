@@ -44,12 +44,10 @@ struct GrumpsIngredients{T<:Flt} <: Ingredients{T}
     Zstar   :: Mat{T}
 end
 
-function myinv( V :: Matrix{T} ) :: Matrix{T} where {T<:Flt}
-    inv( V )
-end
+mypinv( X  )  = inv( X'X ) * X'
 
 function Ingredients( sol :: Solution{T}, ::Val{:defaultseprocedure}, d :: GrumpsData{T}, fgh :: FGH{T}, seo :: StandardErrorOptions  ) where {T<:Flt}
-    
+
     M = dimM( d )
     markets = eachindex( fgh.market )
     ranges = Ranges( dimδm( d ) )
@@ -81,7 +79,7 @@ function Ingredients( sol :: Solution{T}, ::Val{:defaultseprocedure}, d :: Grump
     β = getβcoef( sol ) 
     ξ = δ - d.plmdata.𝒳 * β 
     KVK = VarianceSum( d.plmdata.𝒦, ξ, d.plmdata.𝒦, Val( seo.type ) )
-    Ξ = pinv( d.plmdata.𝒳̂ )
+    Ξ = mypinv( d.plmdata.𝒳̂ )
     KVΞ = VarianceSum( d.plmdata.𝒦, ξ, Ξ', Val( seo.type ) )
     ΞVΞ = VarianceSum( Ξ', ξ, Ξ', Val( seo.type ) )
 
