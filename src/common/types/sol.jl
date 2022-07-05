@@ -91,8 +91,25 @@ Returns the variable name.
 """
 getname( e :: GrumpsEstimate ) = e.name
 
+"""
+    getθcoef( sol :: GrumpsSolution )
 
+Returns a vector of θ coefficients
+"""
 getθcoef( sol ) = getcoef.( getθ( sol) )
+
+"""
+    getδcoef( sol :: GrumpsSolution )
+
+Returns a vector of δ coefficients
+"""
 getδcoef( sol ) = getcoef.( getδ( sol) )
+
+
+"""
+    getβcoef( sol :: GrumpsSolution )
+
+Returns a vector of β coefficients
+"""
 getβcoef( sol ) = getcoef.( getβ( sol) )
 
