@@ -31,7 +31,7 @@ function grumps!( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstar
         oldx = zeros( T, dimθ( d ) )
         repeatx = zeros( Int, 1 )
 
-        @time result = Optim.optimize(
+        result = Optim.optimize(
                 Optim.only_fgh!(  ( F, G, H, θ ) ->  ObjectiveFunctionθ!( fgh, F, G, H, θ, δ, e, d, o, s ) ),
                     θstart, 
                     NewtonTrustRegion(), 
@@ -60,8 +60,7 @@ function grumps!( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstar
     SetResult!( solution, θ, δvec, nothing )
     Unbalance!( fgh, d )
 
-    print( "ses! call  " ); @time ses!( solution, e, d, fgh, seo )
-    println( to )
+    ses!( solution, e, d, fgh, seo )
     return solution
 end
 

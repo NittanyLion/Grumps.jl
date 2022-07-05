@@ -1,12 +1,13 @@
 push!(LOAD_PATH, "src")
 using Grumps, LinearAlgebra
-
+using TimerOutputs
+const to = TimerOutput()
 
 BLAS.set_num_threads(8)
 
 function myprogram( nodes, draws, meth  )
     @info "setting source files"
-    s = Sources(
+    @timeit to "creating sources" s = Sources(
       consumers = "_example_consumers.csv",
       products = "_example_products.csv",
       marketsizes = "_example_marketsizes.csv",
@@ -14,7 +15,7 @@ function myprogram( nodes, draws, meth  )
     )
     # println( s )
     @info "setting variables"
-    v = Variables(
+    @timeit to "creating variables" v = Variables(
         interactions =  [
             :income :constant; 
             :income :ibu; 
@@ -33,22 +34,25 @@ function myprogram( nodes, draws, meth  )
     )
     # println( v )
     @info "setting data options"
-    dop = DataOptions( ;micromode = :Hog, macromode = :Ant, balance = :micro )
+    @timeit to "creating data options" dop = DataOptions( ;micromode = :Hog, macromode = :Ant, balance = :micro )
 
     @info "setting integrators"
+    @timeit to "setting integrators" begin
     ms = DefaultMicroIntegrator( nodes )
     Ms = DefaultMacroIntegrator( draws )
+    end
     @info "setting estimator"
     e = Estimator( meth )
     @info "processing data"
-    d = Data( e, s, v, BothIntegrators( ms, Ms ) )
+    @timeit to "creating data" d = Data( e, s, v, BothIntegrators( ms, Ms ) )
     @info "setting threads"
     th = Grumps.GrumpsThreads( ; markets = 4 )
     @info "setting optimization options"
     o = Grumps.OptimizationOptions(; memsave = false, threads = th )
     seo = StandardErrorOptions(; δ = true )
     @info "running grumps"
-    grumps!( e, d, o, nothing, seo  )
+    @timeit to "running grumps" grumps!( e, d, o, nothing, seo  )
+    println( to )
     # @time grumps(e, d, OptimizationOptions(), nothing, Grumps.StandardErrorOptions() ) 
 end
 

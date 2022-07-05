@@ -1,5 +1,3 @@
-using TimerOutputs
-const to = TimerOutput()
 
 
 
@@ -108,7 +106,7 @@ function sqrt_robust( v :: T ) where {T<:Flt}
 end
 
 function se( e, ing :: GrumpsIngredients{T}, m :: Int ) where {T<:Flt}
-    @time V = VarEst( e, m, m, ing );  println( "Varest $m $m" )
+    V = VarEst( e, m, m, ing );  
     return [ sqrt_robust( V[j,j] ) for j ∈ axes( V, 1 ) ]
 end
 
@@ -120,20 +118,18 @@ se( e, ing :: GrumpsIngredients{T}, ::Val{:δ} ) where {T<:Flt} = vcat( [ se( e,
 
 function ses!( sol :: Solution{T}, e :: GrumpsEstimator, d :: GrumpsData{T}, f :: FGH{T}, seo :: StandardErrorOptions ) where {T<:Flt}
     seo.computeβ || seo.computeθ || seo.computeδ || return nothing
-    @timeit to "ingredients" begin ing = Ingredients( sol, Val( seprocedure( e ) ), d , f, seo  ) end
-    println( "(ingredients computation) ")
+    ing = Ingredients( sol, Val( seprocedure( e ) ), d , f, seo  ) 
     ing == nothing && return nothing
     
-    @timeit to "for loop" for ( ψ, computeψ, solψ ) ∈ [ (:θ, seo.computeθ, sol.θ), (:β,seo.computeβ,sol.β), (:δ,seo.computeδ,sol.δ) ]
+    for ( ψ, computeψ, solψ ) ∈ [ (:θ, seo.computeθ, sol.θ), (:β,seo.computeβ,sol.β), (:δ,seo.computeδ,sol.δ) ]
         computeψ || continue
-        @timeit to "se computation" local seψ = se( e, ing, Val( ψ ) )
+        local seψ = se( e, ing, Val( ψ ) )
         @assert length( seψ ) == length( solψ )
-        @timeit to "inner loop" for j ∈ eachindex( seψ )
+        for j ∈ eachindex( seψ )
             solψ[j].stde = seψ[j]
             solψ[j].tstat = solψ[j].coef / solψ[j].stde
         end
     end
-    println( " (for loop)" )
     return nothing
 end
 
