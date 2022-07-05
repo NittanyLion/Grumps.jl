@@ -1,4 +1,7 @@
 
+
+
+
 @todo 2 "not sure if last call to pick up δ is needed"
 
 
@@ -28,7 +31,7 @@ function grumps!( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstar
         oldx = zeros( T, dimθ( d ) )
         repeatx = zeros( Int, 1 )
 
-        @time result = Optim.optimize(
+        result = Optim.optimize(
                 Optim.only_fgh!(  ( F, G, H, θ ) ->  ObjectiveFunctionθ!( fgh, F, G, H, θ, δ, e, d, o, s ) ),
                     θstart, 
                     NewtonTrustRegion(), 
@@ -56,6 +59,7 @@ function grumps!( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstar
     Computeβ!( solution, δvec, d )
     SetResult!( solution, θ, δvec, nothing )
     Unbalance!( fgh, d )
+
     ses!( solution, e, d, fgh, seo )
     return solution
 end

@@ -2,9 +2,7 @@ push!(LOAD_PATH, "../src")
 
 using Documenter, Grumps
 
-Grumps.@Imports()
 
-import Grumps.Estimator
 
 makedocs( sitename = "Grumps.jl",
     authors = "Joris Pinkse",
@@ -19,7 +17,8 @@ makedocs( sitename = "Grumps.jl",
     "Directory structure" => "structure.md",
     "Algorithm flow" => "flow.md",
     "Extending Grumps" => "extending.md",
-    "Languages other than Julia" => "aliens.md"
+    "Languages other than Julia" => "aliens.md",
+    "Miscellanea" => "misc.md"
     ]
     )
     

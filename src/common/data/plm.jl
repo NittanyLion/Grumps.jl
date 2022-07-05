@@ -2,14 +2,14 @@
 
 @todo 2 "make CreateK more efficient"
 
-function CreateK( :: Sources, :: Variables, dδ :: Int, :: T, ::Val{ false }, :: Vec{ Vec{Int} } ) where {T<:Flt}
+function CreateK( e :: GrumpsMLE, :: Sources, :: Variables, dδ :: Int, :: T, ::Val{ false }, :: Vec{ Vec{Int} } ) where {T<:Flt}
     return zeros( T, dδ , 0  )
 end
 
 @todo 2 "there is duplication in CreateK versus the function below"
 @todo 3 "the functions in this file should be checked carefully, especially CreateK"
 
-function CreateK( s :: Sources, v :: Variables, dδ :: Int, σ2 :: T, ::Val{ true }, fap :: Vec{ Vec{ Int } } ) where {T<:Flt} 
+function CreateK( e :: Union{ GrumpsPenalized, GrumpsGMM }, s :: Sources, v :: Variables, dδ :: Int, σ2 :: T, ::Val{ true }, fap :: Vec{ Vec{ Int } } ) where {T<:Flt} 
 
 
     regs = sort( unique( v.regressors ) )
@@ -18,7 +18,7 @@ function CreateK( s :: Sources, v :: Variables, dδ :: Int, σ2 :: T, ::Val{ tru
     @ensure length( inst ) == length( v.instruments )  "duplication of instruments"
     if length( regs ) == length( inst )
         @info "exactly identified so there is no penalization"
-        return CreateK( s, v, dδ, σ2, Val( false ), fap )
+        return CreateK( GrumpsVanillaEstimator(), s, v, dδ, σ2, Val( false ), fap )
     end
     @ensure length( regs ) < length( inst ) "underidentification not allowed"
 
@@ -93,7 +93,7 @@ end
 
 
 
-function GrumpsPLMData( s :: Sources, v :: Variables, fap :: Vec{ Vec{Int} }, usepenaltyterm :: Bool, σ2 :: T ) where {T<:Flt}
+function GrumpsPLMData( e :: Estimator, s :: Sources, v :: Variables, fap :: Vec{ Vec{Int} }, usepenaltyterm :: Bool, σ2 :: T ) where {T<:Flt}
     @ensure isa( s.products, DataFrame )   "was expecting a DataFrame for product data"
 
 
@@ -135,7 +135,7 @@ function GrumpsPLMData( s :: Sources, v :: Variables, fap :: Vec{ Vec{Int} }, us
     
     𝒳̂ = 𝒵 * ( 𝒵 \ 𝒳 )
 
-    𝒦 = CreateK( s, v, dδ, T(σ2), Val( true ), fap )
+    𝒦 = CreateK( e, s, v, dδ, T(σ2), Val( usepenaltyterm ), fap )
     return GrumpsPLMData( 𝒳, 𝒳̂, vcat( String.( v.regressors ), dumbnames ), size(𝒵,2), 𝒦,  σ2 )
 end
 
