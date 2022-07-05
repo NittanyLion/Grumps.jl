@@ -1,4 +1,9 @@
 
+
+@warn "remove TimerOutputs"
+using TimerOutputs
+const to = TimerOutput()
+
 @todo 2 "not sure if last call to pick up δ is needed"
 
 
@@ -56,7 +61,9 @@ function grumps!( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstar
     Computeβ!( solution, δvec, d )
     SetResult!( solution, θ, δvec, nothing )
     Unbalance!( fgh, d )
-    @time ses!( solution, e, d, fgh, seo )
+
+    print( "ses! call  " ); @time ses!( solution, e, d, fgh, seo )
+    println( to )
     return solution
 end
 
