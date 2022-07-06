@@ -1,11 +1,10 @@
 push!(LOAD_PATH, ".")
 using Grumps
 
-Grumps.@Imports()
 
 
 
-function mle(  )
+function myprogram(  )
     @info "setting source files"
     s = Sources(
       consumers = "_ss_consumers.csv",
@@ -34,6 +33,7 @@ function mle(  )
     println( v )
     dop = DataOptions( ;micromode = :Hog, macromode = :Ant, balance = :micro )
     e = Estimator( "vanilla" )
+    # o = Grumps.OptimizationOptions(; memsave = true, threads = Grumps.GrumpsThreads(; markets =4 ) )
     d = Data( e, s, v )
     # th = Grumps.GrumpsThreads(; markets = 1, inner = 1 )
     # grumps( e, d )
@@ -41,5 +41,5 @@ function mle(  )
     grumps(e, d, OptimizationOptions(), nothing, Grumps.StandardErrorOptions() ) 
 end
 
-mle()
+myprogram()
 
