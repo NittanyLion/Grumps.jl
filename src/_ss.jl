@@ -33,12 +33,12 @@ function myprogram(  )
     println( v )
     dop = DataOptions( ;micromode = :Hog, macromode = :Ant, balance = :micro )
     e = Estimator( "vanilla" )
-    # o = Grumps.OptimizationOptions(; memsave = true, threads = Grumps.GrumpsThreads(; markets =4 ) )
+    o = Grumps.OptimizationOptions(; memsave = true, threads = Grumps.GrumpsThreads(; markets =1 ) )
     d = Data( e, s, v )
     # th = Grumps.GrumpsThreads(; markets = 1, inner = 1 )
     # grumps( e, d )
 
-    grumps(e, d, OptimizationOptions(), nothing, Grumps.StandardErrorOptions() ) 
+    grumps(e, d, o, nothing, Grumps.StandardErrorOptions() ) 
 end
 
 myprogram()
