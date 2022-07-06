@@ -7,7 +7,8 @@
         integrators         :: GrumpsIntegrators = BothIntegrators(),
         T                   :: Type = F64,
         u                   :: UserEnhancement = DefaultUserEnhancement();
-        options             :: DataOptions = GrumpsDataOptions()
+        options             :: DataOptions = GrumpsDataOptions(),
+        threads             :: Int = 0
         )
 
 Takes user inputs and converts them into an object that Grumps can understand.  This is synonymous with Data(...).
@@ -17,19 +18,21 @@ Takes user inputs and converts them into an object that Grumps can understand.  
 * *e*:                   estimator; see *Estimator*
 * *ss*:                  cata sources; see *Sources*
 * *v*:                   variables to be used; see *Variables*
-* *integrators*:            see *BothIntegrators*, *DefaultMicroIntegrator*, and *DefaultMacroIntegrator*
+* *integrators*:         see *BothIntegrators*, *DefaultMicroIntegrator*, and *DefaultMacroIntegrator*
 * *T*:                   floating point type; not heavily tested
 * *u*:                   not yet implemented
 * *options*:             data options to be used, see *DataOptions*
+* *threads*:             the number of parallel threads to be used in creating data
 """
 function GrumpsData( 
     e                   :: GrumpsEstimator,
     ss                  :: Sources,
     v                   :: Variables,
-    integrators            :: GrumpsIntegrators = BothIntegrators(),
+    integrators         :: GrumpsIntegrators = BothIntegrators(),
     T                   :: Type = F64,
     u                   :: UserEnhancement = DefaultUserEnhancement();
-    options             :: DataOptions = GrumpsDataOptions()
+    options             :: DataOptions = GrumpsDataOptions(),
+    threads             :: Int = 0
     )
 
     # read data from file if not already done
@@ -38,6 +41,10 @@ function GrumpsData(
 
     # initialize random numbers
     @info "creating random number generators"
+    if threads ≤ 0 
+        threads = nthreads()
+    end
+    threads = min( nthreads(), threads )
     rngs = RandomNumberGenerators( nthreads() )
 
     @ensure isa( s.products, DataFrame )   "was expecting a DataFrame for product data"
@@ -60,22 +67,25 @@ function GrumpsData(
     # process data needed for the micro likelihood
     @warnif !usesmicrodata( e ) && isa( s.consumers, DataFrame ) "ignoring the consumer information you specified since it is not used for this estimator type"
     @ensure !usesmicrodata( e ) || isa( s.consumers, DataFrame ) "this estimator type requires consumer information; please pass consumer info in Sources"
+    sema = Semaphore( threads )
 
     if isa( s.consumers, DataFrame ) && usesmicrodata( e )
         MustBeInDF( [ v.market, v.choice ], s.consumers, "consumers" )
         nwgmic = NodesWeightsGlobal( microintegrator( integrators ), dθν, rngs[1]  )
         # @threads for th ∈ eachindex( ranges )
             # for m ∈ ranges[th]
-            @threads :dynamic for m ∈ 1:M
-                local th = threadid()
-                local fac = findall( x->string(x) == markets[m], s.consumers[:, v.market] )
-                if fac ≠ nothing
-                    local nw = NodesWeightsOneMarket( microintegrator( integrators ), dθν, rngs[ th ], nwgmic  )
-                    mic[m] = GrumpsMicroData( markets[m], view( s.consumers, fac, : ), view( s.products, fap[m], : ), v, nw, rngs[th], options, usesmicromoments( e ), T, u )
-                else
-                    mic[m] = GrumpsMicroNoData( markets[m] )
-                end
+        @threads :dynamic for m ∈ 1:M
+            acquire( sema )
+            local th = threadid()
+            local fac = findall( x->string(x) == markets[m], s.consumers[:, v.market] )
+            if fac ≠ nothing
+                local nw = NodesWeightsOneMarket( microintegrator( integrators ), dθν, rngs[ th ], nwgmic  )
+                mic[m] = GrumpsMicroData( markets[m], view( s.consumers, fac, : ), view( s.products, fap[m], : ), v, nw, rngs[th], options, usesmicromoments( e ), T, u )
+            else
+                mic[m] = GrumpsMicroNoData( markets[m] )
             end
+            release( sema )
+        end
         # end
     else
         for m ∈ 1:M
@@ -92,6 +102,7 @@ function GrumpsData(
         # @threads for th ∈ eachindex( ranges )
             # for m ∈ ranges[th]
         @threads :dynamic for m ∈ 1:M
+            acquire( sema )
             local th = threadid()
                 local fam = findfirst( x->string(x) == markets[m], s.marketsizes[:, v.market] )
                 if fam ≠ nothing
@@ -106,6 +117,7 @@ function GrumpsData(
                 else
                     mac[m] = GrumpsMacroNoData{T}( markets[m] )
                 end
+                release( sema )
             end
         # end
     else
@@ -138,10 +150,6 @@ function GrumpsData(
     return gd
 end
 
-# GrumpsData( 
-#     e                   :: Estimator,
-#     x...
-#     ) = GrumpsData( Version( e ), x... )
 
 
 """
@@ -149,10 +157,11 @@ end
         e                   :: GrumpsEstimator,
         ss                  :: Sources,
         v                   :: Variables,
-        integrators            :: GrumpsIntegrators = BothIntegrators(),
+        integrators         :: GrumpsIntegrators = BothIntegrators(),
         T                   :: Type = F64,
         u                   :: UserEnhancement = DefaultUserEnhancement();
-        options             :: DataOptions = GrumpsDataOptions()
+        options             :: DataOptions = GrumpsDataOptions(),
+        threads             :: Int = 0
         )
 
 Takes user inputs and converts them into an object that Grumps can understand.  This is synonymous with GrumpsData(...).
@@ -162,9 +171,11 @@ Takes user inputs and converts them into an object that Grumps can understand.  
 * *e*:                   estimator; see *Estimator*
 * *ss*:                  cata sources; see *Sources*
 * *v*:                   variables to be used; see *Variables*
-* *integrators*:            see *BothIntegrators*, *DefaultMicroIntegrator*, and *DefaultMacroIntegrator*
+* *o*:                   optimization options to be used   
+* *integrators*:         see *BothIntegrators*, *DefaultMicroIntegrator*, and *DefaultMacroIntegrator*
 * *T*:                   floating point type; not heavily tested
 * *u*:                   not yet implemented
 * *options*:             data options to be used, see *DataOptions*
+* *threads*:             the number of parallel threads to be used in creating data
 """
-Data(x...) = GrumpsData(x...)
+Data(x...; y...) = GrumpsData(x...; y... )

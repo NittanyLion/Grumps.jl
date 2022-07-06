@@ -45,15 +45,15 @@ function myprogram( nodes, draws, meth  )
     @info "setting estimator"
     e = Estimator( meth )
     @info "processing data"
-    @timeit to "creating data" d = Data( e, s, v, BothIntegrators( ms, Ms ) )
+    @timeit to "creating data" d = Data( e, s, v, BothIntegrators( ms, Ms ); threads = 32 )
     @info "setting threads"
-    th = Grumps.GrumpsThreads( ; markets = 4 )
+    th = Grumps.GrumpsThreads( ; markets = 32 )
     @info "setting optimization options"
     o = Grumps.OptimizationOptions(; memsave = true, threads = th )
     seo = StandardErrorOptions(; δ = true )
     @info "running grumps"
-    @timeit to "running grumps" grumps!( e, d, o, nothing, seo  )
-    println( to )
+    @timeit to "running grumps" sol = grumps!( e, d, o, nothing, seo  )
+    return sol
     # @time grumps(e, d, OptimizationOptions(), nothing, Grumps.StandardErrorOptions() ) 
 end
 

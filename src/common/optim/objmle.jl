@@ -83,6 +83,9 @@ function ObjectiveFunctionθ!(
     end
     copyto!( s.currentθ, θ )                                        
 
+    # @warn "take this gc call out or make it optional"
+    # GC.gc()
+
     if computeF
         F = sum( fgh.market[m].outside.F[1] for m ∈ markets )
     end
