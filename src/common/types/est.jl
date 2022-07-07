@@ -4,7 +4,7 @@ abstract type GrumpsMLE <: GrumpsEstimator end
 abstract type GrumpsPenalized <: GrumpsEstimator end
 abstract type GrumpsGMM <: GrumpsEstimator end
 
-
+const GrumpsEstimatorClasses = [ GrumpsMLE; GrumpsPenalized; GrumpsGMM ]
 
 # set some sensible defaults
 usesmicrodata( ::GrumpsEstimator ) = true
@@ -33,4 +33,10 @@ struct GrumpsBLPEstimator <: GrumpsPenalized
     end
 end
 
+
+struct EstimatorDescription
+    symbol          :: Symbol
+    name            :: String
+    descriptions    :: Vector{String}
+end
 

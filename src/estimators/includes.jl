@@ -19,11 +19,7 @@ end
 const estfolds = EstimatorFolders()
 
 
-struct EstimatorDescription
-    symbol          :: Symbol
-    name            :: String
-    descriptions    :: Vector{String}
-end
+
 
 
 for e ∈ estfolds

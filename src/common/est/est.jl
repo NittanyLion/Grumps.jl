@@ -52,12 +52,8 @@ Possible choices include:
 Estimator( s :: Symbol ) = Estimator( Val( s ) )
 
 
-"""
-    Estimators( )
 
-Prints a list of available estimators.
-"""
-function Estimators()
+function Estimators( ::Val{ false } )
     printstyledln( "Available estimators:\n"; bold = true )
     for e ∈ eachindex( estdesc )
         printstyled( @sprintf( "%30s", estdesc[e].name ); color = :red )
@@ -66,3 +62,47 @@ function Estimators()
     return nothing
 end
 
+
+function Estimators( ::Val{ true } )
+    printstyledln( "Available estimators:\n"; bold = true )
+    for e ∈  estdesc 
+        println( e )        
+    end
+    return nothing    
+end
+
+
+
+function GrumpsEstimatorClass( e  )
+    which = findfirst( x -> x  >: typeof(e), GrumpsEstimatorClasses )
+    return which == nothing ? "unknown" : GrumpsEstimatorClasses[ which ]
+end
+
+
+"""
+    Estimators( elaborate = false )
+
+Prints a list of available estimators.  The argument indicates whether a lot of features should be printed 
+or few.
+"""
+Estimators( elaborate = false ) = Estimators( Val( elaborate ) )
+
+
+StringSymbol(x) = String( Symbol( x ) )
+
+
+function show( io :: IO, ed :: EstimatorDescription )
+    printstyledln( ed.name ; color = :red )
+    printstyled( @sprintf( "   %50s: ", "Symbol used" ); color = :blue); println( ":", ed.symbol )
+    e = Estimator( ed.symbol )
+    for (funk,desc) ∈ [ (GrumpsEstimatorClass, "Type of estimator"),
+                        (inisout, "Inner and outer objective functions are the same"),
+                        (usesmicrodata, "Uses micro data"), 
+                        (usesmacrodata, "Uses macro data"), 
+                        (usespenalty, "Uses penalty term"), 
+                        (usesmicromoments, "Uses micro moments")
+                        ]
+        printstyled( @sprintf( "   %50s: ", desc ); color = :blue );  println( funk( e ) )
+    end
+    return nothing
+end

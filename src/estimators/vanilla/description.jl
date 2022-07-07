@@ -1,4 +1,4 @@
-name( ::Val{:vanilla} ) = "Grumps MLE"
+name( ::Val{:vanilla} ) = "Grumps unpenalized MLE"
 
 
 function Description( e :: Symbol, v ::Val{ :vanilla} )
