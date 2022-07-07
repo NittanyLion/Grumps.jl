@@ -36,6 +36,14 @@ The default data storage options are sensible, but some space can be saved by ti
 DataOptions()
 ```
 
+## Standard error options
+
+**stub**
+
+```@docs
+StandardErrorOptions()
+```
+
 ## Estimator choice
 
 Grumps can compute quite a few estimators and one can specify which estimator to use by passing the return value of a call to `Estimator` to the optimization routine.

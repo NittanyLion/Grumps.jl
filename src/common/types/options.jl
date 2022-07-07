@@ -209,5 +209,10 @@ struct StandardErrorOptions
     end
 end
 
+"""
+    StandardErrorOptions(; θ = true, δ = true, β = true, setype = :homo )
+
+Specifies which coefficients to create standard errors for and what type of standard errors to produce.  Current choices are :homo (i.e. assuming homoskedasticity) and :hetero (heteroskedasticity-robust).  Fancier options will be added at a future point in time.
+"""
 StandardErrorOptions(; θ = true, δ = true, β = true, setype = :homo ) = StandardErrorOptions( θ, δ, β, setype )
 
