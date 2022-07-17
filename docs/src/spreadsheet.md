@@ -5,7 +5,7 @@ Recall that Grumps can take data from four different sources and in different fo
 
 As mentioned elsewhere, there is one spreadsheet (the *products* spreadsheet) that contains data on products, including e.g. price, market share, features, product level instruments.  If consumer data are used then such data can be entered via the *consumers* spreadsheet, which includes data on individual consumer choices, demographic characteristics, etcetera: anything that would typically have an $i$ subscript in other words.  A *market size* spreadsheet would contain information on the size of each market, i.e. the population in that market, which is only needed if the macro portion of the likelihood is to be used.  Finally, a *demographic draws* spreadsheet can be provided to be used in the macro likelihood portion of the objective function.  The format of each of these spreadsheets is described below.
 
-For all spreadsheets be mindful of case and spaces.  In the examples below, the data are comma separated, but that is not necessary: other formats can be specified in the [`Sources`](@ref) call.
+In the examples below, the data are comma separated, but that is not necessary: other formats can be specified in the [`Sources`](@ref) call.  For all spreadsheets be mindful of case and spaces.  However, note that for readability the spreadsheets below contain extra space i.e. they are aligned by comma; **this is not generally advisable**.
 
 
 ## Product characteristics
@@ -39,5 +39,35 @@ income,  age, purchase, second,   market,     choice
 
 The columns are again variable names.  Here, we need both market and choice, but the columns do not have to have those (default) headings.  Indeed, choice could have been replaced with purchase, and nothing would have been different, albeit that the same product
 and market descriptors should be used across data sources (spreadsheets).  The markets and products could have had more descriptive names, and the column headings could have been different.
+
+## Market sizes
+
+Below are the first few lines of a CSV file.
+
+```
+N     , market
+100000, market 1
+100000, market 2
+100000, market 3
+100000, market 4
+100000, market 5
+```
+
+Note that there is one line per market.  Again, the column headings can be adjusted and the ones presented here are the default ones.
+
+
+## Draws
+
+Below are the first few lines of a CSV file.
+
+```
+income,  age, market
+ -1.60, 1.19, market 1
+ -2.93, 1.23, market 1
+ -1.78, 1.58, market 1
+ -1.14, 1.70, market 1
+```
+
+The format and limitations for the draws spreadsheets is essentially the same as the other spreadsheets, but here each line corresponds to a (draw,market) pair. For markets for which market size information is available, one typically needs a number of demographic draws no less than the number of Monte Carlo draws to be used, where each draw is a vector of demographic characteristics that would be observed in the micro sample.  
 
 
