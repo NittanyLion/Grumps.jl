@@ -1,5 +1,12 @@
-using PackageCompiler
+using FastGaussQuadrature, CSV, DataFrames
 
 
-PackageCompiler.create_sysimage([:FastGaussQuadrature, :CSV, :DataFrames]; sysimage_path="image.so", precompile_execution_file="precompile.jl")
+function stuff()
+    df = CSV.File( "example_marketsizes.csv" ) |> DataFrame
+    x = gausshermite( 31 )
+    return df, x
+end
+
+
+stuff()
 
