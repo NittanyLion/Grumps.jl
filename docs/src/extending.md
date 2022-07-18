@@ -74,3 +74,5 @@ Grumps preallocates space for choice probabilities and related objects and reuse
 
 
 ## adding an integrator
+
+**to be done**
