@@ -58,7 +58,7 @@ function CreateRandomCoefficients( dfp :: AbstractDataFrame, v :: Variables, nw 
     MustBeInDF( v.randomcoefficients, dfp, "product data frame" )
     R = length( nw.weights )
     dθν = length( v.randomcoefficients )
-    @ensure size( nw.nodes, 2 ) ≥ dθν  "you have specified fewer nodes than there are random coefficients; this is a bad idea, make the difference big"
+    @ensure size( nw.nodes, 2 ) ≥ dθν  "you have specified fewer dimensions in the nodes than there are random coefficients"
     J = nrow( dfp ) + 1
     X = zeros( R, J, dθν )
     for t ∈ 1:dθν, j ∈ 1:J - 1, r ∈ 1:R
@@ -67,6 +67,18 @@ function CreateRandomCoefficients( dfp :: AbstractDataFrame, v :: Variables, nw 
     return X
 end
 
+function CreateRandomCoefficients( dfp :: AbstractDataFrame, v :: Variables, nw :: MSMMicroNodesWeights, T = F64 )
+    MustBeInDF( v.randomcoefficients, dfp, "product data frame" )
+    R = length( nw.weights )
+    dθν = length( v.randomcoefficients )
+    @ensure size( nw.nodes, 3 ) ≥ dθν  "you have specified fewer dimensions in the nodes than there are random coefficients"
+    J = nrow( dfp ) + 1
+    X = zeros( R, J, dθν )
+    for t ∈ 1:dθν, j ∈ 1:J - 1, r ∈ 1:R, i ∈ 1:S
+        X[i,r,j,t] = dfp[ j, v.randomcoefficients[t] ] * nw.nodes[i,r,t]
+    end
+    return X
+end
 
 
 function CreateUserInteractions( u :: DefaultUserEnhancement,  dfc :: AbstractDataFrame, dfp :: AbstractDataFrame, v :: Variables, T = F64 )
@@ -75,6 +87,33 @@ end
 
 function CreateUserRandomCoefficients( u :: DefaultUserEnhancement, dfp :: AbstractDataFrame, v :: Variables, nw :: NodesWeights, T = F64 )
     return zeros( T, 0, 0, 0 )
+end
+
+function CreateUserRandomCoefficients( u :: DefaultUserEnhancement, dfp :: AbstractDataFrame, v :: Variables, nw :: MSMMicroNodesWeights, T = F64 )
+    return zeros( T, 0, 0, 0, 0 )
+end
+
+
+function GrumpsMicroDataMode( dfp, mkt, nw, T, u, v, y, Y, Z, ℳ, ::Val{:Hog} )
+    X = CreateRandomCoefficients( dfp, v, nw, T )
+    X2 = CreateUserRandomCoefficients( u, dfp, v, nw, T )
+    if size( X2, 3 ) > 0
+        @ensure size(X,1) == size(X2,1)  "user-created random coefficient matrix has the wrong first dimension"
+        @ensure size(X,2) == size(X2,2)  "user-created random coefficient matrix has the wrong second dimension"
+        X = cat( X, X2; dims = 3 )
+    end
+    return GrumpsMicroDataHog{T}( String(mkt), Z, X, y, Y, nw.weights, ℳ )
+end
+
+
+
+
+
+function GrumpsMicroDataMode( dfp, mkt, nw, T, u, v, y, Y, Z, ℳ, ::Val{:Ant} )
+    @ensure typeof( u ) <: DefaultUserEnhancement  "Cannot have micro memory mode Ant with user enhancements"
+    𝒳 = ExtractMatrixFromDataFrame( T, dfp, v.randomcoefficients )
+    𝒟 = nw.nodes
+    return GrumpsMicroDataAnt{T}( String(mkt), Z, 𝒳, 𝒟, y, Y, nw.weights, ℳ )
 end
 
 
@@ -109,22 +148,7 @@ function GrumpsMicroData(
 
     ℳ = CreateMicroInstruments( dfc, dfp, v, usesmicmom, T )
 
-    if o.micromode == :Hog
-        X = CreateRandomCoefficients( dfp, v, nw, T )
-        X2 = CreateUserRandomCoefficients( u, dfp, v, nw, T )
-        if size( X2, 3 ) > 0
-            @ensure size(X,1) == size(X2,1)  "user-created random coefficient matrix has the wrong first dimension"
-            @ensure size(X,2) == size(X2,2)  "user-created random coefficient matrix has the wrong second dimension"
-            X = cat( X, X2; dims = 3 )
-        end
-        return GrumpsMicroDataHog{T}( String(mkt), Z, X, y, Y, nw.weights, ℳ )
-    else
-        @ensure o.micromode == :Ant "unknown micro memory mode $(o.micromode)"
-        @ensure typeof( u ) <: DefaultUserEnhancement  "Cannot have micro memory mode Ant with user enhancements"
-        𝒳 = ExtractMatrixFromDataFrame( T, dfp, v.randomcoefficients )
-        𝒟 = nw.nodes
-        return GrumpsMicroDataAnt{T}( String(mkt), Z, 𝒳, 𝒟, y, Y, nw.weights, ℳ )
-    end
+    return GrumpsMicroDataMode( dfp, mkt, nw, T, u, v, y, Y, Z, ℳ, Val( o.micromode ) )
 end
 
 

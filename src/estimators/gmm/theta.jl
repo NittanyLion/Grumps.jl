@@ -6,11 +6,10 @@ function GMMMoment1!(
     momdδ       :: HType{T},
     θ           :: A1{T},
     δ           :: A1{T},
-    # md          :: GrumpsMarketData{T},
     d           :: GrumpsMicroData{T},
     𝒦m          :: AA2{T},
     o           :: OptimizationOptions,
-    s          :: GrumpsMicroSpace{T}
+    s           :: GrumpsMicroSpace{T}
 ) where {T<:Flt}
 
     # s,d = ms.microspace, md.microdata

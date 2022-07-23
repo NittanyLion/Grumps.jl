@@ -9,6 +9,12 @@ struct GrumpsNodesWeights{T} <: NodesWeights{T}
     weights     :: Vec{T}
 end
 
+struct MSMMicroNodesWeights{T} <: NodesWeights{T}
+    nodes       :: A3{T}
+    weights     :: Mat{T}
+end
+
+
 function GrumpsNodesWeights( nodes :: Mat{T}, weights :: Vec{T}  ) where {T<:Flt}
     return GrumpsNodesWeights{T}( nodes, weights )
 end
@@ -17,6 +23,16 @@ function GrumpsNodesWeights( T = F64 )
     return GrumpsNodesWeights( zeros(T,0,0), zeros(T,0) )
 end
 
+function MSMMicroNodesWeights( nodes :: A3{T}, weights :: Vec{T}  ) where {T<:Flt}
+    return MSMMicroNodesWeights{T}( nodes, weights )
+end
+
+function MSMMicroNodesWeights( T = F64 )
+    return MSMMicroNodesWeights( zeros(T,0,0,0), zeros(T,0,0) )
+end
+
+
+
 abstract type GrumpsIntegrator{T<:Flt} end
 
 abstract type MicroIntegrator{T<:Flt} <: GrumpsIntegrator{T} end
@@ -24,6 +40,10 @@ abstract type MicroIntegrator{T<:Flt} <: GrumpsIntegrator{T} end
 struct DefaultMicroIntegrator{T<:Flt} <: MicroIntegrator{T}   
     n   :: Int
 end
+
+
+
+
 
 """
     DefaultMicroIntegrator( n :: Int, T :: Type )
@@ -43,6 +63,16 @@ Creates a basic quadrature Integrator using 11 nodes in each dimension.  This nu
 function DefaultMicroIntegrator( T = F64 )
     DefaultMicroIntegrator( 11, T )
 end
+
+struct MSMMicroIntegrator{T<:Flt} <: MicroIntegrator{T}
+    n   :: Int
+end
+
+function MSMMicroIntegrator( n :: Int, T = F64 )
+    @ensure n > 0  "n must be positive"
+    MSMMicroIntegrator{T}( n )
+end
+
 
 abstract type MacroIntegrator{T<:Flt} <: GrumpsIntegrator{T} end
 

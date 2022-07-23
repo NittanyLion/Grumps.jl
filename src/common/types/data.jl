@@ -8,7 +8,6 @@ abstract type PLMData{T} <: Data{T} end
 abstract type AllData{T} <: Data{T} end
 abstract type GrumpsMacroData{T} <: MacroData{T} end
 abstract type GrumpsMicroData{T} <: MicroData{T} end
-# abstract type GrumpsPLMData{T} <: PLMData{T} end 
 
 
 struct GrumpsMicroDataHog{T<:Flt} <: GrumpsMicroData{T}
