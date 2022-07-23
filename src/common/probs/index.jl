@@ -18,8 +18,7 @@ FillZXθ!(  θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMicroNoData{T}, o 
 
 
 function FillZXθ!(  θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMicroDataHog{T}, o :: OptimizationOptions, s :: GrumpsMicroSpace{T}  ) where {T<:Flt}
-    # @grumpsthreads inthreads( o )  
-    for i ∈ 1:dimS( d )
+    @threads :dynamic for i ∈ 1:dimS( d )
         for r ∈ 1:dimR( d ), j ∈ 1:dimJ( d )
             s.ZXθ[r,i,j] = sum( d.Z[i,j,t] * θ[t] for t ∈ 1:dimθz( d ) ) + sum( d.X[r,j,t] * θ[ t+ dimθz( d ) ] for t ∈ 1:dimθν( d ) )
         end
@@ -28,8 +27,7 @@ function FillZXθ!(  θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMicroData
 end
 
 function FillZXθ!(  θ :: Vector{T}, e :: GrumpsEstimator, d :: MSMMicroDataHog{T}, o :: OptimizationOptions, s :: GrumpsMicroSpace{T}  ) where {T<:Flt}
-    # @grumpsthreads inthreads( o )  
-    for i ∈ 1:dimS( d )
+    @threads :dynamic for i ∈ 1:dimS( d )
         for r ∈ 1:dimR( d ), j ∈ 1:dimJ( d )
             s.ZXθ[r,i,j] = sum( d.Z[i,j,t] * θ[t] for t ∈ 1:dimθz( d ) ) + sum( d.X[r,i,j,t] * θ[ t+ dimθz( d ) ] for t ∈ 1:dimθν( d ) )
         end
@@ -66,11 +64,6 @@ function AθZXθ!(
         softmax!( @view sm.macrospace.Aθ[ r, :] )
     end    
     
-    # @grumpsthreads inthreads( o ) 
-    # @sync for ind ∈ CartesianIndices( ( 1:dimR( d.microdata ), 1:dimS( d.microdata ) ) )
-    #     @spawn softmax!( @view sm.microspace.ZXθ[ ind, :] )
-    # end
-    
     @threads :dynamic for r ∈ 1:dimR( d.microdata )
         for i ∈ 1:dimS( d.microdata ) 
             softmax!( @view sm.microspace.ZXθ[ r, i, :] )
@@ -83,7 +76,6 @@ end
 
 
 function freeAθZXθ!( e :: GrumpsEstimator, s :: GrumpsSpace{T}, o :: OptimizationOptions, m :: Int ) where {T<:Flt}
-    # ReleaseSpace!( s, memslot )
     release( s.semas, s.marketspace[m].memblockindex )
     return nothing
 end

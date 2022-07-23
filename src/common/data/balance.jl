@@ -6,6 +6,77 @@ function computeμσ( μ :: T, σ :: T, count :: Int ) where {T<:Flt}
 end
 
 
+function BalanceZConstants( md :: Union{ GrumpsMicroDataAnt, GrumpsMicroDataHog, MSMMicroDataHog }, t :: Int )
+    J = size( md.Z, 2 )
+    insides = 1:J-1
+    S = size( md.Z, 1 )
+    return sum( md.Z[:, insides, t ] ), sum( md.Z[:, insides, t ].^2 ), (J-1) * S
+end
+
+function BalanceZConstants( md :: MicroData, t :: Int )
+    @ensure false "Type $(typeof(md)) not yet implemented"
+end
+
+function BalanceXConstants( md :: GrumpsMicroDataHog, t :: Int )
+    R, J, dθν = size( md.X )
+    @ensure 1 ≤ t ≤ dθν "there are fewer than $t random coefficients, namely $dθν"
+    insides = 1:J-1
+    return sum( md.X[:, insides, t ] ), sum( md.X[:, insides, t ].^2 ), (J-1) * R
+end
+
+function BalanceXConstants( md :: GrumpsMicroDataAnt, t :: Int )
+    J, dθν = size( md.𝒳 )
+    R = size( md.𝒟, 1 )
+    @ensure 1 ≤ t ≤ dθν "there are fewer than $t random coefficients, namely $dθν"
+    insides = 1:J-1
+    return sum( md.𝒳[ j, t ] * md.𝒟[ r, t ] for j ∈ insides, r ∈ 1:R ), sum( ( md.𝒳[ j, t ] * md.𝒟[ r,t ] )^2 for j ∈ insides, r ∈ 1:R ), (J-1) * R
+end
+
+function BalanceXConstants( md :: MSMMicroDataHog, t :: Int )
+    R, S, J, dθν = size( md.X )
+    @ensure 1 ≤ t ≤ dθν "there are fewer than $t random coefficients, namely $dθν"
+    insides = 1:J-1
+    return sum( md.X[:,:, insides, t ] ), sum( md.X[:,:, insides, t ].^2 ), (J-1) * R * size( md.X, 2 )
+end
+
+function BalanceXConstants( md, t :: Int )
+    @ensure false "balancing random coefficients is not yet implemented for $(typeof(md))"
+end
+
+
+function Balance!( md :: GrumpsMicroDataHog{T} , t :: Int, σ :: T ) where {T<:Flt}
+    md.X[:,:,t] ./= σ
+    return nothing
+end
+
+function Balance!( md :: GrumpsMicroDataAnt{T} , t :: Int, σ :: T ) where {T<:Flt}
+    md.𝒳[:,t] ./= σ
+    return nothing
+end
+
+
+function Balance!( md :: MSMMicroDataHog{T} , t :: Int, σ :: T ) where {T<:Flt}
+    md.X[:,:,:,t] ./= σ
+    return nothing
+end
+
+
+Balance!( Md :: GrumpsMacroNoData, t :: Int, σ :: T ) where {T<:Flt }= nothing
+
+function Balance!( Md, t :: Int, σ :: T ) where {T<:Flt}
+    @ensure false "balancing not yet implemented for $(typeof(Md))"
+end
+
+function Balance!( Md :: GrumpsMacroDataHog{T}, t :: Int, σ :: T ) where {T<:Flt}
+    Md.A[:,:,t] ./= σ
+    return nothing
+end
+
+function Balance!( Md :: GrumpsMacroDataAnt{T}, t :: Int, σ :: T ) where {T<:Flt}
+    Md.𝒳[:,t] ./= σ
+    return nothing
+end
+
 
 
 function Balance!( gd :: GrumpsData{T}, scheme :: Val{ :micro } ) where {T<:Flt}
@@ -18,26 +89,14 @@ function Balance!( gd :: GrumpsData{T}, scheme :: Val{ :micro } ) where {T<:Flt}
         μ = σ = zero( T )
         count = 0
         for m ∈ activemarkets
-            local md = gd.marketdata[m].microdata
-            J = size( md.Z, 2 )
-            local insides = 1:J-1
-            if typeof( md ) <: Union{ GrumpsMicroDataAnt, GrumpsMicroDataHog, MSMMicroDataHog }
-                S = size( md.Z, 1 )
-                J = size( md.Z, 2 )
-                μ += sum( md.Z[:, insides, t ] )
-                σ += sum( md.Z[:, insides, t ].^2 )
-                count += (J-1) * S
-            else
-                @ensure false "Type $(typeof(md)) not yet implemented"
-            end
+            local μadd, σadd, countadd = BalanceZConstants( gd.marketdata[m].microdata, t )
+            μ += μadd;  σ += σadd; count += countadd
         end
         @ensure count > 1  "need more than one consumer to balance"
         μ, σ = computeμσ( μ, σ, count )
         if σ > zero( T )
             for m ∈ activemarkets
-                # gd.marketdata[m].microdata.Z[:,:,t] .-= μ
                 gd.marketdata[m].microdata.Z[:,:,t] ./= σ
-                # @info "divided Z[:,:,$t] in market $m by $σ"
             end
         end
         gd.balance[t] = GrumpsNormalization( μ, σ )
@@ -48,64 +107,59 @@ function Balance!( gd :: GrumpsData{T}, scheme :: Val{ :micro } ) where {T<:Flt}
         μ = σ = zero( T )
         count = 0
         for m ∈ activemarkets
-            local md = gd.marketdata[m].microdata
-            if typeof( md ) <: GrumpsMicroDataHog 
-                R = size( md.X, 1 )
-                J = size( md.X, 2 )
-                local insides = 1:J-1
-                μ += sum( md.X[:, insides, t ] )
-                σ += sum( md.X[:, insides, t ].^2 )
-                count += (J-1) * R
-            elseif typeof( md ) <: GrumpsMicroDataAnt
-                J = size( md.𝒳, 1 )
-                R = size( md.𝒟, 1 )
-                local insides = 1:J-1
-                μ += sum( md.𝒳[ j, t ] * md.𝒟[ r, t ] for j ∈ insides, r ∈ 1:R )
-                σ += sum( ( md.𝒳[ j, t ] * md.𝒟[ r,t ] )^2 for j ∈ insides, r ∈ 1:R )
-                count += (J-1) * R
-            elseif typeof( md ) <: MSMMicroDataHog 
-                R = size( md.X, 2 )
-                J = size( md.X, 3 )
-                local insides = 1:J-1
-                μ += sum( md.X[:,:, insides, t ] )
-                σ += sum( md.X[:,:, insides, t ].^2 )
-                count += (J-1) * R * size( md.X, 1 )
-            else @ensure false "Type $(typeof(md)) not yet implemented"
-            end
+            local μadd, σadd, countadd = BalanceXConstants( gd.marketdata[m].microdata, t )
+            μ += μadd;  σ += σadd; count += countadd
+            # local md = gd.marketdata[m].microdata
+            # if typeof( md ) <: GrumpsMicroDataHog 
+            #     R = size( md.X, 1 )
+            #     J = size( md.X, 2 )
+            #     local insides = 1:J-1
+            #     μ += sum( md.X[:, insides, t ] )
+            #     σ += sum( md.X[:, insides, t ].^2 )
+            #     count += (J-1) * R
+            # elseif typeof( md ) <: GrumpsMicroDataAnt
+            #     J = size( md.𝒳, 1 )
+            #     R = size( md.𝒟, 1 )
+            #     local insides = 1:J-1
+            #     μ += sum( md.𝒳[ j, t ] * md.𝒟[ r, t ] for j ∈ insides, r ∈ 1:R )
+            #     σ += sum( ( md.𝒳[ j, t ] * md.𝒟[ r,t ] )^2 for j ∈ insides, r ∈ 1:R )
+            #     count += (J-1) * R
+            # elseif typeof( md ) <: MSMMicroDataHog 
+            #     R = size( md.X, 2 )
+            #     J = size( md.X, 3 )
+            #     local insides = 1:J-1
+            #     μ += sum( md.X[:,:, insides, t ] )
+            #     σ += sum( md.X[:,:, insides, t ].^2 )
+            #     count += (J-1) * R * size( md.X, 1 )
+            # else @ensure false "Type $(typeof(md)) not yet implemented"
+            # end
         end
         @ensure count > 1  "need more than one consumer to balance"
         μ, σ = computeμσ( μ, σ, count )
         if σ > zero( T )
             for m ∈ activemarkets
-                # gd.marketdata[m].microdata.X[:,:,t] .-= μ
-                if typeof( gd.marketdata[m].microdata ) <: MSMMicroDataHog
-                    gd.marketdata[m].microdata.X[:,:,:,t] ./= σ
-                else
-                    gd.marketdata[m].microdata.X[:,:,t] ./= σ
-                end
-                # @info "divided X[:,:,$t] in market $m by $σ"
+                Balance!( gd.marketdata[m].microdata, t, σ )
             end
         end
         gd.balance[k] = GrumpsNormalization( μ, σ )
     end
     # now rescale the macro end
-    @threads for t ∈ 1:dθ
+    @threads :dynamic for t ∈ 1:dθ
         for m ∈ eachindex( gd.marketdata )
-            local Md = gd.marketdata[m].macrodata
-            local bal = gd.balance[t]
-            tp = typeof( Md  )
-            if  tp <: GrumpsMacroNoData 
-                continue
-            elseif tp <: GrumpsMacroDataHog
-                # Md.A[:,:,t] .-= bal.μ
-                Md.A[:,:,t] ./= bal.σ
-            elseif tp <: GrumpsMacroDataAnt
-                # Md.𝒳[:,t] .-= bal.μ
-                Md.𝒳[:,t] ./= bal.σ
-                # @info "divided 𝒳[:,:,$t] in market $m by $(bal.σ)"
-            else
-                @ensure false "unknown type"
-            end
+            Balance!( gd.marketdata[m].macrodata, t, gd.balance[t].σ )
+            # local Md = gd.marketdata[m].macrodata
+            # local bal = gd.balance[t]
+            # tp = typeof( Md  )
+            # if  tp <: GrumpsMacroNoData 
+            #     continue
+            # elseif tp <: GrumpsMacroDataHog
+            #     Md.A[:,:,t] ./= bal.σ
+            # elseif tp <: GrumpsMacroDataAnt
+            #     # Md.𝒳[:,t] .-= bal.μ
+            #     Md.𝒳[:,t] ./= bal.σ
+            # else
+            #     @ensure false "unknown type"
+            # end
         end
     end
     return nothing

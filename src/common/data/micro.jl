@@ -71,7 +71,6 @@ function CreateRandomCoefficients( dfp :: AbstractDataFrame, v :: Variables, nw 
     MustBeInDF( v.randomcoefficients, dfp, "product data frame" )
     R,S = size( nw.weights )
     dθν = length( v.randomcoefficients )
-    @info "R=$R S=$S dθν = $dθν"
     @ensure size( nw.nodes, 3 ) ≥ dθν  "you have specified fewer dimensions in the nodes than there are random coefficients"
     J = nrow( dfp ) + 1
     X = zeros( R, S, J, dθν )
