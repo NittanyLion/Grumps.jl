@@ -10,6 +10,14 @@ dimS( d :: GrumpsMicroDataHog )     = size( d.Z, 1 )
 dimR( d :: GrumpsMicroDataHog )     = size( d.X, 1 )
 dimmom( d :: GrumpsMicroDataHog )   = size( d.ℳ, 3 )
 
+dimθz( d :: MSMMicroDataHog )    = size( d.Z, 3 )
+dimθν( d :: MSMMicroDataHog )    = size( d.X, 4 )
+dimθ( d :: MSMMicroDataHog )     = dimθz( d ) + dimθν( d )
+dimδ( d :: MSMMicroDataHog )     = size( d.Z, 2 ) - 1
+dimδm( d :: MSMMicroDataHog )    = dimδ( d )
+dimS( d :: MSMMicroDataHog )     = size( d.Z, 1 )
+dimR( d :: MSMMicroDataHog )     = size( d.X, 1 )
+dimmom( d :: MSMMicroDataHog )   = size( d.ℳ, 3 )
 
 dimθz( d :: GrumpsMicroDataAnt )    = size( d.Z, 3 )
 dimθν( d :: GrumpsMicroDataAnt )    = size( d.𝒳, 2 )

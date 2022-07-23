@@ -32,6 +32,37 @@ struct GrumpsMicroDataHog{T<:Flt} <: GrumpsMicroData{T}
     end
 end
 
+
+struct MSMMicroDataHog{T<:Flt} <: GrumpsMicroData{T}
+    name    :: String
+    Z       ::  A3{T}
+    X       ::  A4{T}
+    y       ::  Vec{Int}
+    Y       ::  Mat{Bool}
+    w       ::  Mat{T}
+    ℳ       ::  A3{T}
+
+    function MSMMicroDataHog{T2}( name :: String, Z :: A3{T2}, X :: A4{T2}, y :: Vec{Int}, Y :: Mat{Bool}, w :: Mat{T2}, ℳ :: A3{T2} ) where {T2<:Flt}
+        # sanity checking
+        S, J, dθz = size( Z )
+        R, dθν = size( X, 1 ), size( X, 4 )
+        @ensure size( X, 2 ) == S "number of consumers mismatch X"
+        @ensure size( X, 3 ) == J  "number of products mismatch X"
+        @ensure size( Y, 2 ) == J  "number of products mismatch Y"
+        @ensure length( y ) == S "number of consumers mismatch y"
+        @ensure size( Y, 1 ) == S "number of consumers mismatch Y"
+        @ensure size( w, 1 ) == R "number of nodes mismatch w"
+        @ensure size( w, 2 ) == S "number of consumers mismatch w"
+        new{T2}( name, Z, X, y, Y, w, ℳ )
+    end
+
+
+end
+
+GrumpsMicroDataHog( name :: String, Z :: A3{T2}, X :: A3{T2}, y :: Vec{Int}, Y :: Matrix{Bool}, w :: Vec{T2}, ℳ :: A3{T2} ) where {T2<:Flt} = GrumpsMicroDataHog{T2}( name, Z, X, y, Y, w, ℳ )
+GrumpsMicroDataHog( name :: String, Z :: A3{T2}, X :: A4{T2}, y :: Vec{Int}, Y :: Mat{Bool}, w :: Mat{T2}, ℳ :: A3{T2} ) where {T2<:Flt} = MSMMicroDataHog{T2}( name, Z, X, y, Y, w, ℳ )
+
+
 struct GrumpsMicroDataAnt{T<:Flt} <: GrumpsMicroData{T}
     name    ::  String
     Z       ::  A3{T}

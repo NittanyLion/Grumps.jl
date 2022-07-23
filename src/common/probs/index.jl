@@ -27,6 +27,15 @@ function FillZXθ!(  θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMicroData
     return nothing
 end
 
+function FillZXθ!(  θ :: Vector{T}, e :: GrumpsEstimator, d :: MSMMicroDataHog{T}, o :: OptimizationOptions, s :: GrumpsMicroSpace{T}  ) where {T<:Flt}
+    # @grumpsthreads inthreads( o )  
+    for i ∈ 1:dimS( d )
+        for r ∈ 1:dimR( d ), j ∈ 1:dimJ( d )
+            s.ZXθ[r,i,j] = sum( d.Z[i,j,t] * θ[t] for t ∈ 1:dimθz( d ) ) + sum( d.X[r,i,j,t] * θ[ t+ dimθz( d ) ] for t ∈ 1:dimθν( d ) )
+        end
+    end
+    return nothing
+end
 
 function AθZXθ!( 
     θ :: Vec{T}, 

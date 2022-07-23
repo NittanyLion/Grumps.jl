@@ -79,7 +79,7 @@ function GrumpsData(
             local th = threadid()
             local fac = findall( x->string(x) == markets[m], s.consumers[:, v.market] )
             if fac ≠ nothing
-                local nw = NodesWeightsOneMarket( microintegrator( integrators ), dθν, rngs[ th ], nwgmic  )
+                local nw = NodesWeightsOneMarket( microintegrator( integrators ), dθν, rngs[ th ], nwgmic, length( fac )  )
                 mic[m] = GrumpsMicroData( markets[m], view( s.consumers, fac, : ), view( s.products, fap[m], : ), v, nw, rngs[th], options, usesmicromoments( e ), T, u )
             else
                 mic[m] = GrumpsMicroNoData( markets[m] )

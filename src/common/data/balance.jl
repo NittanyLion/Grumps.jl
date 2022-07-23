@@ -21,7 +21,7 @@ function Balance!( gd :: GrumpsData{T}, scheme :: Val{ :micro } ) where {T<:Flt}
             local md = gd.marketdata[m].microdata
             J = size( md.Z, 2 )
             local insides = 1:J-1
-            if typeof( md ) <: Union{ GrumpsMicroDataAnt, GrumpsMicroDataHog }
+            if typeof( md ) <: Union{ GrumpsMicroDataAnt, GrumpsMicroDataHog, MSMMicroDataHog }
                 S = size( md.Z, 1 )
                 J = size( md.Z, 2 )
                 μ += sum( md.Z[:, insides, t ] )
@@ -63,6 +63,14 @@ function Balance!( gd :: GrumpsData{T}, scheme :: Val{ :micro } ) where {T<:Flt}
                 μ += sum( md.𝒳[ j, t ] * md.𝒟[ r, t ] for j ∈ insides, r ∈ 1:R )
                 σ += sum( ( md.𝒳[ j, t ] * md.𝒟[ r,t ] )^2 for j ∈ insides, r ∈ 1:R )
                 count += (J-1) * R
+            elseif typeof( md ) <: MSMMicroDataHog 
+                R = size( md.X, 2 )
+                J = size( md.X, 3 )
+                local insides = 1:J-1
+                μ += sum( md.X[:,:, insides, t ] )
+                σ += sum( md.X[:,:, insides, t ].^2 )
+                count += (J-1) * R * size( md.X, 1 )
+            else @ensure false "Type $(typeof(md)) not yet implemented"
             end
         end
         @ensure count > 1  "need more than one consumer to balance"
@@ -70,7 +78,11 @@ function Balance!( gd :: GrumpsData{T}, scheme :: Val{ :micro } ) where {T<:Flt}
         if σ > zero( T )
             for m ∈ activemarkets
                 # gd.marketdata[m].microdata.X[:,:,t] .-= μ
-                gd.marketdata[m].microdata.X[:,:,t] ./= σ
+                if typeof( gd.marketdata[m].microdata ) <: MSMMicroDataHog
+                    gd.marketdata[m].microdata.X[:,:,:,t] ./= σ
+                else
+                    gd.marketdata[m].microdata.X[:,:,t] ./= σ
+                end
                 # @info "divided X[:,:,$t] in market $m by $σ"
             end
         end

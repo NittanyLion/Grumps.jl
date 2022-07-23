@@ -69,13 +69,14 @@ end
 
 function CreateRandomCoefficients( dfp :: AbstractDataFrame, v :: Variables, nw :: MSMMicroNodesWeights, T = F64 )
     MustBeInDF( v.randomcoefficients, dfp, "product data frame" )
-    R = length( nw.weights )
+    R,S = size( nw.weights )
     dθν = length( v.randomcoefficients )
+    @info "R=$R S=$S dθν = $dθν"
     @ensure size( nw.nodes, 3 ) ≥ dθν  "you have specified fewer dimensions in the nodes than there are random coefficients"
     J = nrow( dfp ) + 1
-    X = zeros( R, J, dθν )
+    X = zeros( R, S, J, dθν )
     for t ∈ 1:dθν, j ∈ 1:J - 1, r ∈ 1:R, i ∈ 1:S
-        X[i,r,j,t] = dfp[ j, v.randomcoefficients[t] ] * nw.nodes[i,r,t]
+        X[r,i,j,t] = dfp[ j, v.randomcoefficients[t] ] * nw.nodes[r,i,t]
     end
     return X
 end
@@ -100,9 +101,9 @@ function GrumpsMicroDataMode( dfp, mkt, nw, T, u, v, y, Y, Z, ℳ, ::Val{:Hog} )
     if size( X2, 3 ) > 0
         @ensure size(X,1) == size(X2,1)  "user-created random coefficient matrix has the wrong first dimension"
         @ensure size(X,2) == size(X2,2)  "user-created random coefficient matrix has the wrong second dimension"
-        X = cat( X, X2; dims = 3 )
+        X = cat( X, X2; dims = size(X,4) )
     end
-    return GrumpsMicroDataHog{T}( String(mkt), Z, X, y, Y, nw.weights, ℳ )
+    return GrumpsMicroDataHog( String(mkt), Z, X, y, Y, nw.weights, ℳ )
 end
 
 

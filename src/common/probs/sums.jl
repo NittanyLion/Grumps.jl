@@ -51,8 +51,33 @@ function ComputeΔb!( Δb :: AA2{T}, s :: MicroSpace{T}, d :: GrumpsMicroDataHog
     return nothing
 end
 
+function ComputeΔb!( Δb :: AA2{T}, s :: MicroSpace{T}, d :: MSMMicroDataHog{T}, o :: OptimizationOptions, r :: Int, i :: Int ) where {T<:Flt}
+    weights, consumers, products, insides, = RSJ( d )
+    @ensure r ∈ weights         "weights out of bounds"
+    @ensure i ∈ consumers       "consumers out of bounds"
+    @ensure size( Δb, 1 ) == products[end]  "mismatch in the number of products in Δb"
+    @ensure size( Δb, 2 ) == dimθ( d )  "mismatch in the number of parameters in Δb"
 
-function ComputeΔb!( Δb :: AA2{T}, s :: MicroSpace{T}, d :: GrumpsMicroDataAnt{T}, o :: OptimizationOptions, r :: Int, i :: Int ) where {T<:Flt}
+
+    for k ∈ 1:dimθz( d )
+        avg = sum( s.πrij[r,i,j] * d.Z[i,j,k] for j ∈ products )
+        for j ∈ products
+            Δb[ j, k ] = d.Z[i,j,k] - avg
+        end
+    end
+
+    for k ∈ 1:dimθν( d )
+        kk = k + dimθz( d )
+        avg = sum( s.πrij[r,i,j] * d.X[r,i,j,k] for j ∈ products )
+        for j ∈ products
+            Δb[ j, kk ] = d.X[r,i,j,k] - avg
+        end
+    end        
+
+    return nothing
+end
+
+function ComputeΔb!( Δb :: AA2{T}, s :: MicroSpace{T}, d :: MicroData, o :: OptimizationOptions, r :: Int, i :: Int ) where {T<:Flt}
     weights, consumers, products, insides, parameters = RSJ( d )
     @ensure false "WeightedDifference! not yet programmed for $(typeof(d))"
 end

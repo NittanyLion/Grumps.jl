@@ -34,12 +34,20 @@ end
 
 
 
-function NodesWeightsOneMarket( ms :: DefaultMicroIntegrator{T}, d :: Int, rng :: AbstractRNG, nwgmic :: GrumpsNodesWeights{T} ) where {T<:Flt}
+function NodesWeightsOneMarket( ms :: DefaultMicroIntegrator{T}, d :: Int, rng :: AbstractRNG, nwgmic :: GrumpsNodesWeights{T}, S :: Int ) where {T<:Flt}
    return nwgmic
 end
 
 
 function NodesWeightsGlobal( ms :: MSMMicroIntegrator{T}, d :: Int,  rng :: AbstractRNG ) where {T<:Flt}
-    return MSMMicroNodesWeights{T}( zeros( T, 0, 0, 0 ), zeros(T, 0) )
+    return MSMMicroNodesWeights{T}( zeros( T, 0, 0, 0 ), zeros(T, 0, 0) )
  end
+ 
+
+function NodesWeightsOneMarket( ms :: MSMMicroIntegrator{T}, d :: Int, rng :: AbstractRNG, nwgmic :: MSMMicroNodesWeights{T}, S :: Int ) where {T<:Flt}
+    R = ms.n
+    w = fill( T( 1.0/ R  ), R, S )
+    n = randn( rng, R, S, d )
+    return MSMMicroNodesWeights( n, w )
+end
  
