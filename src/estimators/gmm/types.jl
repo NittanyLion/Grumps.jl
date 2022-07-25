@@ -19,5 +19,6 @@ Estimator( ::Val{ :gmm } ) = GrumpsGMMEstimator()
 usesmicrodata( ::GrumpsGMMEstimator ) = true
 usesmicromoments( ::GrumpsGMMEstimator ) = true
 usespenalty( ::GrumpsGMMEstimator ) = true
-
 seprocedure( ::GrumpsGMMEstimator ) = :notyetimplemented
+IsCompatible( :: GrumpsGMMEstimator, :: MSMMicroIntegrator ) = true
+

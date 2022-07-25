@@ -10,4 +10,7 @@ function GrumpsTypes()
     print_tree( OptimizationOptions )
     print_tree( Variables )
     print_tree( Solution )
+    print_tree( GrumpsIntegrators )
+    print_tree( GrumpsIntegrator )
+    print_tree( NodesWeights )
 end

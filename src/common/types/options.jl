@@ -33,6 +33,15 @@ is you're doing.  The last option is the variance of ξ, i.e. the error variance
 """
 DataOptions( x...; kwargs... ) = GrumpsDataOptions( x...; kwargs... )
 
+
+micromode( o :: GrumpsDataOptions ) = o.micromode
+macromode( o :: GrumpsDataOptions ) = o.macromode
+balance( o :: GrumpsDataOptions ) = o.balance
+σ2( o :: GrumpsDataOptions ) = o.σ2
+s2( o :: GrumpsDataOptions ) = σ2( o )
+
+
+
 abstract type OptimizationOptions end
 
 

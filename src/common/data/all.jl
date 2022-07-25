@@ -35,6 +35,9 @@ function GrumpsData(
     threads             :: Int = 0
     )
 
+    # check compatibility of choices made 
+    CheckCompatible( e, integrators, options )
+    
     # read data from file if not already done
     @info "reading data"
     s = readfromfile( ss )

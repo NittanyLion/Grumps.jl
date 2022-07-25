@@ -94,7 +94,7 @@ function CreateUserRandomCoefficients( u :: DefaultUserEnhancement, dfp :: Abstr
 end
 
 
-function GrumpsMicroDataMode( dfp, mkt, nw, T, u, v, y, Y, Z, ℳ, ::Val{:Hog} )
+function GrumpsMicroDataMode( dfp, mkt, nw :: NodesWeights, T, u, v, y, Y, Z, ℳ, ::Val{:Hog} )
     X = CreateRandomCoefficients( dfp, v, nw, T )
     X2 = CreateUserRandomCoefficients( u, dfp, v, nw, T )
     if size( X2, 3 ) > 0
@@ -109,13 +109,17 @@ end
 
 
 
-function GrumpsMicroDataMode( dfp, mkt, nw, T, u, v, y, Y, Z, ℳ, ::Val{:Ant} )
+function GrumpsMicroDataMode( dfp, mkt, nw :: NodesWeights, T, u, v, y, Y, Z, ℳ, ::Val{:Ant} )
     @ensure typeof( u ) <: DefaultUserEnhancement  "Cannot have micro memory mode Ant with user enhancements"
     𝒳 = ExtractMatrixFromDataFrame( T, dfp, v.randomcoefficients )
     𝒟 = nw.nodes
     return GrumpsMicroDataAnt{T}( String(mkt), Z, 𝒳, 𝒟, y, Y, nw.weights, ℳ )
 end
 
+
+function GrumpsMicroDataMode( dfp, mkt, nw :: NodesWeights, T, u, v, y, Y, Z, ℳ, anyval )
+    @ensure false "memory mode you chose is not programmed in GrumpsMicroDataMode"
+end
 
 
 function GrumpsMicroData( 
@@ -148,7 +152,7 @@ function GrumpsMicroData(
 
     ℳ = CreateMicroInstruments( dfc, dfp, v, usesmicmom, T )
 
-    return GrumpsMicroDataMode( dfp, mkt, nw, T, u, v, y, Y, Z, ℳ, Val( o.micromode ) )
+    return GrumpsMicroDataMode( dfp, mkt, nw, T, u, v, y, Y, Z, ℳ, Val( micromode(o) ) )
 end
 
 

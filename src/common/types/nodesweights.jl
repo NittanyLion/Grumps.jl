@@ -105,6 +105,9 @@ struct BothIntegrators{T} <: GrumpsIntegrators{T}
     macrointegrator :: MacroIntegrator{T}
 end
 
+microintegrator( i :: BothIntegrators ) = i.microintegrator
+macrointegrator( i :: BothIntegrators ) = i.macrointegrator
+
 """
     BothIntegrators( microIntegrator :: MicroIntegrator{T}, macroIntegrator :: MacroIntegrator{T} )  
 
