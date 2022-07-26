@@ -1,9 +1,6 @@
 
 
 
-@todo 3 "currently only saving θ coefficients"
-@todo 2 "still need to compute standard errors"
-@todo 4 "still need to do penalized estimator"
 
 """
     SetResult!( sol, θ, δ, β )
@@ -33,16 +30,20 @@ end
 
 
 function SetConvergence!( c :: GrumpsConvergence{T}, r ) where {T<:Flt}
-    c.minimum = minimum( r )
-    c.iterations = Optim.iterations( r )
-    c.iteration_limit_reached = Optim.iteration_limit_reached( r )
-    c.converged = Optim.converged( r )
-    c.f_converged = Optim.f_converged( r )
-    c.g_converged = Optim.g_converged( r )
-    c.x_converged = Optim.x_converged( r )
-    c.f_calls = Optim.f_calls( r )
-    c.g_calls = Optim.g_calls( r )
-    c.h_calls = Optim.h_calls( r )
+    # c.minimum = minimum( r )
+    # c.iterations = Optim.iterations( r )
+    # c.iteration_limit_reached = Optim.iteration_limit_reached( r )
+    # c.converged = Optim.converged( r )
+    # c.f_converged = Optim.f_converged( r )
+    # c.g_converged = Optim.g_converged( r )
+    # c.x_converged = Optim.x_converged( r )
+    # c.f_calls = Optim.f_calls( r )
+    # c.g_calls = Optim.g_calls( r )
+    # c.h_calls = Optim.h_calls( r )
+    for fld ∈ fieldnames( GrumpsConvergence )
+        eval( :( local val = Optim.$fld( r ) ) )
+        setfield!( c, fld, val )
+    end
     return nothing
 end
 

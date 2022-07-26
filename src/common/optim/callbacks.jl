@@ -40,7 +40,7 @@ function GrumpsδCallBack( statevec, e, d, o, oldx, repeatx )
     # GC.gc()
 
     if isnan( state.g_norm )
-        logreport!( solution, "Quitting because NaN achieved" )
+        logreport!( solution, "Quitting because of NaN" )
         SetStatus!( solution, "NaN" )
         return true
     end

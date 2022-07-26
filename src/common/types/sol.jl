@@ -27,9 +27,12 @@ mutable struct GrumpsConvergence{T<:Flt}
     f_calls                 :: Int
     g_calls                 :: Int
     h_calls                 :: Int
+    f_trace                 :: Vec{T}
+    g_norm_trace            :: Vec{T}
+    x_trace                 :: Vec{T}
 
     function GrumpsConvergence( T2 :: Type )
-        new{T2}( typemax( T2 ), 0, false, false, false, false, false, 0, 0, 0 )
+        new{T2}( typemax( T2 ), 0, false, false, false, false, false, 0, 0, 0, zeros(T2,0), zeros(T2,0), zeros(T2,0) )
     end
 end
 
@@ -43,6 +46,9 @@ h_converged( c :: GrumpsConvergence ) = c.h_converged
 f_calls( c :: GrumpsConvergence ) = c.f_calls
 g_calls( c :: GrumpsConvergence ) = c.g_calls
 h_calls( c :: GrumpsConvergence ) = c.h_calls
+f_trace( c :: GrumpsConvergence ) = c.f_trace
+g_norm_trace( c :: GrumpsConvergence ) = c.g_norm_trace
+x_trace( c :: GrumpsConvergence ) = c.x_trace
 
 
 mutable struct GrumpsSolution{T<:Flt} <: Solution{T}
