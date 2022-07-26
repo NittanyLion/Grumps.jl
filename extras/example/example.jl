@@ -1,12 +1,7 @@
-# Example program
 
-Below is a documented example program.  You can find a closely
-related example program in the `extras/example` folder.
-
-```
  # set relative path of location of Grumps.jl; won't be needed 
  # once Julia is a formal package
-push!(LOAD_PATH, "src")                                                    
+push!(LOAD_PATH, "../../src")                              
 
 
 using Grumps, LinearAlgebra
@@ -17,10 +12,10 @@ BLAS.set_num_threads(8)
 function myprogram( nodes, draws, meth  )
     # set which files contain the data to be used
     s = Sources(                                                            
-      consumers = "_example_consumers.csv",
-      products = "_example_products.csv",
-      marketsizes = "_example_marketsizes.csv",
-      draws = "_example_draws.csv"  
+      consumers = "example_consumers.csv",
+      products = "example_products.csv",
+      marketsizes = "example_marketsizes.csv",
+      draws = "example_draws.csv"  
     )
     
     # set the specification to be used
@@ -92,8 +87,11 @@ for nodes ∈ [ 11 ] # , 17, 25]
             sol = myprogram( nodes, draws, meth ) 
             println( getθcoef( sol ), "\n" )
             println( sol, "\n" )
+            Save( "_results_$(meth)_$(nodes)_$(draws).csv", sol )
         end
     end
 end
-```
+
+
+# 
 
