@@ -2,6 +2,11 @@ push!(LOAD_PATH, "../src")
 
 using Documenter, Grumps
 
+const MimeTex = MIME{Symbol("text/tex")}
+const MimeCSV = MIME{Symbol("text/csv")}
+const MimeTxt = MIME{Symbol("text/plain")}
+const MimeTexCSV = Union{ MimeTex, MimeCSV }
+const MimeText = Union{ MimeTex, MimeCSV, MimeTxt }
 
 
 makedocs( sitename = "Grumps.jl",

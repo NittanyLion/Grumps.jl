@@ -47,6 +47,8 @@ function grumps!( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstar
         )
 
         θtr = Optim.minimizer( result )
+        # @info "$(typeof( Optim.g_norm_trace( result ) ))"
+        # @info "$(Optim.g_norm_trace(result))"
         θ = getθ( θtr, d )
         Unbalance!( θ, d )
 

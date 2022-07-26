@@ -89,12 +89,14 @@ Data()
 
 Once all data structures have been put together, one can call the algorithm.  This is straightforward.
 ```@docs
-    grumps!( ::Estimator, ::Data{T}, ::OptimizationOptions, ::Grumps.StartingVector{T}, ::StandardErrorOptions ) where {T<:Grumps.Flt}
+    grumps!( ::Estimator, ::Data{T}, ::OptimizationOptions, ::Grumps.StartingVector{T}, ::StandardErrorOptions ) where {T<:Grumps.AbstractFloat}
 ```
 
 ## Retrieving results
 
-As noted above, Grumps will return its results in a `GrumpsSolution` variable that can be queried as follows.  **to be expanded**
+As noted above, Grumps will return its results in a `GrumpsSolution` variable that can be queried or saved as follows.  You can also simply call one of the `print` or 
+related functions on any of these objects.
+**to be expanded**
 
 ```@docs
 getθ( sol :: GrumpsSolution )
@@ -107,6 +109,13 @@ getname( e :: GrumpsEstimate )
 getθcoef( sol :: GrumpsSolution )
 getδcoef( sol :: GrumpsSolution )
 getβcoef( sol :: GrumpsSolution )
+Save( fn :: AbstractString, mt :: MimeText, x :: Any; kwargs... )
+Save( fn :: AbstractString, x :: Any; kwargs... )
+show( io :: IO, est :: Vector{ GrumpsEstimate{T} }, s :: String = ""; adorned = true, header = false, printstde = true, printtstat = true ) where {T<:AbstractFloat}
+show( io :: IO, convergence :: Grumps.GrumpsConvergence{T}; header = false, adorned = true ) where {T<:AbstractFloat}
+show( io :: IO, sol :: GrumpsSolution{T}; adorned = true, printθ = true, printβ = true, printδ = false, printconvergence = true ) where {T<:AbstractFloat}
+show( io :: IO, mt :: MimeTex, sol :: GrumpsSolution; kwargs... ) 
+show( io :: IO, mt :: MimeCSV, sol :: GrumpsSolution; kwargs... ) 
 ```
 
 
