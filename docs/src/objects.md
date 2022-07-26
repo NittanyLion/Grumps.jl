@@ -111,6 +111,7 @@ getδcoef( sol :: GrumpsSolution )
 getβcoef( sol :: GrumpsSolution )
 Save( fn :: AbstractString, mt :: MimeText, x :: Any; kwargs... )
 Save( fn :: AbstractString, x :: Any; kwargs... )
+show( io :: IO, e :: GrumpsEstimate{T}, s :: String = ""; adorned = true, printstde = true, printtstat = true ) where {T<:AbstractFloat}
 show( io :: IO, est :: Vector{ GrumpsEstimate{T} }, s :: String = ""; adorned = true, header = false, printstde = true, printtstat = true ) where {T<:AbstractFloat}
 show( io :: IO, convergence :: Grumps.GrumpsConvergence{T}; header = false, adorned = true ) where {T<:AbstractFloat}
 show( io :: IO, sol :: GrumpsSolution{T}; adorned = true, printθ = true, printβ = true, printδ = false, printconvergence = true ) where {T<:AbstractFloat}

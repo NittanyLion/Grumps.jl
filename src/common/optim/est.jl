@@ -6,7 +6,7 @@
 
 
 """
-    grumps( 
+    grumps!( 
         e       :: Estimator,
         d       :: Data{T},
         o       :: OptimizationOptions = OptimizationOptions(),

@@ -87,6 +87,7 @@ for nodes ∈ [ 11 ] # , 17, 25]
             sol = myprogram( nodes, draws, meth ) 
             println( getθcoef( sol ), "\n" )
             println( sol, "\n" )
+            Save( "_$(meth).csv", sol )
         end
     end
 end

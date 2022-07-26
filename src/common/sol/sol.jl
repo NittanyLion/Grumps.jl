@@ -5,6 +5,13 @@
 @todo 2 "still need to compute standard errors"
 @todo 4 "still need to do penalized estimator"
 
+"""
+    SetResult!( sol, θ, δ, β )
+
+Copies the coefficients from the vectors `θ`, `β`, and `δ` to `sol`.  If
+any of said vectors is replaced with `nothing` then that vector is not
+copied.
+"""    
 function SetResult!( sol :: GrumpsSolution{T}, θ :: GType{T}, δ :: GType{T}, β :: GType{T}  ) where {T<:Flt}
     if θ ≠ nothing
         for i ∈ eachindex( θ )
@@ -39,6 +46,11 @@ function SetConvergence!( c :: GrumpsConvergence{T}, r ) where {T<:Flt}
     return nothing
 end
 
+"""
+    SetConvergence!( solution, result )
+
+Copies the convergence statistics returned in `result` to the solution `solution`.
+"""
 SetConvergence!( sol :: GrumpsSolution, res ) = SetConvergence!( sol.convergence, res )
 
 @todo 2  "SetHighWaterMark! not written yet"
@@ -57,13 +69,21 @@ function SetStatus!( sol :: GrumpsSolution, status :: AbstractString )
     
 end
 
-@todo 2 "save log and results to file"
 
 const tcritval = 1.9599639845400576
 
 
 """
-    show( io :: IO, e :: GrumpsEstimate{T}, s :: String = ""; adorned = true, printstde = true, printtstat = true ) 
+    show( io :: IO, e :: GrumpsEstimate{T}, s :: String = ""; keywords...)
+    
+Show a `GrumpsEstimate` object on `io`; the argument `s` indicates which parameter family (θ,β,δ) the estimate
+belongs to.  The optional keywords are described in the table below.
+
+| Keyword      | Description            | Default |
+|:-------------|:-----------------------|:--------|
+| `adorned`    | make output pretty?    | `true`  |
+| `printstde`  | print standard errors? | `true`  |
+| `printtstat` | print t statistics?    | `true`  | 
 """
 function show( io :: IO, e :: GrumpsEstimate{T}, s :: String = ""; adorned = true, printstde = true, printtstat = true ) where {T<:Flt}
     signif = :normal
@@ -93,7 +113,17 @@ function show( io :: IO, e :: GrumpsEstimate{T}, s :: String = ""; adorned = tru
 end
 
 """
-    show( io :: IO, est :: Vector{ GrumpsEstimate{T} }, s :: String = ""; adorned = true, header = false, printstde = true, printtstat = true ) 
+    show( io :: IO, est :: Vector{ GrumpsEstimate{T} }, s :: String = ""; keywords... )
+
+Shows a vector of estimates on `io` using the string `s` (typically one of θ,β,δ).  The
+command takes the following optional keywords.
+    
+| Keyword      | Description            | Default |
+|:-------------|:-----------------------|:--------|
+| `adorned`    | make output pretty?    | `true`  |
+| `printstde`  | print standard errors? | `true`  |
+| `printtstat` | print t statistics?    | `true`  | 
+| `header`     | descriptive header?    | `false` |
 """
 function show( io :: IO, est :: Vector{ GrumpsEstimate{T} }, s :: String = ""; adorned = true, header = false, printstde = true, printtstat = true ) where {T<:Flt}
     header && prstyledln( io, adorned, "Coefficient estimates for $s: "; bold = true, color = :green )
@@ -104,9 +134,15 @@ function show( io :: IO, est :: Vector{ GrumpsEstimate{T} }, s :: String = ""; a
 end
 
 """
-    show( io :: IO, convergence :: GrumpsConvergence{T}; header = false, adorned = true ) 
+    show( io :: IO, convergence :: GrumpsConvergence{T}; keywords...) 
 
-Shows the contents of `convergence`, where the flags indicated what should be printed and how.
+Shows the contents of `convergence`, where the flags indicated what should be printed and how, as indicated
+in the following table.
+
+| Keyword   | Description         | Default |
+|:----------|:--------------------|:--------|
+| `adorned` | make output pretty? | `true`  |
+| `header`  | descriptive header? | `false` |
 """
 function show( io :: IO, convergence :: GrumpsConvergence{T}; header = false, adorned = true ) where {T<:Flt }
     header && prstyledln( io, adorned, "Convergence criteria:"; bold = true, color = :green )
@@ -118,9 +154,18 @@ function show( io :: IO, convergence :: GrumpsConvergence{T}; header = false, ad
 end
 
 """
-    show( io :: IO, sol :: GrumpsSolution{T}; adorned = true, printθ = true, printβ = true, printδ = false, printconvergence = true ) 
+    show( io :: IO, sol :: GrumpsSolution{T}; keywords... ) 
 
-Shows the contents of `sol`, where the flags indicated what should be printed and how.  
+Shows the contents of `sol`, where the keywords indicate what should be printed and how, as
+described in the table below.
+
+| Keyword            | Description            | Default |
+|:-------------------|:-----------------------|:--------|
+| `adorned`          | make output pretty?    | `true`  |
+| `printθ`           | print θ results?       | `true`  |
+| `printβ`           | print β results?       | `true`  |
+| `printδ`           | print δ results?       | `false` |
+| `printconvergence` | convergence stats?     | `true`  |
 """
 function show( io :: IO, sol :: GrumpsSolution{T}; adorned = true, printθ = true, printβ = true, printδ = false, printconvergence = true ) where {T<:Flt}
     prstyledln( io, adorned, "Coefficient estimates:"; bold = true )
@@ -188,14 +233,14 @@ function Grumpsshow( io :: IO, mt, sol :: GrumpsSolution{T}; colsep = ",", print
 end
 
 """
-    show( io :: IO, mt :: MIME{Symbol("text/tex")}, sol :: GrumpsSolution; kwargs... )
+    show( io :: IO, mt :: MIME{Symbol("text/tex")}, sol :: GrumpsSolution; keywords... )
 
 This is the same as [`Save()`](@ref) except that the contents are spit out on io (which could be `stdout` or
 an already opened file).
 """
 show( io :: IO, mt :: MimeTex, sol :: GrumpsSolution; kwargs... ) = Grumpsshow( io, mt, sol )
 """
-    show( io :: IO, mt :: MIME{Symbol("text/csv")}, sol :: GrumpsSolution; kwargs... )
+    show( io :: IO, mt :: MIME{Symbol("text/csv")}, sol :: GrumpsSolution; keywords... )
 
 This is the same as [`Save()`](@ref) except that the contents are spit out on io (which could be `stdout` or
 an already opened file).
@@ -222,13 +267,21 @@ function infermimetype( fn :: AbstractString )
 end
 
 """
-    Save( fn, mt, sol :: GrumpsSolution; colsep = ",", printθ = true, printδ = false, printβ = true, printconvergence = true )
+    Save( fn, mt, sol :: GrumpsSolution; keywords... )
 
-Saves the solution stored in `sol` to a file with filename `fn` which has mime type `mt`, saving θ, δ, β coefficients
-and convergence statistics depending on the flags `printθ`, `printδ`, `printβ`, `printconvergence` and using a column
-separator `colsep` wherever relevant. The flag `printconvergence` may be ignored for some mime types, e.g. `text/csv`.
+Saves the solution stored in `sol` to a file with filename `fn` which has mime type `mt`.  
 
-Allowed mime types are currently `text/plain`, `text/csv`, and `text/tex`.
+There are several keywords that are described below, some of which will be ignored for
+some mime types.  Allowed mime types are `text/plain`, `text/csv`, and `text/tex`.
+
+| Keyword            | Description            | Default |
+|:-------------------|:-----------------------|:--------|
+| `colsep`           | column separator       | `","`   |
+| `adorned`          | make output pretty?    | `true`  |
+| `printθ`           | print θ results?       | `true`  |
+| `printβ`           | print β results?       | `true`  |
+| `printδ`           | print δ results?       | `false` |
+| `printconvergence` | convergence stats?     | `true`  |
 """
 function Save( fn :: AbstractString, mt :: MimeText, x :: Any; kwargs... )
     open( fn, "w" ) do fl
@@ -238,10 +291,22 @@ function Save( fn :: AbstractString, mt :: MimeText, x :: Any; kwargs... )
 end
 
 """
-    Save( fn, sol :: GrumpsSolution; colsep = ",", printθ = true, printδ = false, printβ = true, printconvergence = true )
+    Save( fn, sol :: GrumpsSolution; keywords... )
 
 The same as the form of `Save` with prespecified mime type except that the mime type is now inferred from
-the file extension.
+the file extension.  The keywords also have the same meaning, namely...
+
+There are several keywords that are described below, some of which will be ignored for
+some mime types.  Allowed mime types are `text/plain`, `text/csv`, and `text/tex`.
+
+| Keyword            | Description            | Default |
+|:-------------------|:-----------------------|:--------|
+| `colsep`           | column separator       | `","`   |
+| `adorned`          | make output pretty?    | `true`  |
+| `printθ`           | print θ results?       | `true`  |
+| `printβ`           | print β results?       | `true`  |
+| `printδ`           | print δ results?       | `false` |
+| `printconvergence` | convergence stats?     | `true`  |
 """
 function Save( fn :: AbstractString, x :: Any; kwargs... )
     return Save( fn, infermimetype( fn ), x; kwargs... )
