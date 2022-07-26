@@ -16,17 +16,46 @@ mutable struct GrumpsEstimate{T<:Flt}
 end
 
 
+mutable struct GrumpsConvergence{T<:Flt}
+    minimum                 :: T
+    iterations              :: Int
+    iteration_limit_reached :: Bool
+    converged               :: Bool
+    f_converged             :: Bool
+    g_converged             :: Bool
+    x_converged             :: Bool
+    f_calls                 :: Int
+    g_calls                 :: Int
+    h_calls                 :: Int
+
+    function GrumpsConvergence( T2 :: Type )
+        new{T2}( typemax( T2 ), 0, false, false, false, false, false, 0, 0, 0 )
+    end
+end
+
+minimum( c :: GrumpsConvergence ) = c.minimum
+iterations( c :: GrumpsConvergence ) = c.iterations
+iteration_limit_reached( c :: GrumpsConvergence ) = c.iteration_limit_reached
+converged( c :: GrumpsConvergence ) = c.converged
+f_converged( c :: GrumpsConvergence ) = c.f_converged
+g_converged( c :: GrumpsConvergence ) = c.g_converged
+h_converged( c :: GrumpsConvergence ) = c.h_converged
+f_calls( c :: GrumpsConvergence ) = c.f_calls
+g_calls( c :: GrumpsConvergence ) = c.g_calls
+h_calls( c :: GrumpsConvergence ) = c.h_calls
+
+
 mutable struct GrumpsSolution{T<:Flt} <: Solution{T}
     θ   :: Vec{ GrumpsEstimate{T} }
     β   :: Vec{ GrumpsEstimate{T} }
     δ   :: Vec{ GrumpsEstimate{T} }
-
+    convergence :: GrumpsConvergence{T}
 
     function GrumpsSolution( T2 :: Type, θn :: Vec{String}, βn :: Vec{String}, δn :: Vec{String} )
         θ = [ GrumpsEstimate( θn[i], typemax( T2 ), nothing, nothing ) for i ∈ eachindex( θn ) ]
         β = [ GrumpsEstimate( βn[i], typemax( T2 ), nothing, nothing ) for i ∈ eachindex( βn ) ]
         δ = [ GrumpsEstimate( δn[i], typemax( T2 ), nothing, nothing ) for i ∈ eachindex( δn ) ]
-        new{T2}(  θ, β, δ )
+        new{T2}(  θ, β, δ, GrumpsConvergence( T2 ) )
     end 
 end
 

@@ -2,7 +2,7 @@
 
 include( "packages/packages.jl" )
 
-import Base.show, Base.Threads.@threads, Base.Threads.nthreads, Base.Threads.threadid, Base.Threads.@spawn
+import Base.show, Base.Threads.@threads, Base.Threads.nthreads, Base.Threads.threadid, Base.Threads.@spawn, Base.minimum
 
 
 

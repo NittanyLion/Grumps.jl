@@ -21,14 +21,14 @@ seprocedure( ::GrumpsGMM ) = :notyetimplemented
 
 struct GrumpsMultinomialLogitEstimator <: GrumpsMLE
     function GrumpsMultinomialLogitEstimator() 
-        @warn "not yet implemented"
+        @ensure false "GrumpsMultinomialLogitEstimator not yet implemented"
         new()
     end
 end
 
 struct GrumpsBLPEstimator <: GrumpsPenalized
     function GrumpsBLPEstimator() 
-        @warn "not yet implemented"
+        @ensure false "GrumpsBLPEstimator not yet implemented"
         new()
     end
 end

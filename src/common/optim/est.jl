@@ -27,7 +27,6 @@ function grumps!( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstar
         solution    = Solution( e, d, seo )
         
         δ           = [ zeros( T, dimm ) for dimm ∈ dimδm( d )  ]
-        # CheckSanity( e, d, o, s )
         oldx = zeros( T, dimθ( d ) )
         repeatx = zeros( Int, 1 )
 
@@ -51,13 +50,14 @@ function grumps!( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstar
         θ = getθ( θtr, d )
         Unbalance!( θ, d )
 
-        ObjectiveFunctionθ!( fgh, zero(T), nothing, nothing, θtr , δ, e, d, o, s )         # pick up δ
+        ObjectiveFunctionθ!( fgh, zero(T), nothing, nothing, θtr, δ, e, d, o, s )         # pick up δ
     end
     
     δvec = vcat( δ... )
 
     Computeβ!( solution, δvec, d )
     SetResult!( solution, θ, δvec, nothing )
+    SetConvergence!( solution, result )
     Unbalance!( fgh, d )
 
     ses!( solution, e, d, fgh, seo )
