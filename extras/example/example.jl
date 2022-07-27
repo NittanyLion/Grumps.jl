@@ -83,12 +83,16 @@ for nodes ∈ [ 11 ] # , 17, 25]
     for draws ∈ [ 10_000 ]  # , 100_000 ]
         # other descriptive strings are allowed, as are the exact symbols
         for meth ∈ [ "grumps", "mle", "grumps share constraints", "mixed logit", "gmm" ]         
-            @info "$nodes $draws $meth"
+            # run the program
             sol = myprogram( nodes, draws, meth ) 
+            # get the θ coefficients only 
             println( getθcoef( sol ), "\n" )
-            println( sol, "\n" )
-            Save( "_results_$(meth)_$(nodes)_$(draws).csv", sol )
+            # get the minimum only
             println( Grumps.minimum( sol ) )
+            # print the entire solution
+            println( sol, "\n" )
+            # save the results to a CSV file
+            Save( "_results_$(meth)_$(nodes)_$(draws).csv", sol )
         end
     end
 end
