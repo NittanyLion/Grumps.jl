@@ -30,18 +30,7 @@ end
 
 
 function SetConvergence!( c :: GrumpsConvergence{T}, r ) where {T<:Flt}
-    # c.minimum = minimum( r )
-    # c.iterations = Optim.iterations( r )
-    # c.iteration_limit_reached = Optim.iteration_limit_reached( r )
-    # c.converged = Optim.converged( r )
-    # c.f_converged = Optim.f_converged( r )
-    # c.g_converged = Optim.g_converged( r )
-    # c.x_converged = Optim.x_converged( r )
-    # c.f_calls = Optim.f_calls( r )
-    # c.g_calls = Optim.g_calls( r )
-    # c.h_calls = Optim.h_calls( r )
     for fld ∈ fieldnames( GrumpsConvergence )
-        println( "type of $fld = ", typeof( getfield( Optim, fld )( r ) ) )
         setfield!( c, fld, getfield( Optim, fld )( r ) )
     end
     return nothing
