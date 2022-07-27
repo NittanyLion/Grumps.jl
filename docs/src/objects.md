@@ -96,7 +96,9 @@ Once all data structures have been put together, one can call the algorithm.  Th
 
 As noted above, Grumps will return its results in a `GrumpsSolution` variable that can be queried or saved as follows.  You can also simply call one of the `print` or 
 related functions on any of these objects.
-**to be expanded**
+
+Finally, you can call any of `minimum`, `iterations`, `iteration_limit_reached`, `converged`, `f_converged`, `g_converged`, `x_converged`, `f_calls`, `g_calls`, `h_calls`,
+`f_trace`, `g_norm_trace`, `x_trace` on a `GrumpsSolution` or a `GrumpsConvergence` object in the same way that you would query the return value in the [Optim package](https://github.com/JuliaNLSolvers/Optim.jl/), albeit that they are not in the namespace by default so use `Grumps.converged` instead of `converged`.
 
 ```@docs
 getθ( sol :: GrumpsSolution )

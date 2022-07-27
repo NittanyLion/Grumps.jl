@@ -88,6 +88,7 @@ for nodes ∈ [ 11 ] # , 17, 25]
             println( getθcoef( sol ), "\n" )
             println( sol, "\n" )
             Save( "_results_$(meth)_$(nodes)_$(draws).csv", sol )
+            println( Grumps.minimum( sol ) )
         end
     end
 end

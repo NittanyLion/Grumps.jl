@@ -41,8 +41,8 @@ function SetConvergence!( c :: GrumpsConvergence{T}, r ) where {T<:Flt}
     # c.g_calls = Optim.g_calls( r )
     # c.h_calls = Optim.h_calls( r )
     for fld ∈ fieldnames( GrumpsConvergence )
-        eval( :( local val = Optim.$fld( r ) ) )
-        setfield!( c, fld, val )
+        println( "type of $fld = ", typeof( getfield( Optim, fld )( r ) ) )
+        setfield!( c, fld, getfield( Optim, fld )( r ) )
     end
     return nothing
 end
@@ -148,8 +148,11 @@ in the following table.
 function show( io :: IO, convergence :: GrumpsConvergence{T}; header = false, adorned = true ) where {T<:Flt }
     header && prstyledln( io, adorned, "Convergence criteria:"; bold = true, color = :green )
     for f ∈ fieldnames( typeof( convergence ) )
-        prstyled( io, adorned, @sprintf( "%30s: ", f ); bold = true)
-        println( io, getfield( convergence, f) )
+        lastonly = occursin( "trace", String( f ) )
+        ℓ = lastonly ? " (last)" : ""
+        prstyled( io, adorned, @sprintf( "%30s: ", string( f, ℓ ) ); bold = true)
+        contents = getfield( convergence, f)
+        println( io, lastonly ? ( length( contents) > 0 ? contents[end] : "none" ) : contents )
     end
     return nothing
 end
