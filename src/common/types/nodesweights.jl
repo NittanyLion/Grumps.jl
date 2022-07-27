@@ -68,11 +68,26 @@ struct MSMMicroIntegrator{T<:Flt} <: MicroIntegrator{T}
     n   :: Int
 end
 
+
+"""
+    MSMMicroIntegrator( n :: Int, T = F64 )
+
+Creates a Monte Carlo integrator type for *micro* integration with GMM with smart moments.  The optional type can be omitted.
+"""
 function MSMMicroIntegrator( n :: Int, T = F64 )
     @ensure n > 0  "n must be positive"
     MSMMicroIntegrator{T}( n )
 end
 
+"""
+    MSMMicroIntegrator( T = F64 )
+
+Creates a Monte Carlo integrator type for *micro* integration with GMM with smart moments with 10 MC draws (per consumer).
+The type variable is optional and can be omitted.
+"""
+function MSMMicroIntegrator( T = F64 )
+    MSMMicroIntegrator{T}( 10 )
+end
 
 abstract type MacroIntegrator{T<:Flt} <: GrumpsIntegrator{T} end
 

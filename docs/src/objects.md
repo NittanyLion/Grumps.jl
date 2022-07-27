@@ -72,6 +72,7 @@ The procedure is to create the integrators using a call to BothIntegrators with 
 BothIntegrators( :: MicroIntegrator{T}, ::MacroIntegrator{T} ) where {T<:AbstractFloat}
 DefaultMicroIntegrator( ::Int, ::Type )
 DefaultMacroIntegrator( ::Int, ::Type )
+MSMMicroIntegrator( :: Int, ::Type )
 ```
 
 
