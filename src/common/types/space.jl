@@ -141,6 +141,8 @@ struct GrumpsMarketSpace{T<:Flt} <: MarketSpace{T}
     memblockindex  :: Int
 end
 
+@todo 3 "replace << with just an index to the pointer method"
+@todo 3 "could just redo all of this as views and reshape, but that would require abstract arrays throughout"
 
 function GrumpsMarketSpace( d :: GrumpsMarketData{T}, memblock :: MemBlock{T}, m :: Int ) where {T<:Flt}
     b = memblock.revdiv[m]          # which memory block are we using?
