@@ -72,7 +72,7 @@ function ObjectiveFunctionθ!(
     copyto!( s.currentθ, θ )                                         # copy the current θ
 
     mom = sum( fgh.market[m].mom for m ∈ markets )
-    println( "moment = $mom")
+    # println( "moment = $mom")
     if computeF
         F = dot( mom, mom )
     end
@@ -107,8 +107,8 @@ function ObjectiveFunctionθ!(
         copyto!( Garg, G )
     end
 
-    computeG && println( "gradient = $G")
-    computeH && println( "Hessian = $(round.(H;digits=5)) ")
+    # computeG && println( "gradient = $G")
+    # computeH && println( "Hessian = $(round.(H;digits=5)) ")
     return F
 end
 
