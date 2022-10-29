@@ -84,9 +84,12 @@ function CreateK( e :: Union{ GrumpsPenalized, GrumpsGMM }, s :: Sources, v :: V
     end
     UZ, = svd( Ztilde; alg = LinearAlgebra.QRIteration() )
     UX, = svd( Xtilde; alg = LinearAlgebra.QRIteration() )
-    V = dregs > 0 ? UZ * nullspace( UZ'UX ) : UZ
+
+    # ****** CHECK THE NEXT LINE CAREFULLY
+    V = dregs > 0 ? UZ * nullspace( UX'UZ ) : UZ
 
     @ensure rank( V ) == dinst - dregs "underidentified"
+    # exit()
     return V / sqrt( σ2 )
 end
 
