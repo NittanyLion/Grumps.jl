@@ -102,7 +102,7 @@ function GrumpsMicroDataMode( dfp, mkt, nw :: NodesWeights, T, u, v, y, Y, Z, �
         @ensure size(X,2) == size(X2,2)  "user-created random coefficient matrix has the wrong second dimension"
         X = cat( X, X2; dims = size(X,4) )
     end
-    return GrumpsMicroDataHog( String(mkt), Z, X, y, Y, nw.weights, ℳ )
+    return size(Z,1) > 0 ? GrumpsMicroDataHog( String(mkt), Z, X, y, Y, nw.weights, ℳ ) : GrumpsMicroNoData( String(mkt) )
 end
 
 
@@ -113,7 +113,7 @@ function GrumpsMicroDataMode( dfp, mkt, nw :: NodesWeights, T, u, v, y, Y, Z, �
     @ensure typeof( u ) <: DefaultUserEnhancement  "Cannot have micro memory mode Ant with user enhancements"
     𝒳 = ExtractMatrixFromDataFrame( T, dfp, v.randomcoefficients )
     𝒟 = nw.nodes
-    return GrumpsMicroDataAnt{T}( String(mkt), Z, 𝒳, 𝒟, y, Y, nw.weights, ℳ )
+    return size(Z,1) > 0 ? GrumpsMicroDataAnt{T}( String(mkt), Z, 𝒳, 𝒟, y, Y, nw.weights, ℳ ) : GrumpsMicroNoData{T}( String(mkt) )
 end
 
 

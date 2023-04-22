@@ -6,9 +6,9 @@ function show( io :: IO, d :: GrumpsMacroDataAnt{T}; adorned = true ) where {T<:
                [ "float type: ", T ],
                [ "𝒳: ", string( size( d.𝒳, 1 ), " by ", size( d.𝒳 ,2 ) )  ],
                [ "𝒟: ", string( size( d.𝒟, 1 ), " by ", size( d.𝒟, 2 ) ) ],
-               [ "s: ", string( "sum to ", sum( d.s ) ) ],
+               [ "s: ", string( "sum to ", safesum( d.s ) ) ],
                [ "market size (net of micro): ", d.N ],
-               [ "weights: ", string( "sum to ", sum(d.w) ) ] ]
+               [ "weights: ", string( "sum to ", safesum(d.w) ) ] ]
         prpair( adorned,  pr[1], pr[2] )
     end
     return nothing 
@@ -21,9 +21,9 @@ function show( io :: IO, d :: GrumpsMacroDataHog{T}; adorned = true ) where {T<:
                [ "memory mode: ", "Ant" ],
                [ "float type: ", T ],
                [ "𝒜: ", string( size( d.𝒜, 1 ), " by ", size( d.𝒜 ,2 ), " by ", size( d.𝒜, 3 ) )  ],
-               [ "s: ", string( "sum to ", sum( d.s ) ) ],
+               [ "s: ", string( "sum to ", safesum( d.s ) ) ],
                [ "market size (net of micro): ", d.N ],
-               [ "weights: ", string( "sum to ", sum(d.w) ) ] ]
+               [ "weights: ", string( "sum to ", safesum(d.w) ) ] ]
         prpair( adorned,  pr[1], pr[2] )
     end
     return nothing 
@@ -47,9 +47,9 @@ function show( io :: IO, d :: GrumpsMicroDataHog{T}; adorned = true ) where {T<:
                [ "float type: ", T ],
                [ "Z: ", string( size( d.Z, 1 ), " by ", size( d.Z ,2 ), " by ", size( d.Z, 3 ) )  ],
                [ "X: ", string( size( d.X, 1 ), " by ", size( d.X ,2 ), " by ", size( d.X, 3 ) )  ],
-               [ "y: ", string( "range ", "$(minimum( d.y )) to $(maximum( d.y ) )" ) ],
-               [ "Y: ", string( "sum to ", sum( d.Y ) ) ],
-               [ "weights: ", string( "sum to ", sum(d.w) ) ] ]
+               [ "y: ", string( "range ", "$(safeminimum( d.y )) to $(safemaximum( d.y ) )" ) ],
+               [ "Y: ", string( "sum to ", safesum( d.Y ) ) ],
+               [ "weights: ", string( "sum to ", safesum(d.w) ) ] ]
 
         prpair( adorned,  pr[1], pr[2] )
     end
@@ -65,9 +65,9 @@ function show( io :: IO, d :: GrumpsMicroDataAnt{T}; adorned = true ) where {T<:
                [ "Z: ", string( size( d.Z, 1 ), " by ", size( d.Z ,2 ), " by ", size( d.Z, 3 ) )  ],
                [ "𝒳: ", string( size( d.𝒳, 1 ), " by ", size( d.𝒳 ,2 ) ) ],
                [ "𝒟: ", string( size( d.𝒟, 1 ), " by ", size( d.𝒟 ,2 ) ) ],
-               [ "y: ", string( "range ", "$(minimum( d.y )) to $(maximum( d.y ) )" ) ],
-               [ "Y: ", string( "sum to ", sum( d.Y ) ) ],
-               [ "weights: ", string( "sum to ", sum(d.w) ) ] ]
+               [ "y: ", string( "range ", "$(safeminimum( d.y )) to $(safemaximum( d.y ) )" ) ],
+               [ "Y: ", string( "sum to ", safesum( d.Y ) ) ],
+               [ "weights: ", string( "sum to ", safesum(d.w) ) ] ]
 
         prpair( adorned,  pr[1], pr[2] )
     end

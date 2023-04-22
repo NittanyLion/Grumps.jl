@@ -23,7 +23,7 @@ struct GrumpsMicroSpace{T<:Flt} <: MicroSpace{T}
     function GrumpsMicroSpace( R :: Int, S :: Int, J :: Int, dθ :: Int, mustrecompute :: Bool, T2 :: Type = F64 )
 
         @ensure R > 0  "must have at least one draw"
-        @ensure S > 0  "must have at least one consumer"
+        # @ensure S > 0  "must have at least one consumer"
         @ensure J > 1 "must have at least one inside product"
         @ensure dθ > 0 "must have at least one theta coefficient"
         new{T2}( 

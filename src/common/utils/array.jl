@@ -29,3 +29,8 @@ function findstringinarray( needle, haystack, message )
     ff == nothing && throwargerr( message ) 
     return ff
 end
+
+
+safesum( x ) = sum( x; init = zero( eltype(x) ) )
+safeminimum( x ) = minimum( x; init = zero( eltype(x) ) )
+safemaximum( x ) = maximum( x; init = zero( eltype(x) ) )

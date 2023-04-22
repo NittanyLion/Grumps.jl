@@ -90,6 +90,10 @@ end
 
 struct GrumpsMicroNoData{T<:Flt} <: GrumpsMicroData{T}
     name    :: String
+
+    function GrumpsMicroNoData( s :: String, T2 :: Type = Float64 )
+        new{T2}( s )
+    end
 end
 
 

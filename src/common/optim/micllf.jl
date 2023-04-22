@@ -43,6 +43,7 @@ function MicroObjectiveδ!(
     computeF, computeG, computeH = computewhich( F, G, H )
 
     F = SetZero!( setzero, F, G, H, nothing )                                       # set F,G,H to zero if so desired
+    length( consumers ) == 0 && return F
 
     ChoiceProbabilities!( s, d, o, δ )                                             # fill s with some goodies
 
@@ -84,10 +85,10 @@ function MicroObjectiveθ!(
     G           :: GType{T}, 
     Hθθ         :: HType{T}, 
     Hδθ         :: HType{T},
-    θ           :: AA1{T},
-    δ           :: AA1{T},
-    d           :: GrumpsMicroNoData, 
-    s           :: MicroSpace{T},
+    θ           :: A1{T},
+    δ           :: A1{T},
+    d           :: GrumpsMicroNoData{T}, 
+    s           :: GrumpsMicroNoSpace{T},
     o           :: OptimizationOptions, 
     setzero     :: Bool = true 
     ) where {T<:Flt}
