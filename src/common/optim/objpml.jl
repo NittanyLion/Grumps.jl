@@ -84,8 +84,7 @@ function ObjectiveFunctionθ!(
 
     end
 
-    copyto!( s.currentθ, θ )                                        
-
+    copyto!( s.currentθ, θ )        
     ranges = Ranges( δ )
     Kδ = sum( d.plmdata.𝒦[ranges[m],:]'δ[m] for m ∈ markets )
     if computeF
