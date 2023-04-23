@@ -1,5 +1,17 @@
+# The functions below are used to create data objects for the micro likelihood.
 
 
+
+"""
+    CreateChoices( 
+        dfc         :: AbstractDataFrame, 
+        v           :: Variables, 
+        products    :: Vec{<:AbstractString} 
+        )
+
+    CreateChoices reads data from a dataframe and turns them into an integer vector y and a 
+    Boolean matrix Y of choices.  
+"""
 function CreateChoices( dfc :: AbstractDataFrame, v :: Variables, products :: Vec{<:AbstractString} )
     MustBeInDF( v.choice, dfc, "consumer data frame" ) 
 
@@ -15,6 +27,16 @@ function CreateChoices( dfc :: AbstractDataFrame, v :: Variables, products :: Ve
 end
 
 
+"""
+    CreateInteractions( 
+        dfc         :: AbstractDataFrame, 
+        dfp         :: AbstractDataFrame, 
+        v           :: Variables, 
+        T           = F64 
+        )
+        
+    CreateInteractions reads data from consumer and product dataframes and returns an array of interactions.
+"""
 function CreateInteractions( dfc:: AbstractDataFrame, dfp:: AbstractDataFrame, v :: Variables, T = F64 )
     MustBeInDF( v.interactions[:,1], dfc, "consumer data frame" )
     MustBeInDF( v.interactions[:,2], dfp, "product data frame" )
@@ -29,7 +51,17 @@ function CreateInteractions( dfc:: AbstractDataFrame, dfp:: AbstractDataFrame, v
     return Z
 end
 
+"""
+    CreateMicroInstruments( 
+        dfc         :: AbstractDataFrame, 
+        dfp         :: AbstractDataFrame, 
+        v           :: Variables, 
+        usesmicmom  :: Bool, 
+        T = F64 
+        )
 
+    CreateMicroInstruments is used for the MSM version of our estimator, which is not recommended.
+"""
 function CreateMicroInstruments( dfc:: AbstractDataFrame, dfp:: AbstractDataFrame, v :: Variables, usesmicmom :: Bool, T = F64 )
     S, dδ = nrow( dfc ), nrow( dfp ) 
     J = dδ + 1
@@ -54,6 +86,16 @@ function CreateMicroInstruments( dfc:: AbstractDataFrame, dfp:: AbstractDataFram
 end
 
 
+"""
+    CreateRandomCoefficients( 
+        dfp         :: AbstractDataFrame, 
+        v           :: Variables, 
+        nw          :: NodesWeights, 
+        T            = F64 
+        )
+
+    CreateRandomCoefficients takes a dataframe and random draws and turns it into random coefficients data.   
+"""
 function CreateRandomCoefficients( dfp :: AbstractDataFrame, v :: Variables, nw :: NodesWeights, T = F64 )
     MustBeInDF( v.randomcoefficients, dfp, "product data frame" )
     R = length( nw.weights )

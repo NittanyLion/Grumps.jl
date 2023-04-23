@@ -1,4 +1,4 @@
-
+# The functions below return dimensions info for Grumps objects
 
 
 dimθz( d :: GrumpsMicroDataHog )    = size( d.Z, 3 )
@@ -68,7 +68,6 @@ dimmom( d :: GrumpsPLMData ) = d.dmom
 
 dimJ( d ) = dimδm( d ) + 1
 
-# *************** PUT IN DIMS FOR ANT AND MACRO
 
 
 dimθ( d :: Dimensions )     = d.θ

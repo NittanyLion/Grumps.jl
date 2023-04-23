@@ -1,3 +1,6 @@
+# The function below produces a data object used for processing the macro likelihood.
+
+
 
 """
     GrumpsMacroData( 

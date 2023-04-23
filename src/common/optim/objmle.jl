@@ -24,9 +24,6 @@ function ObjectiveFunctionθ1!(
 
     # if recompute
     initializelastδ!( s, m )
-    grumpsδ!( fgh.inside, θ, δ, e, d, o, s.marketspace[m], m )      # compute δs in the inner loop and store them in s.δ
-    # else
-        # @warn "did not recompute δ"
     # end
     
 
@@ -82,9 +79,6 @@ function ObjectiveFunctionθ!(
             ) 
     end
     copyto!( s.currentθ, θ )                                        
-
-    # @warn "take this gc call out or make it optional"
-    # GC.gc()
 
     if computeF
         F = sum( fgh.market[m].outside.F[1] for m ∈ markets )

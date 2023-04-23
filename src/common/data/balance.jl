@@ -1,7 +1,13 @@
+# The functions below deal with balancing of the data.
+# This refers to scaling the data before optimizing.
+# Unbalancing then reverses this action.
+
+
+
 function computeμσ( μ :: T, σ :: T, count :: Int ) where {T<:Flt}
     μ /= count
     σ = σ / count - μ^2 
-    σ = σ > sqrt( eps( T ) ) ? sqrt( σ ) : zero( T )  # PERHAPS I SHOULD EXPOSE THIS CONSTANT
+    σ = σ > sqrt( eps( T ) ) ? sqrt( σ ) : zero( T )  
     μ, σ
 end
 
@@ -78,7 +84,6 @@ function Balance!( Md :: GrumpsMacroDataAnt{T}, t :: Int, σ :: T ) where {T<:Fl
 end
 
 
-
 function Balance!( gd :: GrumpsData{T}, scheme :: Val{ :micro } ) where {T<:Flt}
    
     dθ = length( gd.balance )
@@ -109,30 +114,6 @@ function Balance!( gd :: GrumpsData{T}, scheme :: Val{ :micro } ) where {T<:Flt}
         for m ∈ activemarkets
             local μadd, σadd, countadd = BalanceXConstants( gd.marketdata[m].microdata, t )
             μ += μadd;  σ += σadd; count += countadd
-            # local md = gd.marketdata[m].microdata
-            # if typeof( md ) <: GrumpsMicroDataHog 
-            #     R = size( md.X, 1 )
-            #     J = size( md.X, 2 )
-            #     local insides = 1:J-1
-            #     μ += sum( md.X[:, insides, t ] )
-            #     σ += sum( md.X[:, insides, t ].^2 )
-            #     count += (J-1) * R
-            # elseif typeof( md ) <: GrumpsMicroDataAnt
-            #     J = size( md.𝒳, 1 )
-            #     R = size( md.𝒟, 1 )
-            #     local insides = 1:J-1
-            #     μ += sum( md.𝒳[ j, t ] * md.𝒟[ r, t ] for j ∈ insides, r ∈ 1:R )
-            #     σ += sum( ( md.𝒳[ j, t ] * md.𝒟[ r,t ] )^2 for j ∈ insides, r ∈ 1:R )
-            #     count += (J-1) * R
-            # elseif typeof( md ) <: MSMMicroDataHog 
-            #     R = size( md.X, 2 )
-            #     J = size( md.X, 3 )
-            #     local insides = 1:J-1
-            #     μ += sum( md.X[:,:, insides, t ] )
-            #     σ += sum( md.X[:,:, insides, t ].^2 )
-            #     count += (J-1) * R * size( md.X, 1 )
-            # else @ensure false "Type $(typeof(md)) not yet implemented"
-            # end
         end
         @ensure count > 1  "need more than one consumer to balance"
         μ, σ = computeμσ( μ, σ, count )
@@ -147,19 +128,6 @@ function Balance!( gd :: GrumpsData{T}, scheme :: Val{ :micro } ) where {T<:Flt}
     @threads :dynamic for t ∈ 1:dθ
         for m ∈ eachindex( gd.marketdata )
             Balance!( gd.marketdata[m].macrodata, t, gd.balance[t].σ )
-            # local Md = gd.marketdata[m].macrodata
-            # local bal = gd.balance[t]
-            # tp = typeof( Md  )
-            # if  tp <: GrumpsMacroNoData 
-            #     continue
-            # elseif tp <: GrumpsMacroDataHog
-            #     Md.A[:,:,t] ./= bal.σ
-            # elseif tp <: GrumpsMacroDataAnt
-            #     # Md.𝒳[:,t] .-= bal.μ
-            #     Md.𝒳[:,t] ./= bal.σ
-            # else
-            #     @ensure false "unknown type"
-            # end
         end
     end
     return nothing
@@ -216,11 +184,4 @@ function Unbalance!( fgh :: FGH{T}, gd :: GrumpsData{T} ) where {T<:Flt}
     return nothing
 end
 
-# function Balance!( scheme :: BalancingScheme, gd :: GrumpsData{T} ) where {T<:Flt}
-#     if usemicro 
-#         @ensure anymicrodata( gd ) "there are no micro data to balance with"
-#         return Balance!( scheme, gd, Val( :micro ) )
-#     end
-#     @ensure anymacrodata( gd ) "there are no macro data to balance with"
-#     return Balance!( scheme, gd, Val( :macro ) )
-# end
+

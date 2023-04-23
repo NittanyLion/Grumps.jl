@@ -1,0 +1,10 @@
+read the manual on github
+read the paper at http://joris.pinkse.org/paper/grumps/
+this is a preliminary version
+still need to put in designed quadrature, so go easy on the random coefficients
+does not do CUDA
+uses multithreading, but no distributed computing
+a new option which increases speed and reduces memory load will be added soon
+because of the way the random numbers for MC integration are drawn / multithreading, successive optimizations with the same data may not produce the exact same results
+if you see unexpected behavior, please send me code and data so that I can replicate
+please direct all questions/suggestions/comments to Joris Pinkse at joris@psu.edu

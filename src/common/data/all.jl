@@ -1,3 +1,7 @@
+# The functions below take user inputs and create Grumps data objects.
+# Each of these functions then calls separate routines to process micro likelihood
+# data, macro likelihood data, and product level moments data.
+
 
 """
     GrumpsData( 
@@ -53,7 +57,6 @@ function GrumpsData(
     @ensure isa( s.products, DataFrame )   "was expecting a DataFrame for product data"
     AddConstant!( s.products )
     MustBeInDF( [ v.market; v.product ], s.products, "products" )
-    # **** TEST WHETHER THINGS MAKE SENSE; CAN'T HAVE INTERACTIONS AND NO MICRO DATA FOR INSTANCE
     
     markets = sort( unique( string.( s.products[:,v.market] ) ) )
     M = length( markets )
@@ -66,7 +69,6 @@ function GrumpsData(
     dθν = length( v.randomcoefficients ) + dim( u, :randomcoefficients )
     dθ = dθν + size(v.interactions,1) + dim( u, :interactions )
 
-    # ranges = SplitEqually( M, nthreads() )
     # process data needed for the micro likelihood
     @warnif !usesmicrodata( e ) && isa( s.consumers, DataFrame ) "ignoring the consumer information you specified since it is not used for this estimator type"
     @ensure !usesmicrodata( e ) || isa( s.consumers, DataFrame ) "this estimator type requires consumer information; please pass consumer info in Sources"
@@ -75,8 +77,6 @@ function GrumpsData(
     if isa( s.consumers, DataFrame ) && usesmicrodata( e )
         MustBeInDF( [ v.market, v.choice ], s.consumers, "consumers" )
         nwgmic = NodesWeightsGlobal( microintegrator( integrators ), dθν, rngs[1]  )
-        # @threads for th ∈ eachindex( ranges )
-            # for m ∈ ranges[th]
         @threads :dynamic for m ∈ 1:M
             acquire( sema )
             local th = threadid()
@@ -89,7 +89,6 @@ function GrumpsData(
             end
             release( sema )
         end
-        # end
     else
         for m ∈ 1:M
             mic[m] = GrumpsMicroNoData( markets[m] )
@@ -102,8 +101,6 @@ function GrumpsData(
     if isa( s.marketsizes, DataFrame ) && usesmacrodata( e )
         MustBeInDF( [ v.market, v.marketsize ], s.marketsizes, "market sizes" )
         nwgmac = NodesWeightsGlobal( macrointegrator( integrators ), dθ, s.draws, v, rngs[1] )
-        # @threads for th ∈ eachindex( ranges )
-            # for m ∈ ranges[th]
         @threads :dynamic for m ∈ 1:M
             acquire( sema )
             local th = threadid()
@@ -122,7 +119,6 @@ function GrumpsData(
                 end
                 release( sema )
             end
-        # end
     else
         for m ∈ 1:M
             mac[m] = GrumpsMacroNoData{T}( markets[m] )
