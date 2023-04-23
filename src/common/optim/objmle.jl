@@ -24,6 +24,7 @@ function ObjectiveFunctionθ1!(
 
     # if recompute
     initializelastδ!( s, m )
+    grumpsδ!( fgh.inside, θ, δ, e, d, o, s.marketspace[m], m )
     # end
     
 
@@ -94,7 +95,10 @@ function ObjectiveFunctionθ!(
     if computeG || computeH
         δθ = Vector{ Matrix{T} }(undef, markets[end] )
         @threads :dynamic for m ∈ markets
-            δθ[m] = - fgh.market[m].inside.Hδδ \ fgh.market[m].inside.Hδθ
+            δθ[m] = try - fgh.market[m].inside.Hδδ \ fgh.market[m].inside.Hδθ
+            catch 
+                @ensure false "Hessian with respect to δ is not invertible for market $m"
+            end
         end
     
         G[:] = sum( fgh.market[m].outside.Gθ +  δθ[m]' * fgh.market[m].outside.Gδ for m ∈ markets )

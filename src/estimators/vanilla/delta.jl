@@ -22,7 +22,7 @@ function  InsideObjective1!(
         o,
         true
          ) 
-      
+     
 
     F2 = MicroObjectiveδ!( 
         F1,
@@ -34,6 +34,7 @@ function  InsideObjective1!(
         o,
         false               # this is to indicate that things shouldn't be set to zero
          ) 
+
     
     return F2
 end

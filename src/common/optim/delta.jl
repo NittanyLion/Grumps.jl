@@ -27,7 +27,7 @@ function grumpsδ!(
         ) )
 
     copyto!( δ, result.minimizer )
-    copyto!( s.microspace.lastδ, δ )
+    typeof(s.microspace) ≠ GrumpsMicroNoSpace && copyto!( s.microspace.lastδ, δ )
     fgh.F .= InsideObjective1!( zero(T), fgh.Gδ, fgh.Hδδ, fgh.Hδθ, θ, δ, e, d, o, s )
 
     return nothing    

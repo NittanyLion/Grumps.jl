@@ -1,6 +1,6 @@
 read the manual on github
 read the paper at http://joris.pinkse.org/paper/grumps/
-this is a preliminary version
+this is a preliminary version: bugs are to be expected, sanity checking and documentation are incomplete
 still need to put in designed quadrature, so go easy on the random coefficients for now
 does not do CUDA
 uses multithreading, but no distributed computing

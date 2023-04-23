@@ -191,35 +191,10 @@ function ntr_solve_subproblem(
     M = length( H )
     !isfinite( H ) && return T(Inf), false, zero(T), false, false
 
-    # @timeit to "compute eigenvalues" begin
-    # H_eig = Vector{ Eigen{T, T, Matrix{T}, Vector{T} } }(undef, M)
-    # function computestuff( left, right, U )
-    #     local H_eig, H, Qg, QK = U
-    #     for m ∈ left:right
-    #         H_eig[m] = eigen( Symmetric( H[m] ) )
-    #         # we know the objective function is positive definite so negative eigenvalues are roundoff errors
-    #         for j ∈ eachindex( H_eig[m].values )
-    #             H_eig[m].values[j] ≥ zero( T ) && break
-    #             H_eig[m].values[j] = zero( T )
-    #         end
-    #         Qg[m] = H_eig[m].vectors' * gr[m]
-    #         QK[m] = H_eig[m].vectors' * K[m]
-    #     end
-    # end
-
-    # Qg = Vector{ Vector{T} }( undef, M )
-    # QK = Vector{ Matrix{T} }( undef, M )
-    # binaryrun( computestuff, 1, M,  1, (H_eig, H, Qg, QK ) )
-    # end
-
     ( vectors, values, Qg, QK ) = HeigenQgQK( H, gr, K )
-
-    # end
 
     min_H_ev, max_H_ev = minmax( values )
 
-    # values = [ H_eig[m].values for m ∈ 1:M ]
-    # vectors = [ H_eig[m].vectors for m ∈ 1:M ]
 
     if min_H_ev ≥ 1.0e-8
         ntr_find_direction!( s, Qg, QK, values, vectors, zero(T), plmspace.Z )

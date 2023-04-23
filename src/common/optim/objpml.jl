@@ -1,4 +1,4 @@
-for f ∈ [ "types", "algo", "opt", "ui", "util" ]
+for f ∈ [ "types", "algo", "opt", "ui", "util", "sanity" ]
     include( "pmlalgo/$(f).jl" )
 end  
 
@@ -87,10 +87,8 @@ function ObjectiveFunctionθ!(
     copyto!( s.currentθ, θ )                                        
 
     ranges = Ranges( δ )
-    # Kδ = [ d.plmdata.𝒦[ranges[m],:]'δ[m] for m ∈ markets ]
     Kδ = sum( d.plmdata.𝒦[ranges[m],:]'δ[m] for m ∈ markets )
     if computeF
-        # F = sum( fgh.market[m].outside.F[1] + 0.5 * dot( Kδ[m], Kδ[m] ) for m ∈ markets )
         F = sum( fgh.market[m].outside.F[1] for m ∈ markets ) + 0.5 * dot( Kδ, Kδ ) 
     end
 
@@ -103,21 +101,9 @@ function ObjectiveFunctionθ!(
 
     if computeG || computeH
         M = length( markets )
-        # δθ = Vector{ Matrix{T} }( undef, M )
-        # HinvK = Vector{ Matrix{T} }( undef, M )
         K = [ view( d.plmdata.𝒦, ranges[m], : ) for m ∈ markets ]
         Hδθ = [ fgh.market[m].outside.Hδθ for m ∈ markets ]
         Hδδ = [ fgh.market[m].inside.Hδδ for m ∈ markets ]
-        # @threads :dynamic for m ∈ markets
-        #     @ensure fgh.market[m].inside === fgh.market[m].outside "whoops"
-        #     HinvK[m] = Hδδ[m] \ K[m]
-        #     δθ[m] = - Hδδ[m] \ Hδθ[m]
-        # end
-        # ℛ = sum( HinvK[m]'Hδθ[m] for m ∈ markets )
-        # Δ = ( I + sum( K[m]' * HinvK[m] for m ∈ markets ) ) \ ℛ
-        # @threads :dynamic for m ∈ markets
-        #     δθ[m] += HinvK[m] * Δ 
-        # end
         dδ = dimδm( d );  dθ = dimθ( d )
         δθ = [ zeros( T, dδ[m], dθ ) for m ∈ markets ]
         Z = [ zeros( T, size( K[1], 2 ), dδ[m] ) for m ∈ markets ]
@@ -127,17 +113,6 @@ function ObjectiveFunctionθ!(
 
         G[:] = sum( fgh.market[m].outside.Gθ +  δθ[m]' * fgh.market[m].outside.Gδ for m ∈ markets )
         if computeH
-            # H[ : ] = sum( fgh.market[m].outside.Hθθ 
-            #             + prd[m]
-            #             + prd[m]'
-            #             + δθ[m]' * fgh.market[m].outside.Hδδ * δθ[m] 
-            #             + Kdδθ[m]' * Kdδθ[m]
-            #                 for m ∈ markets ) 
-            # H[ :, : ] = sum( fgh.market[m].outside.Hθθ 
-            #     + prd[m]
-            #     + prd[m]'
-            #     + δθ[m]' * fgh.market[m].outside.Hδδ * δθ[m] 
-            #         for m ∈ markets ) + Kdδθ'Kdδθ
             H[ :, : ] = sum( fgh.market[m].outside.Hθθ + δθ[m]'Hδθ[m] for m ∈ markets ) 
             Symmetrize!( H )
         end

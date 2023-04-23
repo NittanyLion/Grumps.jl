@@ -19,6 +19,8 @@ picked automatically.
 """
 function grumps!( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstart :: StartingVector{T}, seo :: StandardErrorOptions ) where {T<:Flt}
 
+    CheckSanity( e, d, o, θstart, seo )
+    
     memblock    = MemBlock( d, o )
     GC.@preserve memblock begin
         θstart      = StartingValues( θstart, e, d, o )

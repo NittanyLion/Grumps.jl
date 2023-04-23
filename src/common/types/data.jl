@@ -161,16 +161,6 @@ struct GrumpsPLMData{T<:Flt} <: PLMData{T}
 end
 
 
-# struct GrumpsPLMDataPenalty{T<:Flt} <: GrumpsPLMData{T}
-
-# end
-
-# struct GrumpsPLMData{T<:Flt} <: PLMData{T}
-#     𝒳   :: Matrix{T}    # regressors
-#     𝒵   :: Matrix{T}    # instruments
-#     𝒦   :: Matrix{T}    # projection
-#     σ2  :: T            # second stage error variance
-# end
 
 
 struct VariableNames
