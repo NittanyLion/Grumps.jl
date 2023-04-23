@@ -1,3 +1,4 @@
+# load optimization code
 for f ∈ [ "types", "algo", "opt", "ui", "util", "sanity" ]
     include( "pmlalgo/$(f).jl" )
 end  
@@ -5,6 +6,7 @@ end
 @todo 2 "figure out when to recompute"
 @todo 4 "call delta objective function outside across markets"
 
+# this computes the οutside objective function for a single market (excluding the penalty term)
 function ObjectiveFunctionθ1!( 
     fgh         :: PMLMarketFGH{T},
     θ           :: Vec{ T }, 
@@ -30,7 +32,7 @@ end
 
 
 
-
+# this computes the outside objective function
 function ObjectiveFunctionθ!( 
     fgh         :: PMLFGH{T}, 
     F           :: FType{T},
@@ -62,8 +64,10 @@ function ObjectiveFunctionθ!(
         end
     end
 
+    # compute δ
     grumpsδ!( fgh, θ, δ, e, d, o, s )
 
+    # compute the likelihood values, gradients, and Hessians
     @threads :dynamic for m ∈ markets
         mustrecompute(s) && AθZXθ!( θ, e, d.marketdata[m], o, s, m ) : m
         ObjectiveFunctionθ1!( 
@@ -85,6 +89,8 @@ function ObjectiveFunctionθ!(
     end
 
     copyto!( s.currentθ, θ )        
+
+    # now add the penalty term
     ranges = Ranges( δ )
     Kδ = sum( d.plmdata.𝒦[ranges[m],:]'δ[m] for m ∈ markets )
     if computeF
@@ -97,7 +103,7 @@ function ObjectiveFunctionθ!(
     end
 
 
-
+    # compute the overall gradient and Hessian wrt θ
     if computeG || computeH
         M = length( markets )
         K = [ view( d.plmdata.𝒦, ranges[m], : ) for m ∈ markets ]
@@ -115,6 +121,7 @@ function ObjectiveFunctionθ!(
             H[ :, : ] = sum( fgh.market[m].outside.Hθθ + δθ[m]'Hδθ[m] for m ∈ markets ) 
             Symmetrize!( H )
         end
+        # correct for the fact that we took an exponential of the random coefficients
         ExponentiationCorrection!( G, H, θ, dimθz( d ) )
 
     end

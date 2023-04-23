@@ -2,7 +2,7 @@
 @todo 2 "figure out when to recompute"
 @todo 4 "for all estimators, note that frugal is not compatible with for threads; need spawns"
 
-
+# this computes the οutside objective function for a single market (excluding the penalty term)
 function ObjectiveFunctionθ1!( 
     fgh         :: GrumpsMarketFGH{T},
     θ           :: Vec{ T }, 
@@ -41,7 +41,7 @@ end
 
 
 
-
+# this computes the outside objective function
 function ObjectiveFunctionθ!( 
     fgh         :: GrumpsFGH{T}, 
     F           :: FType{T},
@@ -64,6 +64,7 @@ function ObjectiveFunctionθ!(
     SetZero!( true, F, G, H )
     markets = 1:dimM( d )
 
+    # compute the likelihood values, gradients, and Hessians wrt θ
     @threads :dynamic for m ∈ markets
         ObjectiveFunctionθ1!( 
             fgh.market[m],
@@ -113,6 +114,7 @@ function ObjectiveFunctionθ!(
                         + δθ[m]' * fgh.market[m].outside.Hδδ * δθ[m] 
                             for m ∈ markets )
         end
+        # correct for the fact that we took an exponential of the random coefficients
         ExponentiationCorrection!( G, H, θ, dimθz( d ) )
 
     end

@@ -199,7 +199,6 @@ struct GrumpsData{T<:Flt} <: AllData{T}
     function GrumpsData{T2}( md :: Vec{ GrumpsMicroData{T2} }, Md :: Vec{ GrumpsMacroData{T2} }, plm :: GrumpsPLMData{T2}, varnames :: VariableNames, bal :: Vec{GrumpsNormalization{T2}}, dims :: Dimensions ) where {T2<:Flt}
         # just doing some sanity checking
         @ensure length( md ) == length( Md )  "number of micro and macro markets does not match"
-        @warn "need to put in more sanity checks here"
         for m ∈ eachindex( md )
             if !( typeof( md[m] ) <: GrumpsMicroNoData )
                 @ensure dimθ( md[m] ) == dims.θ "dimension θ does not match"

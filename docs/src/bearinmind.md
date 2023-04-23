@@ -22,6 +22,8 @@ The estimation procedure in [Grieco, Murry, Pinkse, and Sagl (2022)](http://jori
 
 All numbers should be in the same floating point format.  The default (and only heavily tested) format is Float64, i.e. a 64-bit float.  But the code is designed to handle other formats.  This could be attractive if greater precision is desired.  So one could use some form of BigFloat, at the expense of increased memory use and a substantial increase in computation time.
 
+<!-- ## Nesting of frugal option -->
+
 
 
 
