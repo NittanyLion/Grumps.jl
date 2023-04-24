@@ -55,6 +55,10 @@ function ExtractVectorFromDataFrame( T :: Type, dfp :: AbstractDataFrame, col ::
     return Vec{T}( dfp[ :, col ] )
 end
 
+function ExtractVectorFromDataFrame( dfp :: AbstractDataFrame, col :: Symbol )
+    MustBeInDF( col,  dfp, "" )
+    return Vec( dfp[ :, col ] )
+end
 
 function ExtractDummiesFromDataFrame( T :: Type, dfp :: AbstractDataFrame, cols :: Vec{Symbol} )
     if length( cols ) == 0
@@ -63,7 +67,6 @@ function ExtractDummiesFromDataFrame( T :: Type, dfp :: AbstractDataFrame, cols 
 
     MustBeInDF( cols, dfp, "" )
     vals = [ sort( unique( dfp[:,cols[t]] ) )[1:end-1] for t ∈ eachindex( cols ) ]
-
     (start, finish) = StartFinish( vals )
     ndummies = finish[end]
     𝒟 = zeros( T, nrow( dfp ), ndummies )
@@ -76,8 +79,10 @@ function ExtractDummiesFromDataFrame( T :: Type, dfp :: AbstractDataFrame, cols 
     varnames = Vec{String}( undef, ndummies )
     for j ∈ eachindex( vals )
         for t ∈ eachindex( vals[j] )
-            varnames[ start[j]+t-1 ] = "dum_$(cols[t])_$(vals[j][t])"
+            varnames[ start[j]+t-1 ] = "dum_$(cols[j])_$(vals[j][t])"
         end
     end
     𝒟, varnames 
 end
+
+

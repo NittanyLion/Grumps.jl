@@ -102,7 +102,7 @@ function GrumpsPLMData( e :: Estimator, s :: Sources, v :: Variables, fap :: Vec
 
         
     ( dumsunsorted, dumbnames ) = ExtractDummiesFromDataFrame( T, s.products, v.dummies )
-    𝒹unsorted = v.nuisancedummy == :none ? nothing : ExtractVectorFromDataFrame( T, dfp, v.nuisancedummy ) 
+    𝒹unsorted = v.nuisancedummy == :none ? nothing : ExtractVectorFromDataFrame( s.products, v.nuisancedummy ) 
     𝒳unsorted = ExtractMatrixFromDataFrame( T, s.products, v.regressors )
     𝒵unsorted = ExtractMatrixFromDataFrame( T, s.products, v.instruments )
 
@@ -111,7 +111,7 @@ function GrumpsPLMData( e :: Estimator, s :: Sources, v :: Variables, fap :: Vec
     dδ = size(𝒳unsorted,1)
     𝒳 = zeros( T, dδ, size(𝒳unsorted,2) + size(dumsunsorted,2) )
     𝒵 = zeros( T, dδ, length( v.instruments) + size(dumsunsorted,2) )
-    𝒹 = v.nuisancedummy == :none ? nothing :  zeros( T, length( 𝒹unsorted) )
+    𝒹 = v.nuisancedummy == :none ? nothing :  similar( 𝒹unsorted )
 
     ranges = Ranges( fap )
     for m ∈ eachindex( fap )
@@ -126,13 +126,15 @@ function GrumpsPLMData( e :: Estimator, s :: Sources, v :: Variables, fap :: Vec
 
     if 𝒹 ≠ nothing
         # difference out nuisance dummies
-        u = sort( unique( 𝒹 ) )
+        u = sort( unique( 𝒹unsorted ) )
         nd = length( u ) - 1
         @ensure nd  > 0   "nuisance dummy should take more than one value"
         for t ∈ 1:nd 
             ind = findall( x->x == u[t], 𝒹 )
-            zsum = sum( 𝒵[ ind[t], : ]; dims = 1 )
-            𝒵[ ind[t], : ] -= zsum[ :, t ] / length( ind[t] )
+            zsum = sum( 𝒵[ ind, : ]; dims = 1 ) / length( ind )
+            for 𝒶 ∈ eachindex( zsum )
+                𝒵[ ind, 𝒶 ] .-= zsum[1,𝒶] 
+            end
         end
     end
     
