@@ -66,7 +66,7 @@ function ntr_find_direction!( p :: VVector{ T },  Qg :: VVector{T}, QK :: VMatri
     @threads :dynamic for m ∈ 1:M
         p[m] .= T(0.0)
         for j ∈ 1:J[m]
-            mult = ( Qg[m][j] - sum( Z[m][t,j] * r[t] for t ∈ 1:cols_k ) ) / ( λ + values[m][j] )
+            mult = ( Qg[m][j] - safesum( Z[m][t,j] * r[t] for t ∈ 1:cols_k ) ) / ( λ + values[m][j] )
             for i ∈ 1:J[m]
                 p[m][i] -= vectors[m][i,j] * mult
             end
