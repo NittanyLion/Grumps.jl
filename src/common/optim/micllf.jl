@@ -119,6 +119,7 @@ function MicroObjectiveθ!(
     computeH = computeHθθ || computeHδθ
 
     F = SetZero!( setzero, F, G, Hθθ, Hδθ  ) 
+    length( consumers ) == 0 && return F     # if there are no consumers then there is nothing to compute
 
     ChoiceProbabilities!( s, d, o, δ )    # only recomputed if δ is different from before or has not yet been computed
                                 
