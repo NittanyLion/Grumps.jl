@@ -9,4 +9,5 @@ because of the way the random numbers for MC integration are drawn / multithread
 the gmm version should not be used: stick with grumps, mle, and sc: gmm is inferior to begin with and the gmm code is not ready for prime time
 if you see unexpected behavior, please send me code and data so that I can replicate
 all of the user-level commands are documented; e.g. use ?Save
+please check the memory conservation documentation if memory becomes an issue
 please direct all questions/suggestions/comments to Joris Pinkse at joris@psu.edu
