@@ -36,9 +36,9 @@ end
 
 function ntr_find_direction!( p :: VVector{ T },  Qg :: VVector{T}, QK :: VMatrix{T}, values::VVector{T},  vectors::VMatrix{T}, λ :: T, Z::VMatrix{T} ) where {T<:Flt}
     M = length( p )
-    λ ≥ 0.0 || println( λ )
-    @assert( λ ≥ 0.0 )
+    @ensure  λ ≥ 0.0 "something went wrong in the algorithm; λ should be nonnegative"
     cols_k = size( QK[1], 2 )
+    @ensure cols_k > 0 "something went wrong in the algorithm cols_k should be positive, but it is $(cols_k);  size of QK[1] is $(size(QK[1]))"
     J = [ length( p[m] ) for m ∈ 1:M ]
     A = zeros(T, cols_k, cols_k )
     for m ∈ 1:M
@@ -66,7 +66,7 @@ function ntr_find_direction!( p :: VVector{ T },  Qg :: VVector{T}, QK :: VMatri
     @threads :dynamic for m ∈ 1:M
         p[m] .= T(0.0)
         for j ∈ 1:J[m]
-            mult = ( Qg[m][j] - safesum( Z[m][t,j] * r[t] for t ∈ 1:cols_k ) ) / ( λ + values[m][j] )
+            mult = ( Qg[m][j] - sum( Z[m][t,j] * r[t] for t ∈ 1:cols_k ) ) / ( λ + values[m][j] )
             for i ∈ 1:J[m]
                 p[m][i] -= vectors[m][i,j] * mult
             end

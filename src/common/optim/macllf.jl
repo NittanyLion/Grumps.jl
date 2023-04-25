@@ -35,6 +35,16 @@ function MacroObjectiveδ!(
     ChoiceProbabilities!( s, d, o, δ )                                             # fill s with some goodies
 
     if computeF
+        # ************* TAKE THIS OUT!
+        for j ∈ products
+            if s.πj[j] < 0.0 
+                @info "negative choice probability $j"
+            end
+            if d.s[j] < 0.0
+                @info "negative shares $j"
+            end
+        end
+        # *********** TAKE THIS OUT!
         F -= d.N * sum( iszero( d.s[j] ) ? d.s[j] : d.s[j] * log( s.πj[j] / d.s[j] ) for j ∈ products )                        # compute objective function
     end
 

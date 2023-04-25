@@ -28,7 +28,7 @@ function CreateK( e :: Union{ GrumpsPenalized, GrumpsGMM }, s :: Sources, v :: V
     @ensure v.nuisancedummy ∉ union( regs, inst, v.dummies )  "nuisance dummy should not be included in the regressors and instruments"
     
     dumsunsorted, = ExtractDummiesFromDataFrame( T, s.products, v.dummies )
-    𝒹unsorted = v.nuisancedummy == :none ? nothing : ExtractVectorFromDataFrame( T, dfp, v.nuisancedummy ) 
+    𝒹unsorted = v.nuisancedummy == :none ? nothing : ExtractVectorFromDataFrame( s.products, v.nuisancedummy )
     𝒳tildeunsorted = ExtractMatrixFromDataFrame( T, s.products, onlyregs )
     𝒵tildeunsorted = ExtractMatrixFromDataFrame( T, s.products, onlyinst )
     Ctildeunsorted = ExtractMatrixFromDataFrame( T, s.products, inboth )
@@ -40,7 +40,7 @@ function CreateK( e :: Union{ GrumpsPenalized, GrumpsGMM }, s :: Sources, v :: V
     Ctilde = zeros( T, dδ, dinboth + ddums )
     Xtilde = zeros( T, dδ, dregs )
     Ztilde = zeros( T, dδ, dinst )
-    𝒹 = v.nuisancedummy == :none ? nothing :  zeros( T, dδ )
+    𝒹 = v.nuisancedummy == :none ? nothing :  similar( 𝒹unsorted )
 
     markets = 1:length( fap )
     ranges = Ranges( fap )
@@ -52,7 +52,7 @@ function CreateK( e :: Union{ GrumpsPenalized, GrumpsGMM }, s :: Sources, v :: V
             Ztilde[ ranges[m], : ] = 𝒵tildeunsorted[ fap[m], : ]
         end
         if dinboth > 0
-             Ctilde[ ranges[m], 1 : dinboth ] = Ctildeunsorted[ fap[m], : ]
+            Ctilde[ ranges[m], 1 : dinboth ] = Ctildeunsorted[ fap[m], : ]
             Ctilde[ ranges[m], dinboth + 1 : dinboth + ddums ] = dumsunsorted[ fap[m], : ]
         end
         if v.nuisancedummy ≠ :none
@@ -61,19 +61,27 @@ function CreateK( e :: Union{ GrumpsPenalized, GrumpsGMM }, s :: Sources, v :: V
     end 
     if 𝒹 ≠ nothing
         # difference out nuisance dummies
-        u = sort( unique( 𝒹 ) )
+        u = sort( unique( 𝒹unsorted ) )
         nd = length( u ) - 1
         @ensure nd  > 0   "nuisance dummy should take more than one value"
         for t ∈ 1:nd 
             ind = findall( x->x == u[t], 𝒹 )
-            zsum = sum( Ztilde[ ind[t], : ]; dims = 1 )
-            Ztilde[ ind[t], : ] -= zsum[ :, t ] / length( ind[t] )
-            xsum = sum( Xtilde[ ind[t], : ]; dims = 1 )
-            Xtilde[ ind[t], : ] -= xsum[ :, t ] / length( ind[t] )
-            csum = sum( Ctilde[ ind[t], : ]; dims = 1 )
-            Ctilde[ ind[t], : ] -= csum[ :, t ] / length( ind[t] )
+            zsum = sum( Ztilde[ ind, : ]; dims = 1 ) / length( ind )
+            for 𝒶 ∈ eachindex( zsum )
+                Ztilde[ ind, 𝒶 ] .-= zsum[ 𝒶 ]
+            end 
+            xsum = sum( Xtilde[ ind, : ]; dims = 1 ) / length( ind )
+            for 𝒶 ∈ eachindex( xsum )
+                Xtilde[ ind, 𝒶 ] .-= xsum[ 𝒶 ]
+            end 
+            csum = sum( Ctilde[ ind, : ]; dims = 1 ) / length( ind )
+            for 𝒶 ∈ eachindex( csum )
+                Ctilde[ ind, 𝒶 ] .-= csum[ 𝒶 ]
+            end 
         end
     end
+    @todo 4 "check the above code carefully"
+    @warn "the differencing out nuisance dummies code should be checked carefully"
 
     @ensure rank( Ctilde ) == size( Ctilde, 2 )  "collinearity in regressors common to X,Z"
 
