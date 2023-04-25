@@ -17,9 +17,9 @@
 Conducts the optimization.  You typically just want to set θstart to nothing, i.e. have a starting vector 
 picked automatically.  
 """
-function grumps!( e :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstart :: StartingVector{T}, seo :: StandardErrorOptions ) where {T<:Flt}
+function grumps!( epassed :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstart :: StartingVector{T}, seo :: StandardErrorOptions ) where {T<:Flt}
 
-    CheckSanity( e, d, o, θstart, seo )
+    e = CheckSanity( epassed, d, o, θstart, seo )
     
     memblock    = MemBlock( d, o )
     GC.@preserve memblock begin

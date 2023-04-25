@@ -105,7 +105,6 @@ function GrumpsPLMData( e :: Estimator, s :: Sources, v :: Variables, fap :: Vec
     𝒹unsorted = v.nuisancedummy == :none ? nothing : ExtractVectorFromDataFrame( s.products, v.nuisancedummy ) 
     𝒳unsorted = ExtractMatrixFromDataFrame( T, s.products, v.regressors )
     𝒵unsorted = ExtractMatrixFromDataFrame( T, s.products, v.instruments )
-
     nregs = length( v.regressors )
     ninst = length( v.instruments )
     dδ = size(𝒳unsorted,1)
@@ -136,8 +135,7 @@ function GrumpsPLMData( e :: Estimator, s :: Sources, v :: Variables, fap :: Vec
                 𝒵[ ind, 𝒶 ] .-= zsum[1,𝒶] 
             end
         end
-    end
-    
+    end 
     𝒳̂ = 𝒵 * ( 𝒵 \ 𝒳 )
 
     𝒦 = CreateK( e, s, v, dδ, T(σ2), Val( usepenaltyterm ), fap )
