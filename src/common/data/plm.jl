@@ -59,6 +59,8 @@ function CreateK( e :: Union{ GrumpsPenalized, GrumpsGMM }, s :: Sources, v :: V
              𝒹[ ranges[m] ] = 𝒹unsorted[ fap[m] ]
         end
     end 
+
+
     if 𝒹 ≠ nothing
         # difference out nuisance dummies
         u = sort( unique( 𝒹unsorted ) )
@@ -80,8 +82,8 @@ function CreateK( e :: Union{ GrumpsPenalized, GrumpsGMM }, s :: Sources, v :: V
             end 
         end
     end
-    @todo 4 "check the above code carefully"
-    @warn "the differencing out nuisance dummies code should be checked carefully"
+
+    
 
     @ensure rank( Ctilde ) == size( Ctilde, 2 )  "collinearity in regressors common to X,Z"
 
@@ -93,11 +95,9 @@ function CreateK( e :: Union{ GrumpsPenalized, GrumpsGMM }, s :: Sources, v :: V
     UZ, = svd( Ztilde; alg = LinearAlgebra.QRIteration() )
     UX, = svd( Xtilde; alg = LinearAlgebra.QRIteration() )
 
-    # ****** CHECK THE NEXT LINE CAREFULLY
     V = dregs > 0 ? UZ * nullspace( UX'UZ ) : UZ
 
     @ensure rank( V ) == dinst - dregs "underidentified"
-    # exit()
     return V / sqrt( σ2 )
 end
 
