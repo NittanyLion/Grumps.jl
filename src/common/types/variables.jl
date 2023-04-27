@@ -38,7 +38,11 @@ struct GrumpsVariables <: Variables
 
         @ensure length( regressors ) ≤ length( instruments )   "underidentified (#regressors > #increments)"
         @ensure size( interactions, 1 ) ≥ 1   "need at least one interaction"
-        new( market, product, choice, interactions, randomcoefficients, outsidegood, share, marketsize, regressors,      instruments, dummies, nuisancedummy, microinstruments, user )
+        @warnif length( randomcoefficients ) > 2 "choosing a large number of random coefficients is typically a bad idea: " *
+                         "it slows down the code, increases memory load, and one cannot credibly recover " *
+                         "many random coefficients absent second choice data; " *
+                         "I trust that you know what you are doing"
+        new( market, product, choice, interactions, randomcoefficients, outsidegood, share, marketsize, regressors, instruments, dummies, nuisancedummy, microinstruments, user )
     end
 end
 
