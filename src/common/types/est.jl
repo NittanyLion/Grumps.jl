@@ -11,6 +11,7 @@ usesmicrodata( ::GrumpsEstimator ) = true
 usesmacrodata( ::GrumpsEstimator ) = true
 usespenalty( ::GrumpsEstimator ) = false
 usesmicromoments( ::GrumpsEstimator ) = false
+iopattern( ::GrumpsEstimator) = "000000"
 
 usespenalty( ::GrumpsPenalized ) = true
 usespenalty( ::GrumpsGMM ) = true

@@ -2,15 +2,17 @@
 
 @todo 2 "make CreateK more efficient"
 
-function CreateK( e :: GrumpsMLE, :: Sources, :: Variables, dδ :: Int, :: T, ::Val{ false }, :: Vec{ Vec{Int} } ) where {T<:Flt}
+function CreateK( e :: GrumpsMLE, s :: Sources, v :: Variables, dδ :: Int, σ2 :: T, ::Val{ false }, fap :: Vec{ Vec{Int} } ) where {T<:Flt}
+    # return typeof( e ) ≠ GrumpsCheapEstimator ? zeros( T, dδ , 0  ) : CreateK( GrumpsPMLEstimatorInstance, s, v, dδ, σ2, Val( true ), fap ) 
     return zeros( T, dδ , 0  )
 end
 
 @todo 2 "there is duplication in CreateK versus the function below"
 @todo 3 "the functions in this file should be checked carefully, especially CreateK"
 
-function CreateK( e :: Union{ GrumpsPenalized, GrumpsGMM }, s :: Sources, v :: Variables, dδ :: Int, σ2 :: T, ::Val{ true }, fap :: Vec{ Vec{ Int } } ) where {T<:Flt} 
+function CreateK( e :: Union{ GrumpsPenalized, GrumpsGMM, GrumpsMLE }, s :: Sources, v :: Variables, dδ :: Int, σ2 :: T, ::Val{ true }, fap :: Vec{ Vec{ Int } } ) where {T<:Flt} 
 
+    @info "creating K, as expexcted "
 
     regs = sort( unique( v.regressors ) )
     inst = sort( unique( v.instruments ) )
@@ -18,7 +20,7 @@ function CreateK( e :: Union{ GrumpsPenalized, GrumpsGMM }, s :: Sources, v :: V
     @ensure length( inst ) == length( v.instruments )  "duplication of instruments"
     if length( regs ) == length( inst )
         @info "exactly identified so there is no penalization"
-        return CreateK( GrumpsVanillaEstimator(), s, v, dδ, σ2, Val( false ), fap )
+        return CreateK( GrumpsVanillaEstimatorInstance, s, v, dδ, σ2, Val( false ), fap )
     end
     @ensure length( regs ) < length( inst ) "underidentification not allowed"
 

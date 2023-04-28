@@ -8,6 +8,7 @@ end
 name( ::GrumpsShareConstraintEstimator ) = name( Val( :shareconstraint ) )
 
 inisout( ::GrumpsShareConstraintEstimator ) = false
+iopattern( ::GrumpsShareConstraintEstimator ) = "010110"
 
 Estimator( ::Val{ :shareconstraint } ) = GrumpsShareConstraintEstimator()
 

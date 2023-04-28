@@ -1,5 +1,5 @@
 # load optimization code
-for f ∈ [ "types", "algo", "opt", "ui", "util", "sanity" ]
+for f ∈ [ "types", "algo", "opt", "ui", "util" ]
     include( "pmlalgo/$(f).jl" )
 end  
 
