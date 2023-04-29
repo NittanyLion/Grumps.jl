@@ -6,12 +6,12 @@ The way that Grumps works is that one first specifies where the data are stored,
 
 ## Data entry
 
-The methods below are used to enter data into Grumps.  With [`Sources()`](@ref) one specifies where the data can be found and with [`Variables()`](@ref) which
-variables to use from those data sources.
+The methods below are used to enter data into Grumps.  With [`Sources()`](@ref) one specifies where the data can be found and with [`Variables()`](@ref) which variables to use from those data sources.  Note that there are two versions of the *Variables* method, where the main difference is the syntax.  Use whichever one you prefer.
 
 ```@docs
 Sources()
 Variables()
+Variables( ::String, ::String, ::String, ::String )
 ```
 
 
