@@ -50,6 +50,7 @@ Grumps can compute quite a few estimators and one can specify which estimator to
 
 The easiest way to call `Estimator` is by passing it a string that describes what it is that you want to do.  The following estimators are currently defined:
 * the full Grumps estimator
+* a less expensive alternative estimator with the same limit distribution as the full Grumps estimator
 * Grumps-style maximum likelihood, i.e Grumps without penalty
 * ditto, but imposing share constraints
 * GMM estimator that uses both micro and macro moments and uses quadrature instead of Monte Carlo draws in the micro moments.  The micro moments are smart in that they condition on $z_{im}$ instead of integrating it out.
