@@ -14,6 +14,7 @@ makedocs( sitename = "Grumps.jl",
     pages = [
     "Home" => "index.md",
     "Installation" => "installation.md",
+    "Estimators" => "estimators.md",
     "Quick start" => "quickstart.md",
     "User interface" => "objects.md",
     "Spreadsheet formats" => "spreadsheet.md",
