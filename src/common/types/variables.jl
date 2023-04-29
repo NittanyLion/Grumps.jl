@@ -64,7 +64,7 @@ end
       user                :: Mat{Symbol} = []
         )  
 
-This method is used to specify regressors, instruments, random coefficients, interactions, etcetera, variable labels, etcetera, from
+This method is used to specify regressors, instruments, random coefficients, interactions, variable labels, etcetera, from
 the sources you have specified in [`Sources()`](@ref). It creates an object of type *GrumpsVariables*.
 
 For instance, the option *market* specifies the column heading of the column containing the market descriptor (name).  The same is true
@@ -199,78 +199,76 @@ end
         user                :: String = ""
         )
 
-        This method is used to specify regressors, instruments, random coefficients, interactions, etcetera, variable labels, etcetera, from
-        the sources you have specified in [`Sources()`](@ref). It creates an object of type *GrumpsVariables*.  There is another method by the
-        same name that accomplishes much the same thing, but has a different user interface. 
+This method is used to specify regressors, instruments, random coefficients, interactions, variable labels, etcetera, from
+the sources you have specified in [`Sources()`](@ref). It creates an object of type *GrumpsVariables*.  There is another method by the
+same name that accomplishes much the same thing, but has a different user interface. 
 
-        The method described here takes string arguments, including two mandatory ones, whereas the other method takes optional arguments only, mostly symbols,
-        vectors of symbols, and matrices of symbols that can be passed in arbitrary order using keywords.  The current method parses user input
-        before calling the other method.
-        
-        The option *market* specifies the column heading of the column containing the market descriptor (name).  The same is true for all other 
-        arguments, except *outsidegood* which describes the spreadsheet entry that indicates the product is an outside good.  The same label for 
-        the outside good should be used in all spreadsheets and all markets. Outside good entries should only be used in the consumer micro data 
-        and then only if there actually are consumers in the micro data choosing the outside good. All descriptors are case sensitive.
-        
-        There is a separation between variables that go into the individual consumer utility and ones that only go into "mean utility".  For instance,
-        to specify what goes into individual consumer utility, one could specify
+The method described here takes string arguments, including two mandatory ones, whereas the other method takes optional arguments only, mostly symbols,
+vectors of symbols, and matrices of symbols that can be passed in arbitrary order using keywords.  The current method parses user input
+before calling the other method.
 
-        "choice = log_inc * msrp + fam_size * log_footprint + fam_size * van + urban * truck + rc * suv + rc * truck + rc * van"
+The option *market* specifies the column heading of the column containing the market descriptor (name).  The same is true for all other 
+arguments, except *outsidegood* which describes the spreadsheet entry that indicates the product is an outside good.  The same label for 
+the outside good should be used in all spreadsheets and all markets. Outside good entries should only be used in the consumer micro data 
+and then only if there actually are consumers in the micro data choosing the outside good. All descriptors are case sensitive.
 
-        as the *microspec* argument to indicate that consumer choice is in the micro data set in a column headed "choice" and that there are four
-        interaction terms and three random coefficients.  The interaction terms have the consumer-level variable as the first factor and the product 
-        variable as the second argument.  In this example the three random coefficients are on the suv, truck, and van variables and these variable
-        names should correspond to the column headings in the product level data set.  One can use *constant* to indicate a constant is used: there
-        is no need to include a constant in one's data.
+There is a separation between variables that go into the individual consumer utility and ones that only go into "mean utility".  For instance,
+to specify what goes into individual consumer utility, one could specify
 
-        The *macrospec* argument takes the form 
-        
-        "share = constant + log_mpg + log_hp + log_footprint + msrp / constant, log_mpg, log_hp, log_footprint, log_curbweight, lag_pl_con"
+"choice = loginc * msrp + famsize * logfootprint + famsize * van + urban * truck + rc * suv + rc * truck + rc * van"
 
-        where *share* are product-level market shares, everything between = and / represents regressors, and everything after / represents 
-        instruments; both regressors and instruments are for the product level moments portion.  One can again use *constant* to indicate a constant
-        is used, which need not be included in one's data.
+as the *microspec* argument to indicate that consumer choice is in the micro data set in a column headed "choice" and that there are four
+interaction terms and three random coefficients.  The interaction terms have the consumer-level variable as the first factor and the product 
+variable as the second argument.  In this example the three random coefficients are on the suv, truck, and van variables and these variable
+names should correspond to the column headings in the product level data set.  One can use *constant* to indicate a constant is used: there
+is no need to include a constant in one's data.
 
-        Note that there are three ways that dummy variables can be entered as second stage regressors.  The first is via *macrospec*, in which case
-        the onus is on the user to ensure that they have the correct numerical values.  The second possibility is via the *dummyspec* argument.  For 
-        each variable passed via the *dummyspec* argument, Grumps will examine the corresponding column of the product data set (which can contain descriptive
-        entries that need not be numerical) and turn it into dummy variables.  If the coefficient on the dummies is of no interest then it is better to
-        pass one via the *nuisancedummyspec* argument since it saves both computation time and memory.  There can only be at most one categorical variable that can
-        be converted to nuisance dummies, but there can be arbitrarily many categories.  These dummies and nuisance dummies are automatically assumed to be
-        exogenous and will be included in the instruments, also.
-        
-        *market* refers to the variable containing the market indicator in all input datasets.  Strings work best for the market indicators themselves,
-        but it is not a requirement.
-        
-        *product* refers to the variable containing the product indicator in the product dataset. Strings work best for the product indicators themselves,
-        but it is not a requirement.
-        
-        *choice* refers to the variable indicating the choice indicator in the consumer level datasets.  Strings work best for the choice indicators themselves,
-        but it is not a requirement.
-        
-        *interactions* refers to the variables indicating consumer and product variable interactions (each row contains consumer variable, product variable)
-        
-        *randomcoefficients* refers to the product level variables that have a random coefficient on them
-        
-        *outsidegood* refers to the label used for the outside good
-        
-        *share* refers to the label used for the product level share; these are shares where the denominator includes the outside good
-        
-        *marketsize* refers to the size of the market (number of people)
-        
-        *regressors* refers to the label used for the second stage regressors
-        
-        *instruments* refers to the label used for the second stage instruments
-        
-        *dummies* refers to discrete variables to be converted to second stage dummy regressors and instruments
-        
-        *nuisancedummy* refers to at most one variable to be converted to a second stage dummy regressors and instrument whose coefficient value is of no interest
-        
-        *microinstruments* refers to micro instruments, which are only relevant for gmm style procedures
-        
-        *user* refers to a list of variables to be added to the consumer-product interactions using a user-specified procedure
-        
+The *macrospec* argument takes the form 
 
+"share = constant + logmpg + loghp + logfootprint + msrp / constant, logmpg, loghp, logfootprint, logcurbweight, lagplcon"
+
+where *share* are product-level market shares, everything between = and / represents regressors, and everything after / represents 
+instruments; both regressors and instruments are for the product level moments portion.  One can again use *constant* to indicate a constant
+is used, which need not be included in one's data.
+
+Note that there are three ways that dummy variables can be entered as second stage regressors.  The first is via *macrospec*, in which case
+the onus is on the user to ensure that they have the correct numerical values.  The second possibility is via the *dummyspec* argument.  For 
+each variable passed via the *dummyspec* argument, Grumps will examine the corresponding column of the product data set (which can contain descriptive
+entries that need not be numerical) and turn it into dummy variables.  If the coefficient on the dummies is of no interest then it is better to
+pass one via the *nuisancedummyspec* argument since it saves both computation time and memory.  There can only be at most one categorical variable that can
+be converted to nuisance dummies, but there can be arbitrarily many categories.  These dummies and nuisance dummies are automatically assumed to be
+exogenous and will be included in the instruments, also.
+
+*market* refers to the variable containing the market indicator in all input datasets.  Strings work best for the market indicators themselves,
+but it is not a requirement.
+
+*product* refers to the variable containing the product indicator in the product dataset. Strings work best for the product indicators themselves,
+but it is not a requirement.
+
+*choice* refers to the variable indicating the choice indicator in the consumer level datasets.  Strings work best for the choice indicators themselves,
+but it is not a requirement.
+
+*interactions* refers to the variables indicating consumer and product variable interactions (each row contains consumer variable, product variable)
+
+*randomcoefficients* refers to the product level variables that have a random coefficient on them
+
+*outsidegood* refers to the label used for the outside good
+
+*share* refers to the label used for the product level share; these are shares where the denominator includes the outside good
+
+*marketsize* refers to the size of the market (number of people)
+
+*regressors* refers to the label used for the second stage regressors
+
+*instruments* refers to the label used for the second stage instruments
+
+*dummies* refers to discrete variables to be converted to second stage dummy regressors and instruments
+
+*nuisancedummy* refers to at most one variable to be converted to a second stage dummy regressors and instrument whose coefficient value is of no interest
+
+*microinstruments* refers to micro instruments, which are only relevant for gmm style procedures
+
+*user* refers to a list of variables to be added to the consumer-product interactions using a user-specified procedure
 """
 function Variables( 
     microspec           :: String,
