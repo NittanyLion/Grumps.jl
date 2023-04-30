@@ -56,7 +56,7 @@ The easiest way to call `Estimator` is by passing it a string that describes wha
 * GMM estimator that uses both micro and macro moments and uses quadrature instead of Monte Carlo draws in the micro moments.  The micro moments are smart in that they condition on $z_{im}$ instead of integrating it out.
 * a mixed logit estimator
 
-For a description of these estimators, see [Estimator](@ref).
+For a description of these estimators, see [Estimators](@ref).
 
 ```@docs
 Estimator( s :: String )
