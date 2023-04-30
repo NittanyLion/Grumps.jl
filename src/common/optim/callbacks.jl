@@ -54,6 +54,7 @@ function GrumpsθCallBack( statevec, e :: GrumpsEstimator, d :: GrumpsData{T}, o
     # @glog("Grumps ", e, " iteration ", state.iteration, " completed" )
     if o.θ.show_trace
         if state.iteration == 0
+            println()
             printpatterninside( e ); 
             printstyled( @sprintf( "%50s\n", name( e ) ); bold = true ) 
             printpatternoutside( e ); 

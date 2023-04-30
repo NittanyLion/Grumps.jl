@@ -1,11 +1,12 @@
-# Interacting with other languages
 
-There is only a version of Grumps for Julia.  However, you can call other languages from Julia using one of the `PyCall`, `PythonCall`, or `RCall` packages.  You can load Stata files via the `StatFiles` package.  To call C or Fortran code, see [the Julia documentation](https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/). 
 
-The code below provides an example in which the output is printed in Julia, Python, and R, respectively.
+ # set relative path of location of Grumps.jl; won't be needed 
+ # once Julia is a formal package
+push!(LOAD_PATH, "../../src")                              
 
-```
-using Grumps, PyCall, RCall
+
+
+using Grumps, LinearAlgebra, PyCall, RCall
 
 
 function compute_stuff( meth  )
@@ -48,6 +49,4 @@ end
 
 
 myprogram()
-```
-
 

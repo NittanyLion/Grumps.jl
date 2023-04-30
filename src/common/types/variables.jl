@@ -292,6 +292,7 @@ function Variables(
     interactions = Mat{Symbol}(undef, 0, 2 )
     randomcoefficients = Vec{Symbol}(undef, 0)
     for j ∈ eachindex( micspecrhs )
+        length( micspecrhs[j] ) == 0 && continue
         el = strip.( split( micspecrhs[j], '*' ) )
         @ensure length( el ) == 2 "micro specification should have a multiplication sign in each right hand side term"
         if lowercase( el[2] ) == "rc"
@@ -311,8 +312,8 @@ function Variables(
     @ensure length( macspecrhs ) == 2 "macro specification should contain both regressors and instruments separated by /"
     regressors = Symbol.( strip.( split( macspecrhs[1], '+' ) ) )
     instruments = Symbol.( strip.( split( macspecrhs[2], ',' ) ) )
-    dummies = Symbol.( strip.( split( dummyspec, ',' ) ) )
-    nuisancedummy = Symbol( strip( nuisancedummyspec ) ) 
+    dummies = length( strip( dummyspec ) ) == 0 ? Symbol[] : Symbol.( strip.( split( dummyspec, ',' ) ) )
+    nuisancedummy = length( strip( nuisancedummyspec ) ) ==0 ? :none : Symbol( strip( nuisancedummyspec ) ) 
     
     @ensure microinstruments == "" "passing microinstruments using this method is not yet implemented; use the Variables method in which symbols are passed"
     @ensure user == "" "passing user variables using this method is not yet implemented; use the Variables method in which symbols are passed"
