@@ -6,6 +6,7 @@ end
 
 name( ::GrumpsMixedLogitEstimator ) = name( Val(:mixedlogit) )
 inisout( ::GrumpsMixedLogitEstimator ) = true
+iopattern( ::GrumpsMixedLogitEstimator ) = "100100"
 
 Estimator( ::Val{ :mixedlogit } ) = GrumpsMixedLogitEstimator()
 

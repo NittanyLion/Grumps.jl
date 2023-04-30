@@ -3,7 +3,7 @@ function printpatternlevel( s )
 
     for j ∈ eachindex( s )
         @assert( s[j] ∈ ['0','1'] )
-        printstyled( s[j] == '1' ? '■' : '□' ; color = clr[j]  )
+        printstyled( s[j] == '1' ? "■ " : "□ " ; color = clr[j]  )
     end
 end
 

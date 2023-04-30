@@ -36,7 +36,11 @@ Please do not try to install or invoke Grumps any other way until it is in the J
 
 ### Installation
 
-Package installation is achieved in the usual way, i.e. by typing *]add Grumps* in REPL.
+Package installation is achieved in the usual way, i.e. by typing *]add Grumps* in REPL.  
+
+The REPL is the environment that opens up if you start Julia without arguments or which you automatically get with virtual studio code, the preferred editor for Julia.
+
+So once you have started Julia, type the character *]*: this will open the packaging system for you.  Then type *add Grumps*; this will install Grumps.  Finally, hit the backspace key to take yourself out of the packaging system again.
 
 ### Invocation
 
