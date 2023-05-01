@@ -1,6 +1,6 @@
 # Interacting with other languages
 
-There is only a version of Grumps for Julia.  However, you can call other languages from Julia using one of the `PyCall`, `PythonCall`, or `RCall` packages.  You can load Stata files via the `StatFiles` package.  To call C or Fortran code, see [the Julia documentation](https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/). 
+There is only a version of Grumps for Julia.  However, you can call other languages from Julia using one of the `PyCall`, `PythonCall`, or `RCall` packages.  You can load Stata files via the `StatFiles` package.  To call C or Fortran code, see [the Julia documentation](https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/).  For those using other software like Gauss and Matlab, consider writing results to disk and then reading them in the software you use.
 
 The code below provides an example in which the output is printed in Julia, Python, and R, respectively.
 
@@ -49,5 +49,6 @@ end
 
 myprogram()
 ```
+
 
 
