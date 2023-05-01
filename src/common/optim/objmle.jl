@@ -25,6 +25,8 @@ function ObjectiveFunctionθ1!(
     # if recompute
     initializelastδ!( s, m )
     grumpsδ!( fgh.inside, θ, δ, e, d, o, s.marketspace[m], m )
+
+    F = fgh.inside.F
     # end
     
 
