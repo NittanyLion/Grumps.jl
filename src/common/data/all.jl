@@ -104,8 +104,10 @@ function GrumpsData(
         @threads :dynamic for m ∈ 1:M
             acquire( sema )
             local th = threadid()
-                local fam = findfirst( x->string(x) == markets[m], s.marketsizes[:, v.market] )
-                if fam ≠ nothing
+                local fama = findall( x->string(x) == markets[m], s.marketsizes[:, v.market] )
+                if fama ≠ nothing
+                    @warnif length( fama ) > 1 "multiple lines in the market sizes data with the same market name"
+                    fam = fama[1]
                     local draws = s.draws == nothing ? nothing : 
                         begin
                             local fad = findall( x-> string(x) == markets[m], s.draws[:, v.market] )
@@ -113,7 +115,7 @@ function GrumpsData(
                             view( s.draws, fad, : )
                         end
                     local nw = NodesWeightsOneMarket( macrointegrator( integrators ), dθν, draws, v, rngs[ th ], nwgmac  )
-                    mac[m] = GrumpsMacroData( markets[m], s.marketsizes[fam, v.marketsize], view( s.products, fap[m], : ), v, nw, isassigned( mic, m ) ? mic[m] : nothing, options, T, u )
+                    mac[m] = GrumpsMacroData( markets[m], s.marketsizes[fam[1], v.marketsize], view( s.products, fap[m], : ), v, nw, isassigned( mic, m ) ? mic[m] : nothing, options, T, u )
                 else
                     mac[m] = GrumpsMacroNoData{T}( markets[m] )
                 end
