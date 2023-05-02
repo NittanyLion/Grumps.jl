@@ -74,6 +74,7 @@ function GrumpsData(
     @ensure !usesmicrodata( e ) || isa( s.consumers, DataFrame ) "this estimator type requires consumer information; please pass consumer info in Sources"
     sema = Semaphore( threads )
 
+    @info "creating data objects for micro likelihood"
     if isa( s.consumers, DataFrame ) && usesmicrodata( e )
         MustBeInDF( [ v.market, v.choice ], s.consumers, "consumers" )
         nwgmic = NodesWeightsGlobal( microintegrator( integrators ), dθν, rngs[1]  )
@@ -96,38 +97,56 @@ function GrumpsData(
     end
 
     # process data needed for the macro likelihood
+    @info "creating data objects for macro likelihood"
     @warnif !usesmacrodata( e ) && isa( s.marketsizes, DataFrame ) "ignoring the market size information you provided since it is not used for this estimator type"
     @ensure !usesmacrodata( e ) || isa( s.marketsizes, DataFrame ) "this estimator type requires market size information; please pass market size information in Sources"
     if isa( s.marketsizes, DataFrame ) && usesmacrodata( e )
         MustBeInDF( [ v.market, v.marketsize ], s.marketsizes, "market sizes" )
         nwgmac = NodesWeightsGlobal( macrointegrator( integrators ), dθ, s.draws, v, rngs[1] )
+        # @threads :dynamic for m ∈ 1:M
+        #     acquire( sema )
+        #     local th = threadid()
+        #         local fama = findall( x->string(x) == markets[m], s.marketsizes[:, v.market] )
+        #         if fama ≠ nothing
+        #             @warnif length( fama ) > 1 "multiple lines in the market sizes data with the same market name"
+        #             fam = fama[1]
+        #             local draws = s.draws == nothing ? nothing : 
+        #                 begin
+        #                     local fad = findall( x-> string(x) == markets[m], s.draws[:, v.market] )
+        #                     @ensure fad ≠ nothing  "cannot find market $(markets[m]) in the draws spreadsheet even though it is listed in the products spreadsheet"
+        #                     view( s.draws, fad, : )
+        #                 end
+        #             local nw = NodesWeightsOneMarket( macrointegrator( integrators ), dθν, draws, v, rngs[ th ], nwgmac  )
+        #             mac[m] = GrumpsMacroData( markets[m], s.marketsizes[fam[1], v.marketsize], view( s.products, fap[m], : ), v, nw, isassigned( mic, m ) ? mic[m] : nothing, options, T, u )
+        #         else
+        #             mac[m] = GrumpsMacroNoData{T}( markets[m] )
+        #         end
+        #         release( sema )
+        #     end
+        subdfs = groupby( s.draws, v.market )
+        marketsdrawn = [ subdfs[m][1,v.market] for m ∈ eachindex( subdfs ) ]
         @threads :dynamic for m ∈ 1:M
             acquire( sema )
             local th = threadid()
-                local fama = findall( x->string(x) == markets[m], s.marketsizes[:, v.market] )
-                if fama ≠ nothing
-                    @warnif length( fama ) > 1 "multiple lines in the market sizes data with the same market name"
-                    fam = fama[1]
-                    local draws = s.draws == nothing ? nothing : 
-                        begin
-                            local fad = findall( x-> string(x) == markets[m], s.draws[:, v.market] )
-                            @ensure fad ≠ nothing  "cannot find market $(markets[m]) in the draws spreadsheet even though it is listed in the products spreadsheet"
-                            view( s.draws, fad, : )
-                        end
-                    local nw = NodesWeightsOneMarket( macrointegrator( integrators ), dθν, draws, v, rngs[ th ], nwgmac  )
-                    mac[m] = GrumpsMacroData( markets[m], s.marketsizes[fam[1], v.marketsize], view( s.products, fap[m], : ), v, nw, isassigned( mic, m ) ? mic[m] : nothing, options, T, u )
-                else
-                    mac[m] = GrumpsMacroNoData{T}( markets[m] )
-                end
-                release( sema )
+            local fama = findall( x->string(x) == markets[m], s.marketsizes[:, v.market] )
+            if fama ≠ nothing
+                @warnif length( fama ) > 1 "multiple lines in the market sizes data with the same market name"
+                fam = fama[1]
+                local 𝒾 = findfirst( x->string( x ) == markets[m], marketsdrawn )
+                local nw = NodesWeightsOneMarket( macrointegrator( integrators ), dθν, 𝒾 == nothing ? nothing : subdfs[𝒾], v, rngs[ th ], nwgmac  )
+                mac[m] = GrumpsMacroData( markets[m], s.marketsizes[fam[1], v.marketsize], view( s.products, fap[m], : ), v, nw, isassigned( mic, m ) ? mic[m] : nothing, options, T, u )
+            else
+                mac[m] = GrumpsMacroNoData{T}( markets[m] )
             end
+            release( sema )
+        end
     else
         for m ∈ 1:M
             mac[m] = GrumpsMacroNoData{T}( markets[m] )
         end
     end
 
-
+    @info "creating objects for use in product level moments term"
     # create product level data
     plm = GrumpsPLMData( e, s, v, fap, usespenalty( e ), T( options.σ2 ) )
 
