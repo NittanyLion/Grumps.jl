@@ -111,9 +111,7 @@ function ObjectiveFunctionθ!(
         # @info "inner product Hδδ= $(sum( sum( fgh.market[m].inside.Hδδ'fgh.market[m].inside.Hδδ ) for m ∈ markets ))"
         # @info "inner product Hδθ= $(sum( sum( fgh.market[m].inside.Hδθ'fgh.market[m].inside.Hδθ ) for m ∈ markets ))"
         G[:] = sum( fgh.market[m].outside.Gθ +  δθ[m]' * fgh.market[m].outside.Gδ for m ∈ markets ) 
-        # println( "gradient: $G" )
         Πgrad!( G, e, d.plmdata.𝒦, δ, δθ )
-        # println( "updated : $G" )
         if computeH
             prd = Vector{ Matrix{T} }(undef, markets[end] )
             @threads :dynamic for m ∈ markets
@@ -124,9 +122,7 @@ function ObjectiveFunctionθ!(
                         + prd[m]'
                         + δθ[m]' * fgh.market[m].outside.Hδδ * δθ[m] 
                             for m ∈ markets ) 
-            # println( "hessian: $H")
             Πhess!( H, e, d.plmdata.𝒦, δ, δθ )
-            # println( "updated: $H")
         end
         # correct for the fact that we took an exponential of the random coefficients
         ExponentiationCorrection!( G, H, θ, dimθz( d ) )
