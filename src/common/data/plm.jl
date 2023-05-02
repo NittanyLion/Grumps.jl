@@ -12,7 +12,7 @@ end
 
 function CreateK( e :: Union{ GrumpsPenalized, GrumpsGMM, GrumpsMLE }, s :: Sources, v :: Variables, dδ :: Int, σ2 :: T, ::Val{ true }, fap :: Vec{ Vec{ Int } } ) where {T<:Flt} 
 
-    @info "creating K, as expexcted "
+    @info "creating K, as expected "
 
     regs = sort( unique( v.regressors ) )
     inst = sort( unique( v.instruments ) )
