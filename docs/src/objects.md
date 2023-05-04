@@ -6,7 +6,10 @@ The way that Grumps works is that one first specifies where the data are stored,
 
 ## Data entry
 
-The methods below are used to enter data into Grumps.  With [`Sources()`](@ref) one specifies where the data can be found and with [`Variables()`](@ref) which variables to use from those data sources.  Note that there are two versions of the *Variables* method, where the main difference is the syntax.  Use whichever one you prefer.
+The methods below are used to enter data into Grumps.  With [`Sources()`](@ref) one specifies where the data can be found and with [`Variables()`](@ref) which variables to use from those data sources.  
+
+!!! tip "Two versions of the Variables method"
+    There are two versions of the *Variables* method, where the main difference is the syntax.  Use whichever one you prefer.
 
 ```@docs
 Sources()
@@ -78,6 +81,9 @@ DefaultMacroIntegrator( ::Int, ::Type )
 MSMMicroIntegrator( :: Int, ::Type )
 ```
 
+
+!!! warning "Default macro integrator options"
+    By default, the default macro integrator uses Monte Carlo integration with $R = 10,000$ draws unless otherwise specified.  If one does not specify randomization then the default macro integrator simply uses the first $R$ lines of draws for each market for demographics ($z$ draws) and combines them with $R$ draws from the distribution of the random coefficients ($\nu$ draws), both of which are then interacted with the product level regressors ($x$ variables).  If the spreadsheet does not contain enough rows corresponding to a market then the program will cycle and throw a warning.  With randomization with replacement, $R$ numbers are drawn from the draws spreadsheet regardless of the number of lines in the spreadsheet.  Without replacement, the same occurs and if the spreadsheet does not contain enough lines corresponding to the market, all lines are added and then the procedure is repeated.  In other words, there is replacement by necessity.  Again, a warning will be displayed. With randomization, the random numbers are drawn separately for each market.
 
 
 ## Data object creation

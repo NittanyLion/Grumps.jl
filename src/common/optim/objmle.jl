@@ -107,9 +107,6 @@ function ObjectiveFunctionθ!(
                 @ensure false "Hessian with respect to δ is not invertible for market $m"
             end
         end
-        # @info "inner product derivatives= $(sum( sum( δθ[m]'δθ[m] ) for m ∈ markets ))"
-        # @info "inner product Hδδ= $(sum( sum( fgh.market[m].inside.Hδδ'fgh.market[m].inside.Hδδ ) for m ∈ markets ))"
-        # @info "inner product Hδθ= $(sum( sum( fgh.market[m].inside.Hδθ'fgh.market[m].inside.Hδθ ) for m ∈ markets ))"
         G[:] = sum( fgh.market[m].outside.Gθ +  δθ[m]' * fgh.market[m].outside.Gδ for m ∈ markets ) 
         Πgrad!( G, e, d.plmdata.𝒦, δ, δθ )
         if computeH

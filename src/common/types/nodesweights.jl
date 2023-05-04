@@ -46,21 +46,21 @@ end
 
 
 """
-    DefaultMicroIntegrator( n :: Int, T :: Type )
+    DefaultMicroIntegrator( n :: Int, T :: Type; options = nothing )
 
-Creates a basic quadrature Integrator using n nodes in each dimension.  Type T can be omitted, in which case it is Float64.
+Creates a basic quadrature Integrator using n nodes in each dimension.  Type T can be omitted, in which case it is Float64. The options variable is ignored.
 """
-function DefaultMicroIntegrator( n :: Int, T = F64 )
+function DefaultMicroIntegrator( n :: Int, T = F64; options = nothing )
     @ensure n > 0  "n must be positive"
     DefaultMicroIntegrator{T}( n )
 end
 
 """
-    DefaultMicroIntegrator( T :: Type )
+    DefaultMicroIntegrator( T :: Type; options = nothing )
 
-Creates a basic quadrature Integrator using 11 nodes in each dimension.  This number is likely too small, so use the other method to pick your number.  Type T can be omitted, in which case it is Float64.
+Creates a basic quadrature Integrator using 11 nodes in each dimension.  This number is likely too small, so use the other method to pick your number.  Type T can be omitted, in which case it is Float64.  The options variable is ignored.
 """
-function DefaultMicroIntegrator( T = F64 )
+function DefaultMicroIntegrator( T = F64; options = nothing )
     DefaultMicroIntegrator( 11, T )
 end
 
@@ -70,47 +70,65 @@ end
 
 
 """
-    MSMMicroIntegrator( n :: Int, T = F64 )
+    MSMMicroIntegrator( n :: Int, T = F64; options = nothing )
 
 Creates a Monte Carlo integrator type for *micro* integration with GMM with smart moments.  The optional type can be omitted.
+The options variable is ignored.
 """
-function MSMMicroIntegrator( n :: Int, T = F64 )
+function MSMMicroIntegrator( n :: Int, T = F64; options = nothing )
     @ensure n > 0  "n must be positive"
     MSMMicroIntegrator{T}( n )
 end
 
 """
-    MSMMicroIntegrator( T = F64 )
+    MSMMicroIntegrator( T = F64; options = nothing )
 
 Creates a Monte Carlo integrator type for *micro* integration with GMM with smart moments with 10 MC draws (per consumer).
-The type variable is optional and can be omitted.
+The type variable is optional and can be omitted.  The options variable is ignored.
 """
-function MSMMicroIntegrator( T = F64 )
+function MSMMicroIntegrator( T = F64; options = nothing )
     MSMMicroIntegrator{T}( 10 )
 end
 
 abstract type MacroIntegrator{T<:Flt} <: GrumpsIntegrator{T} end
 
 struct DefaultMacroIntegrator{T<:Flt} <: MacroIntegrator{T}   
-    n   :: Int
+    n               :: Int
+    randomize       :: Bool
+    replacement     :: Bool
 end
 
 """
-    DefaultMacroIntegrator( n :: Int, T :: Type )
+    DefaultMacroIntegrator( n :: Int, T :: Type; options :: Union{Vec{Symbol}, Nothing} = nothing )
 
 Creates a basic Monte Carlo Integrator using n draws.  Type T can be omitted, in which case it is Float64.
+The optional *options* argument can be used to indicate two possible changes from the default, namely
+*:randomize* can be used to require randomization and *:replacement* to indicate randomization with 
+replacement.  Note that *options* is either nothing or a vector of symbols.  The default for both is false.
 """
-function DefaultMacroIntegrator( n :: Int, T::Type = F64 )
-    DefaultMacroIntegrator{T}( n )
+function DefaultMacroIntegrator( n :: Int, T::Type = F64; options :: Union{Vec{Symbol}, Nothing} = nothing )
+    replacement = randomize = false
+    if options ≠ nothing
+        :randomize ∈ options && ( randomize = true )
+        :replacement ∈ options && ( randomize = replacement = true )
+    end
+    if randomize == false 
+        @info "no randomization chosen for macro integrator: just selecting from the start of the draws data if provided"
+    else
+        @info "drawing $( replacement ? "with" : "without" ) replacement from the draws data if provided"
+    end 
+    DefaultMacroIntegrator{T}( n, randomize, replacement )
 end
 
 """
     DefaultMacroIntegrator( T )
 
-Creates a basic Monte Carlo Integrator using 10 000 draws.  This is less than recommended, so use the other method to set a number of your choosing.  Type T can be omitted, in which case it is Float64.
+Creates a basic Monte Carlo Integrator using 10 000 draws.  This is less than recommended, so use the other method to set a number of your choosing.  Type T can be omitted, in which case it is Float64. The optional *options* argument can be used to indicate two possible changes from the default, namely
+*:randomize* can be used to require randomization and *:replacement* to indicate randomization with 
+replacement.  Note that *options* is either nothing or a vector of symbols.  The defaults for both is false.
 """
-function DefaultMacroIntegrator( T::Type = F64 )
-    DefaultMacroIntegrator( 10_000, T )
+function DefaultMacroIntegrator( T::Type = F64; options :: Union{Vec{Symbol}, Nothing} = nothing )
+    DefaultMacroIntegrator( 10_000, T; options = options )
 end
 
 abstract type GrumpsIntegrators{T<:Flt} end
