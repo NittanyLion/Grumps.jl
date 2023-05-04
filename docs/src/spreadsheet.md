@@ -70,4 +70,6 @@ income,  age, market
 
 The format and limitations for the draws spreadsheets is essentially the same as the other spreadsheets, but here each line corresponds to a (draw,market) pair. For markets for which market size information is available, one typically needs a number of demographic draws no less than the number of Monte Carlo draws to be used, where each draw is a vector of demographic characteristics that would be observed in the micro sample.  
 
+!!! warning "Choice of draws using the default macro integrator"
+    If one uses 10,000 Monte Carlo draws then the default Monte Carlo (macro) integrator simply uses the first 10,000 lines of draws for each market for demographics ($z$ draws) and combines them with 10,000 draws from the distribution of the random coefficients ($\nu$ draws), both of which are then interacted with the product level regressors ($x$ variables).  In other words, the default macro integrator does not pick randomly from the draws spreadsheets.
 

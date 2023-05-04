@@ -64,7 +64,13 @@ function Ingredients( sol :: Solution{T}, ::Val{:defaultseprocedure}, d :: Grump
     Δ = inv( I + sum( K[m]' * Ωδδinv[m] * K[m] for m ∈ markets ) )
     Hinvθθ =  inv( Ωθθ - sum( ΩδδinvΩδθ[m]' * Ωδθ[m] for m ∈ markets ) +  Q * Δ * Q' )
 
-    cholera = cholesky( Symmetric( Ωθθ ) ) 
+    cholera = try cholesky( Symmetric( Ωθθ ) ) 
+    catch
+        @warn "cholesky decomposition failed: making matrix artificially positive definite by adding a small number to the diagonal"
+        λmin = eigmin( Symmetric( Ωθθ ) )
+        Ωθθ += ( abs( λmin ) + 1.0e-6 ) * I
+        cholesky( Symmetric( Ωθθ ) ) 
+    end
     C = [ ( cholera.L \ Ωδθ[m]' )' for m ∈ markets ]
     AinvB = [ Ωδδinv[m] * K[m] for m ∈ markets ]
     AinvC = [ Ωδδinv[m] * C[m] for m ∈ markets ]

@@ -78,9 +78,9 @@ function GrumpsData(
     if isa( s.consumers, DataFrame ) && usesmicrodata( e )
         MustBeInDF( [ v.market, v.choice ], s.consumers, "consumers" )
         nwgmic = NodesWeightsGlobal( microintegrator( integrators ), dθν, rngs[1]  )
-        @threads :dynamic for m ∈ 1:M
+        @threads for m ∈ 1:M
             acquire( sema )
-            local th = threadid()
+            local th = threads == 1 ? 1 : threadid()
             local fac = findall( x->string(x) == markets[m], s.consumers[:, v.market] )
             if fac ≠ nothing
                 local nw = NodesWeightsOneMarket( microintegrator( integrators ), dθν, rngs[ th ], nwgmic, length( fac )  )
@@ -125,12 +125,12 @@ function GrumpsData(
         #     end
         subdfs = groupby( s.draws, v.market )
         marketsdrawn = [ subdfs[m][1,v.market] for m ∈ eachindex( subdfs ) ]
-        @threads :dynamic for m ∈ 1:M
+        @threads for m ∈ 1:M
             acquire( sema )
-            local th = threadid()
+            local th = threads == 1 ? 1 : threadid()
             local fama = findall( x->string(x) == markets[m], s.marketsizes[:, v.market] )
             if fama ≠ nothing
-                @warnif length( fama ) > 1 "multiple lines in the market sizes data with the same market name"
+                @warnif length( fama ) > 1 "multiple lines in the market sizes data with the same market name; using the first one"
                 fam = fama[1]
                 local 𝒾 = findfirst( x->string( x ) == markets[m], marketsdrawn )
                 local nw = NodesWeightsOneMarket( macrointegrator( integrators ), dθν, 𝒾 == nothing ? nothing : subdfs[𝒾], v, rngs[ th ], nwgmac  )
