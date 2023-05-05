@@ -225,3 +225,34 @@ Specifies which coefficients to create standard errors for and what type of stan
 """
 StandardErrorOptions(; θ = true, δ = true, β = true, setype = :homo ) = StandardErrorOptions( θ, δ, β, setype )
 
+
+
+function show( io :: IO, o :: GrumpsOptimizationOptions; adorned = true )
+    prstyledln( adorned, "Optimization options:"; color = :red, bold = true )
+    for vr ∈ [ 
+        [:θ, "outer optimization"], 
+        [:δ, "inner optimization"], 
+        [:gth, "threads"],
+        [:probtype, "choice probabilities"],
+        [:memsave, "memory saving"],
+        [:maxrepeats, "maxrepeats"]
+            ]
+        prstyled( adorned, @sprintf( "%30s: ", vr[2] ); bold = true, color = :green );  println( getfield( o, vr[1] ) )
+    end
+
+end
+    
+function show( io :: IO, t :: GrumpsThreads; adorned = true )
+    prstyledln( adorned, "\nThreads:"; color = :blue, bold = true )
+    for vr ∈ [ :blas, :markets, :inner ]
+        prstyled( adorned, @sprintf( "%30s: ", vr); bold = true );  println( getfield( t, vr ) )
+    end
+end
+
+
+function show( io :: IO, o :: OptimOptions; adorned = true )
+    prstyledln( adorned, "\nSingle level optimization options:"; color = :blue, bold = true )
+    for vr ∈ [ :f_tol, :g_tol, :x_tol, :iterations, :show_trace, :store_trace, :extended_trace ]
+        prstyled( adorned, @sprintf( "%30s: ", vr ); bold = true );  println( getfield( o, vr ) )
+    end
+end

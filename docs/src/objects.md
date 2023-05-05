@@ -143,6 +143,6 @@ By default, Grumps loads all data and then creates space for all markets for thi
 To conserve memory, one can set `memsave` in [`OptimizationOptions()`](@ref) to `true`.  What this does is that it shares space for choice probabilities
 and related objects across a number of markets.  For instance, if there are ten markets and the number of market threads in [`OptimizationOptions()`](@ref) is set to two then the space for choice probabilities is shared across five markets.  These choices will have no effect if the number of market threads is no less than the number of markets.  The downside of doing this is that it slows down computation since choice probabilities need to be recomputed.  This is especially true for estimators that use the penalty term in the inside optimization, i.e. currently only the full Grumps estimator.
 
-There are less impactful ways of reducing memory usage, such as choosing the option `:Ant` for the micro data, also.  *** not yet implemented ***
+<!-- There are less impactful ways of reducing memory usage, such as choosing the option `:Ant` for the micro data, also.  *** not yet implemented *** -->
 
 
