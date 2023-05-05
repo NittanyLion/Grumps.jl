@@ -1,8 +1,9 @@
 
 
 
-function show( io :: IO, ms :: DefaultMicroIntegrator )
-   print( "default micro integrator") 
+function show( io :: IO, ms :: DefaultMicroIntegrator; adorned = true )
+    prstyled( adorned, "Default Micro quadrature integrator "; color = :blue, bold = true )
+    println( "  $(ms.n) nodes per dimension")
 end
 
 

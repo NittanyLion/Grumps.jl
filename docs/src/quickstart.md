@@ -12,10 +12,10 @@ To use **Grumps.jl** consider the following program, which computes the penalize
 
         @info "setting source files"
         s = Sources(
-            consumers = "_example_consumers.csv",
-            products = "_example_products.csv",
-            marketsizes = "_example_marketsizes.csv",
-            draws = "_example_draws.csv"  
+            consumers = "example_consumers.csv",
+            products = "example_products.csv",
+            marketsizes = "example_marketsizes.csv",
+            draws = "example_draws.csv"  
         )
         println( s )
 
@@ -51,13 +51,21 @@ To see what is happening in the code, consider the function myprogram.  It first
 
 Next, in `Variables` it describes what variables to include. There are two different but equivalent versions of this method: the only difference is the syntax to accommodate users' preferences.  The example here covers only one version. In this case, there are three interactions between demographic characteristics (in the first column) and product characteristics (in the second column).  There are moreover random coefficients on the ibu and abv variables.  The product-level regressors and instruments that go into $\hat \Pi$ are also entered.  Finally, the outsidegood argument indicates which value in the consumers spreadsheet is used to indicate that a product is the outside good.  There are many other choices; please see the User Interface section.
 
+!!! tip "Objects can be printed"
+    Most variables with data types created by Grumps can be printed.  For instance, the `println( v )` line tells Grumps to print the variable `v`, which in this case contains information about the specification. `println( d )` works too after the `Data` call.
+
 It then tells Grumps that it wants to use the full Grumps maximum likelihood estimator with penalized deviations from the macro moments in `Estimator`.  You could also have entered another descriptive string; **Grumps** is pretty good at figuring out what you want.  Or you can use a symbol, like :mle.  In the `Data` call, it reads the data needed from the sources indicated in the `Sources` call using the information specified in the `Variables` call.
 
-The `grumps!` call then asks Grumps to compute the estimates.  The exclammation mark (`bang') signifies that `grumps!` can change its arguments, including the starting value.
+The `grumps!` call then asks Grumps to compute the estimates.  The exclamation mark (`bang') signifies that `grumps!` can change its arguments, including the starting value.
+
+Finally, `Save` saves the results to disk, in this case to a CSV file, but other formats are possible, also.  And the results can of course be printed, also, as the above program demonstrates.
 
 Note that there are many other options and calls.  The main ones are described in the [User Interface](@ref) tab.
 
-To get help on a command, simply load Grumps in the REPL and type e.g.
-```
-julia> ?Variables
-```
+!!! tip "Getting help"
+    To get help on a command, simply load Grumps in the REPL and type e.g.
+    ```
+    julia> ?Variables
+    ```
+
+

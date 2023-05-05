@@ -131,6 +131,8 @@ show( io :: IO, mt :: MimeTex, sol :: GrumpsSolution; kwargs... )
 show( io :: IO, mt :: MimeCSV, sol :: GrumpsSolution; kwargs... ) 
 ```
 
+!!! tip "Saving results to LaTeX"
+    To save estimation results directly to a LaTeX tabular, just use a `.tex` extension in the filename.  For instance, write `Save( "results.tex", sol )` if your solution is in the variable `sol`.
 
 ## Memory conservation
 

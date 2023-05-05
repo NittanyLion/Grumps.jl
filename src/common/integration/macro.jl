@@ -1,10 +1,12 @@
 
 
 
-function show( io :: IO, ms :: DefaultMacroIntegrator )
-    print( "default macro integrator") 
+function show( io :: IO, integ :: DefaultMacroIntegrator{T}; adorned = true ) where {T<:Flt}
+    prstyled( adorned, "Default Macro Monte Carlo integrator "; color = :blue, bold = true )
+    println( "  $(integ.n) draws,  randomization $(integ.randomize),  replacement $(integ.replacement)  ")
 end
- 
+
+
 function NodesWeightsGlobal( ms :: DefaultMacroIntegrator{T}, d :: Int,  draws :: Union{Nothing, DataFrame}, v :: Variables, rng :: AbstractRNG  ) where {T<:Flt}
    return GrumpsNodesWeights{T}( zeros( T, 0, 0 ), zeros(T, 0) )
 end
