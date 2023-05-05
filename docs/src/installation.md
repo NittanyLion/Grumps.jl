@@ -36,14 +36,14 @@ Please do not try to install or invoke Grumps any other way until it is in the J
 
 ### Installation
 
-Package installation is achieved in the usual way, i.e. by typing *]add Grumps* in REPL.  
+Package installation is achieved in the usual way, i.e. by typing `]add Grumps` in REPL.  
 
 The REPL is the environment that opens up if you start Julia without arguments or which you automatically get with virtual studio code, the preferred editor for Julia.
 
-So once you have started Julia, type the character *]*: this will open the packaging system for you.  Then type *add Grumps*; this will install Grumps.  Finally, hit the backspace key to take yourself out of the packaging system again.
+So once you have started Julia, type the character `]`: this will open the packaging system for you.  Then type `add Grumps`; this will install Grumps.  Finally, hit the backspace key to take yourself out of the packaging system again.
 
 ### Invocation
 
-Fire up Julia using *julia -t 4* replacing the number 4 with whatever number of threads you wish to use.  The recommended number is the number of physical cores in your computer.  As a permanent solution, one can set the `JULIA_NUM_THREADS` environment variable.
+Fire up Julia using `julia -t 4` replacing the number 4 with whatever number of threads you wish to use.  The recommended number is the number of physical cores in your computer.  As a permanent solution, one can set the `JULIA_NUM_THREADS` environment variable.
 
 Grumps can then be loaded with `using Grumps`.  That's it: you're ready to go.
