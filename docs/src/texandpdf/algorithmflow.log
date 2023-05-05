@@ -1,4 +1,4 @@
-This is LuaHBTeX, Version 1.15.0 (TeX Live 2022/Debian)  (format=lualatex 2023.2.14)  29 APR 2023 23:12
+This is LuaHBTeX, Version 1.15.0 (TeX Live 2022/Debian)  (format=lualatex 2023.2.28)  5 MAY 2023 15:45
  restricted system commands enabled.
 **algorithmflow.tex
 (./algorithmflow.tex
@@ -646,13 +646,14 @@ Here is how much of LuaTeX's memory you used:
  413 words of node memory still in use:
    3 hlist, 1 vlist, 1 rule, 2 glue, 3 kern, 1 glyph, 5 attribute, 48 glue_spec,
  5 attribute_list, 2 write nodes
-   avail lists: 2:2008,3:905,4:270,5:93,6:6,7:3378,8:1,9:505,10:4,11:224
+   avail lists: 2:2008,3:905,4:270,5:93,6:6,7:3364,8:1,9:505,10:3,11:224
  35876 multiletter control sequences out of 65536+600000
  41 fonts using 4449951 bytes
  100i,8n,98p,410b,640s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/share/fonts/truetype/msttcorefonts/times.ttf></usr/share/fonts/truetype/ms
-ttcorefonts/timesi.ttf></usr/share/fonts/truetype/msttcorefonts/timesbd.ttf>
-Output written on algorithmflow.pdf (2 pages, 66116 bytes).
+</usr/share/fonts/truetype/msttcorefonts/Times_New_Roman.ttf></usr/share/fonts/t
+ruetype/msttcorefonts/timesi.ttf></usr/share/fonts/truetype/msttcorefonts/timesb
+d.ttf>
+Output written on algorithmflow.pdf (2 pages, 66568 bytes).
 
 PDF statistics: 35 PDF objects out of 1000 (max. 8388607)
  21 compressed objects within 1 object stream
