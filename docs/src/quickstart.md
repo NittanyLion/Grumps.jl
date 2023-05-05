@@ -3,10 +3,9 @@
 To use **Grumps.jl** consider the following program, which computes the penalized maximum likelihood estimator of Grieco, Murry, Pinkse, and Sagl.
 
 
-    using Grumps, LinearAlgebra
+    using Grumps
 
 
-    BLAS.set_num_threads(8)
 
     function myprogram(  )
 
@@ -47,7 +46,7 @@ To use **Grumps.jl** consider the following program, which computes the penalize
 
 
 
-To see what is happening in the code, consider the function myprogram.  It first describes where data on consumers, products, market sizes, and random draws can be found.  This happens in the `Sources` call. In this example, all sources are files, but DataFrames are ok, also.  In addition, not all sources are needed for all estimators and options.  Indeed, only products data are required.
+To see what is happening in the code, consider the function myprogram.  It first describes where data on consumers, products, market sizes, and random draws can be found.  This happens in the `Sources` call. In this example, all sources are files, but DataFrames are ok, also.  In addition, not all sources are needed for all estimators and options.  Indeed, only products data are required.  See [Spreadsheet formats](@ref) for documentation on the spreadsheet formats.
 
 Next, in `Variables` it describes what variables to include. There are two different but equivalent versions of this method: the only difference is the syntax to accommodate users' preferences.  The example here covers only one version. In this case, there are three interactions between demographic characteristics (in the first column) and product characteristics (in the second column).  There are moreover random coefficients on the ibu and abv variables.  The product-level regressors and instruments that go into $\hat \Pi$ are also entered.  Finally, the outsidegood argument indicates which value in the consumers spreadsheet is used to indicate that a product is the outside good.  There are many other choices; please see the User Interface section.
 

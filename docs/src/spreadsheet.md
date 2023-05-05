@@ -5,7 +5,10 @@ Recall that Grumps can take data from four different sources and in different fo
 
 As mentioned elsewhere, there is one spreadsheet (the *products* spreadsheet) that contains data on products, including e.g. price, market share, features, product level instruments.  If consumer data are used then such data can be entered via the *consumers* spreadsheet, which includes data on individual consumer choices, demographic characteristics, etcetera: anything that would typically have an $i$ subscript in other words.  A *market size* spreadsheet would contain information on the size of each market, i.e. the population in that market, which is only needed if the macro portion of the likelihood is to be used.  Finally, a *demographic draws* spreadsheet can be provided to be used in the macro likelihood portion of the objective function.  The format of each of these spreadsheets is described below.
 
-In the examples below, the data are comma separated, but that is not necessary: other formats can be specified in the [`Sources`](@ref) call.  For all spreadsheets be mindful of case and spaces.  However, note that for readability the spreadsheets below contain extra space i.e. they are aligned by comma; **this is not generally advisable**.
+In the examples below, the data are comma separated, but that is not necessary: other formats can be specified in the [`Sources`](@ref) call.  Column ordering is irrelevant.
+
+!!! warning "Cases and spaces"
+    For all spreadsheets be mindful of case and spaces.  That means omit spaces and be consistent in lower case versus upper case. For readability the spreadsheets below contain extra space i.e. they are aligned by comma; this is not advisable.  
 
 
 ## Product characteristics
@@ -23,7 +26,7 @@ The column headings are variable names.  Each line corresponds to a (market, pro
 required, albeit that the columns can have different names; *market* and *product* are just the defaults.  The markets have especially boring
 names in this example, but any string goes.  The same is true for products.  This spreadsheet does *not* need to include the outside
 good (indeed, leave it out) and shares would thus typically sum to a number less than one.  Which columns are to be used and where is 
-determined by the [`Variables`](@ref) call.  To use dummy variables, just insert a column with the corresponding characteristics (there can be multiple categories, which can be descriptive), which Grumps can turn into dummy variables automatically, as described in the [`Variables`](@ref) documentation.
+determined by the [`Variables`](@ref) call.  To use dummy variables, just insert a column with the corresponding characteristics (there can be multiple categories, which can be descriptive (e.g. strings)), which Grumps can turn into dummy variables automatically, as described in the [`Variables`](@ref) documentation.
 
 ## Consumer characteristics
 
@@ -38,7 +41,7 @@ income,  age, purchase, second,   market,     choice
 ```
 
 The columns are again variable names.  Here, we need both market and choice, but the columns do not have to have those (default) headings.  Indeed, choice could have been replaced with purchase, and nothing would have been different, albeit that the same product
-and market descriptors should be used across data sources (spreadsheets).  The markets and products could have had more descriptive names, and the column headings could have been different.
+and market descriptors should be used across data sources (spreadsheets).  The markets and products could have had more descriptive names (e.g.\ "Pennsylvania" instead of "market 1"), and the column headings could have been different.
 
 ## Market sizes
 
