@@ -6,12 +6,14 @@
 ## Overview
 
 **Grumps.jl** is a package for computing random coefficients demand models, including:
-1. the penalized likelihood estimator of Grieco, Murry, Pinkse, and Sagl (2022)
-2. the unpenalized likelihood estimator of Grieco, Murry, Pinkse, and Sagl (2022)
-3. GMM type random coefficient models in the style of Berry, Levinsohn, and Pakes (2004)
-4. GMM type random coefficient models in the style of Berry, Levinsohn, and Pakes (1995)
-5. Mixed logit models
-6. Multinomial logit models
+1. the conformant likelihood with exogeneity restrictions (CLER) estimator of Grieco, Murry, Pinkse, and Sagl (2022)
+2. an asymptotically equivalent less expensive alternative thereof
+3. the unpenalized likelihood estimator of Grieco, Murry, Pinkse, and Sagl (2022)
+4. GMM type random coefficient models in the style of Berry, Levinsohn, and Pakes (2004)
+5. GMM type random coefficient models in the style of Berry, Levinsohn, and Pakes (1995)
+6. Mixed logit models
+7. Multinomial logit models
+
 
 It can handle problems of the form
 

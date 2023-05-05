@@ -6,7 +6,7 @@ The estimator proposed by Grieco, Murry, Pinkse, and Sagl minimizes the sum $\ha
 
 There are three parameter vectors to be estimated: $\beta,\theta,\delta$.  Since $\beta$ can be easily estimated off $\delta$ and the data, the remainder of this discussion focuses on the estimation of $\theta,\delta$.
 
-The *full Grumps* estimator minimizes $\hat\Omega$ over $\delta$ for a given $\theta$ in an inner loop and then minimizes over $\theta$ in an outer loop.  This is efficient, but costly.
+The *full Grumps (CLER)* estimator minimizes $\hat\Omega$ over $\delta$ for a given $\theta$ in an inner loop and then minimizes over $\theta$ in an outer loop.  This is efficient, but costly.
 
 An estimator that is asymptotically equivalent but less expensive computationally, only minimizes with respect to $\delta$ over minus the sum of the loglikelihoods in an inside loop and minimizes $\hat \Omega$ over $\theta$ in the outside loop: we refer to this as the *cheap* option.
 
