@@ -10,6 +10,7 @@ Creates and returns a GrumpsEstimator type.  Grumps is reasonably good at figuri
 
 The estimators currently programmed include:
 * the full Grumps estimator
+* a cheaper alternative that has the same limit distribution
 * Grumps-style maximum likelihood, i.e Grumps without penalty
 * ditto, but imposing share constraints
 * GMM estimator that uses both micro and macro moments and uses quadrature instead of Monte Carlo draws in the micro moments.  The micro moments are `smart' in that they condition on \$z_{im}\$ instead of integrating it out.
@@ -40,6 +41,8 @@ the *Estimator( s :: String )* method is usually a better choice.
 Possible choices include:
 
 *:pml* the full Grumps maximum likelihood estimator  
+
+*:cheap* an alternative with the same limit distribution that is faster to compute
 
 *:vanilla* the unpenalized Grumps maximum likelihood estimator
 
