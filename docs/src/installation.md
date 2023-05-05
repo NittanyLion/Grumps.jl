@@ -44,6 +44,6 @@ So once you have started Julia, type the character `]`: this will open the packa
 
 ### Invocation
 
-Fire up Julia using `julia -t 4` replacing the number 4 with whatever number of threads you wish to use.  The recommended number is the number of physical cores in your computer.  As a permanent solution, one can set the `JULIA_NUM_THREADS` environment variable.
+Fire up Julia using `julia -t 4` replacing the number 4 with whatever number of threads you wish to use (or `auto` to automatically use all threads in your computer).  The recommended number is the number of physical cores in your computer, which is usually less than the total number of threads (often by a factor of two).  As a permanent solution, one can set the `JULIA_NUM_THREADS` environment variable.
 
 Grumps can then be loaded with `using Grumps`.  That's it: you're ready to go.
