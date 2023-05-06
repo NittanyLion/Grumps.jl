@@ -1,6 +1,15 @@
 # Extending Grumps
 
-Grumps can be extended in multiple ways.  Below two possibilities are discussed, namely introducing a new *estimator* and introducing a new *integrator*.
+Grumps can be extended in multiple ways.  Below three possibilities are discussed, namely using an existing estimator for a different data format, introducing a new *estimator*, and introducing a new *integrator*.
+
+## using a new data format
+
+The most general way of doing this is to fill the `GrumpsData` object with something of your own creation.  An easier way of doing this is to use the `UserEnhancement` argument in the call to [`Data()`](@ref).  
+
+!!! danger "The user enhancement code has not been tested yet and needs work."
+    Use it at your own risk.
+
+
 
 ## adding a new estimator
 

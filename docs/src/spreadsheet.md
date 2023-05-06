@@ -1,9 +1,12 @@
 # Spreadsheet formats
 
 
-Recall that Grumps can take data from four different sources and in different formats.  Currently, only *CSV files* and *DataFrames* are implemented.  Recall that not all four sources are required for all estimators.  There is one advantage to providing file names instead of dataframes, and that is that Julia can release the memory allocated by the memory after return of the [`Data`](@ref) call.
+Recall that Grumps can take data from four different sources and in different formats.  Currently, only *CSV files* and *DataFrames* are implemented.  Recall that not all four sources are required for all estimators.  
 
-As mentioned elsewhere, there is one spreadsheet (the *products* spreadsheet) that contains data on products, including e.g. price, market share, features, product level instruments.  If consumer data are used then such data can be entered via the *consumers* spreadsheet, which includes data on individual consumer choices, demographic characteristics, etcetera: anything that would typically have an $i$ subscript in other words.  A *market size* spreadsheet would contain information on the size of each market, i.e. the population in that market, which is only needed if the macro portion of the likelihood is to be used.  Finally, a *demographic draws* spreadsheet can be provided to be used in the macro likelihood portion of the objective function.  The format of each of these spreadsheets is described below.
+!!! tip "Files are preferable to dataframes"
+    There is one advantage to providing file names instead of dataframes, and that is that Julia can release the memory allocated by the memory after return of the [`Data`](@ref) call.
+
+As mentioned elsewhere, there is one spreadsheet (the *products* spreadsheet) that contains data on products, including e.g. price, market share, features, product level instruments ($s,x,b$ in the paper).  If consumer data are used then such data can be entered via the *consumers* spreadsheet, which includes data on individual consumer choices, demographic characteristics, etcetera: anything that would typically have an $i$ subscript in other words ($y,z$ in the paper).  A *market size* spreadsheet would contain information on the size of each market, i.e. the population in that market, which is only needed if the macro portion of the likelihood is to be used ($N$ in the paper).  Finally, a *demographic draws* spreadsheet can be provided to be used in the macro likelihood portion of the objective function, i.e. $z$ draws to use in the macro integration.  The format of each of these spreadsheets is described below.
 
 In the examples below, the data are comma separated, but that is not necessary: other formats can be specified in the [`Sources`](@ref) call.  Column ordering is irrelevant.
 
@@ -41,7 +44,7 @@ income,  age, purchase, second,   market,     choice
 ```
 
 The columns are again variable names.  Here, we need both market and choice, but the columns do not have to have those (default) headings.  Indeed, choice could have been replaced with purchase, and nothing would have been different, albeit that the same product
-and market descriptors should be used across data sources (spreadsheets).  The markets and products could have had more descriptive names (e.g.\ "Pennsylvania" instead of "market 1"), and the column headings could have been different.
+and market descriptors should be used across data sources (spreadsheets).  The markets and products could have had more descriptive names (e.g. "Pennsylvania" instead of "market 1"), and the column headings could have been different.
 
 ## Market sizes
 

@@ -55,7 +55,7 @@ Next, in `Variables` it describes what variables to include. There are two diffe
 
 It then tells Grumps that it wants to use the full Grumps maximum likelihood estimator with penalized deviations from the macro moments in `Estimator`.  You could also have entered another descriptive string; **Grumps** is pretty good at figuring out what you want.  Or you can use a symbol, like :mle.  In the `Data` call, it reads the data needed from the sources indicated in the `Sources` call using the information specified in the `Variables` call.
 
-The `grumps!` call then asks Grumps to compute the estimates.  The exclamation mark (`bang') signifies that `grumps!` can change its arguments, including the starting value.
+The `grumps!` call then asks Grumps to compute the estimates.  The exclamation mark (`bang`) signifies that `grumps!` can change its arguments, including the starting value.
 
 Finally, `Save` saves the results to disk, in this case to a CSV file, but other formats are possible, also.  And the results can of course be printed, also, as the above program demonstrates.
 
