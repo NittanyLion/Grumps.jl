@@ -181,7 +181,6 @@ function GrumpsMicroData(
     MustBeInDF( v.product, dfp,  "product" ) 
     products = String.( string.( vcat( dfp[ :, v.product ] , v.outsidegood ) ) ) 
     @ensure NoDuplicates( products ) "unexpected duplicates in $products"
-
     y, Y = CreateChoices( dfc, v, products )
 
     Z = CreateInteractions( dfc, dfp, v, T )

@@ -52,9 +52,9 @@ StandardErrorOptions()
 Grumps can compute quite a few estimators and one can specify which estimator to use by passing the return value of a call to `Estimator` to the optimization routine.
 
 The easiest way to call `Estimator` is by passing it a string that describes what it is that you want to do.  The following estimators are currently defined:
-* the full Grumps estimator
-* a less expensive alternative estimator with the same limit distribution as the full Grumps estimator
-* Grumps-style maximum likelihood, i.e Grumps without penalty
+* the full Grumps (CLER) estimator
+* a less expensive alternative estimator with the same limit distribution as the CLER estimator
+* Grumps-style maximum likelihood, i.e. CLER without penalty
 * ditto, but imposing share constraints
 * GMM estimator that uses both micro and macro moments and uses quadrature instead of Monte Carlo draws in the micro moments.  The micro moments are smart in that they condition on $z_{im}$ instead of integrating it out.
 * a mixed logit estimator
@@ -133,16 +133,5 @@ show( io :: IO, mt :: MimeCSV, sol :: GrumpsSolution; kwargs... )
 
 !!! tip "Saving results to LaTeX"
     To save estimation results directly to a LaTeX tabular, just use a `.tex` extension in the filename.  For instance, write `Save( "results.tex", sol )` if your solution is in the variable `sol`.
-
-## Memory conservation
-
-**stub; this section to be completed**
-
-By default, Grumps loads all data and then creates space for all markets for things like choice probabilities, objective functions and their derivatives, intermediate objects, etcetera.  This saves computation time, but eats memory, especially as the number of random coefficients increases.
-
-To conserve memory, one can set `memsave` in [`OptimizationOptions()`](@ref) to `true`.  What this does is that it shares space for choice probabilities
-and related objects across a number of markets.  For instance, if there are ten markets and the number of market threads in [`OptimizationOptions()`](@ref) is set to two then the space for choice probabilities is shared across five markets.  These choices will have no effect if the number of market threads is no less than the number of markets.  The downside of doing this is that it slows down computation since choice probabilities need to be recomputed.  This is especially true for estimators that use the penalty term in the inside optimization, i.e. currently only the full Grumps estimator.
-
-<!-- There are less impactful ways of reducing memory usage, such as choosing the option `:Ant` for the micro data, also.  *** not yet implemented *** -->
 
 

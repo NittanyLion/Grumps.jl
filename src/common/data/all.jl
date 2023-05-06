@@ -84,6 +84,7 @@ function GrumpsData(
             local fac = findall( x->string(x) == markets[m], s.consumers[:, v.market] )
             if fac ≠ nothing
                 local nw = NodesWeightsOneMarket( microintegrator( integrators ), dθν, rngs[ th ], nwgmic, length( fac )  )
+                # check that all products in the consumer data set are also in the products data set
                 mic[m] = GrumpsMicroData( markets[m], view( s.consumers, fac, : ), view( s.products, fap[m], : ), v, nw, rngs[th], options, usesmicromoments( e ), T, u )
             else
                 mic[m] = GrumpsMicroNoData( markets[m] )
