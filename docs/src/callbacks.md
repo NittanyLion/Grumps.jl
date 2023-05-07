@@ -17,4 +17,4 @@ This will print "hi" on every $θ$ iteration.  The first argument of `Grumps.θc
 If the `id` variable is set but no user callbacks are defined then Grumps will only execute the default callbacks.
 
 !!! note "Do not overuse Grumps.δcallback"
-    If one has many markets then the δ callback is called *a lot*. Be prepared for a lot of output.
+    If one has many markets then the δ callback is called *a lot*. Be prepared for a lot of output.  The θ callback is not called nearly as often.
