@@ -1,9 +1,9 @@
-δcallback( whatever, statevec, e, d, o, oldx, repeatx ) = nothing
-θcallback( whatever, statevec, e, d, o, oldx, repeatx, solution ) = nothing
+δcallback( ::Any, statevec, e, d, o, oldx, repeatx ) = nothing
+θcallback( ::Any, statevec, e, d, o, oldx, repeatx, solution ) = nothing
 export θcallback, δcallback
 
 function GrumpsδCallBack( statevec, e, d, o, oldx, repeatx )
-    δcallback( Val( id( o ) ), statevec, e, d, o, oldx, repeatx )
+    δcallback( Val( callbackid( o ) ), statevec, e, d, o, oldx, repeatx )
     return false
     state = ( typeof( statevec ) <: Vector ) ? statevec[end] : statevec
     if true #o.δ.show_trace
@@ -57,7 +57,7 @@ function GrumpsθCallBack( statevec, e :: GrumpsEstimator, d :: GrumpsData{T}, o
     # if applicable( Main.θcallback,  Val( id( o ) ), statevec, e, d, o, oldx, repeatx, solution ) 
     #     Main.θcallback( Val( id( o ) ), statevec, e, d, o, oldx, repeatx, solution )
     # end
-    θcallback( Val( id( o ) ), statevec, e, d, o, oldx, repeatx, solution )
+    θcallback( Val( callbackid( o ) ), statevec, e, d, o, oldx, repeatx, solution )
     state = ( typeof( statevec ) <: Vector ) ? statevec[end] : statevec
     # @glog("Grumps ", e, " iteration ", state.iteration, " completed" )
     if o.θ.show_trace
@@ -100,7 +100,7 @@ function GrumpsθCallBack( statevec, e :: GrumpsEstimator, d :: GrumpsData{T}, o
 
     println( )
 
-    SetHighWaterMark!( solution )   # putting this before garbage collection to get the max
+    # SetHighWaterMark!( solution )   # putting this before garbage collection to get the max
     # GC.gc()
 
     if isnan( state.g_norm )

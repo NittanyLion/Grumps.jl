@@ -106,7 +106,7 @@ end
 
 
 
-function GrumpsPLMData( e :: Estimator, s :: Sources, v :: Variables, fap :: Vec{ Vec{Int} }, usepenaltyterm :: Bool, σ2 :: T ) where {T<:Flt}
+function GrumpsPLMData( id :: Any, e :: Estimator, s :: Sources, v :: Variables, fap :: Vec{ Vec{Int} }, usepenaltyterm :: Bool, σ2 :: T ) where {T<:Flt}
     @ensure isa( s.products, DataFrame )   "was expecting a DataFrame for product data"
 
 
@@ -152,5 +152,6 @@ function GrumpsPLMData( e :: Estimator, s :: Sources, v :: Variables, fap :: Vec
     return GrumpsPLMData( 𝒳, 𝒳̂, vcat( String.( v.regressors ), dumbnames ), size(𝒵,2), 𝒦,  σ2 )
 end
 
-
+PLMData( x...; y... ) = GrumpsPLMData(x...; y...)
+export PLMData
 

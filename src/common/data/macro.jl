@@ -4,6 +4,7 @@
 
 """
     GrumpsMacroData( 
+        id          :: Any,
         mkt         :: AbstractString,
         N           :: Real,
         dfp         :: AbstractDataFrame,
@@ -11,14 +12,12 @@
         nw          :: NodesWeights,
         mic         :: Union{Nothing, GrumpsMicroData},
         options     :: DataOptions,
-        T           :: sType = F64,
-        u           :: UserEnhancement = DefaultUserEnhancement()
+        T           :: sType = F64
         )
 
 Creates the macro data object to be used by Grumps.  This function should not be called directly.  Just call `Data` or `GrumpsData` (which are synonymous) instead.
 """
-function GrumpsMacroData( mkt :: AbstractString, N :: Real, dfp :: AbstractDataFrame, v :: Variables, nw :: NodesWeights, mic :: Union{Nothing, MicroData}, options :: DataOptions, T::Type = F64, u :: UserEnhancement = DefaultUserEnhancement() )
-    @ensure typeof( u ) == DefaultUserEnhancement  "cannot yet deal with $(typeof(u))"
+function GrumpsMacroData( id :: Any, mkt :: AbstractString, N :: Real, dfp :: AbstractDataFrame, v :: Variables, nw :: NodesWeights, mic :: Union{Nothing, MicroData}, options :: DataOptions, T::Type = F64 )
 
     J = nrow( dfp ) + 1
     dθ = size( nw.nodes, 2 )
@@ -49,4 +48,5 @@ function GrumpsMacroData( mkt :: AbstractString, N :: Real, dfp :: AbstractDataF
     end
 end
 
-
+MacroData(x...; y...) = GrumpsMacroData(x...; y...) 
+export MacroData

@@ -4,6 +4,7 @@
 
 """
     CreateChoices( 
+        id          :: Any,
         dfc         :: AbstractDataFrame, 
         v           :: Variables, 
         products    :: Vec{<:AbstractString} 
@@ -12,7 +13,7 @@
     CreateChoices reads data from a dataframe and turns them into an integer vector y and a 
     Boolean matrix Y of choices.  
 """
-function CreateChoices( dfc :: AbstractDataFrame, v :: Variables, products :: Vec{<:AbstractString} )
+function CreateChoices( ::Any, dfc :: AbstractDataFrame, v :: Variables, products :: Vec{<:AbstractString} )
     MustBeInDF( v.choice, dfc, "consumer data frame" ) 
 
     S = nrow( dfc )
@@ -29,6 +30,7 @@ end
 
 """
     CreateInteractions( 
+        id          :: Any,
         dfc         :: AbstractDataFrame, 
         dfp         :: AbstractDataFrame, 
         v           :: Variables, 
@@ -37,7 +39,7 @@ end
         
     CreateInteractions reads data from consumer and product dataframes and returns an array of interactions.
 """
-function CreateInteractions( dfc:: AbstractDataFrame, dfp:: AbstractDataFrame, v :: Variables, T = F64 )
+function CreateInteractions( ::Any, dfc:: AbstractDataFrame, dfp:: AbstractDataFrame, v :: Variables, T = F64 )
     MustBeInDF( v.interactions[:,1], dfc, "consumer data frame" )
     MustBeInDF( v.interactions[:,2], dfp, "product data frame" )
 
@@ -53,6 +55,7 @@ end
 
 """
     CreateMicroInstruments( 
+        id          :: Any,
         dfc         :: AbstractDataFrame, 
         dfp         :: AbstractDataFrame, 
         v           :: Variables, 
@@ -62,7 +65,7 @@ end
 
     CreateMicroInstruments is used for the MSM version of our estimator, which is not recommended.
 """
-function CreateMicroInstruments( dfc:: AbstractDataFrame, dfp:: AbstractDataFrame, v :: Variables, usesmicmom :: Bool, T = F64 )
+function CreateMicroInstruments( ::Any, dfc:: AbstractDataFrame, dfp:: AbstractDataFrame, v :: Variables, usesmicmom :: Bool, T = F64 )
     S, dδ = nrow( dfc ), nrow( dfp ) 
     J = dδ + 1
     micinst = size( v.microinstruments, 1 ) == 0 ? v.interactions : v.microinstruments
@@ -88,6 +91,7 @@ end
 
 """
     CreateRandomCoefficients( 
+        idstub      :: Any,
         dfp         :: AbstractDataFrame, 
         v           :: Variables, 
         nw          :: NodesWeights, 
@@ -96,7 +100,7 @@ end
 
     CreateRandomCoefficients takes a dataframe and random draws and turns it into random coefficients data.   
 """
-function CreateRandomCoefficients( dfp :: AbstractDataFrame, v :: Variables, nw :: NodesWeights, T = F64 )
+function CreateRandomCoefficients( ::Any, dfp :: AbstractDataFrame, v :: Variables, nw :: NodesWeights, T = F64 )
     MustBeInDF( v.randomcoefficients, dfp, "product data frame" )
     R = length( nw.weights )
     dθν = length( v.randomcoefficients )
@@ -109,7 +113,7 @@ function CreateRandomCoefficients( dfp :: AbstractDataFrame, v :: Variables, nw 
     return X
 end
 
-function CreateRandomCoefficients( dfp :: AbstractDataFrame, v :: Variables, nw :: MSMMicroNodesWeights, T = F64 )
+function CreateRandomCoefficients( ::Any, dfp :: AbstractDataFrame, v :: Variables, nw :: MSMMicroNodesWeights, T = F64 )
     MustBeInDF( v.randomcoefficients, dfp, "product data frame" )
     R,S = size( nw.weights )
     dθν = length( v.randomcoefficients )
@@ -123,27 +127,27 @@ function CreateRandomCoefficients( dfp :: AbstractDataFrame, v :: Variables, nw 
 end
 
 
-function CreateUserInteractions( u :: DefaultUserEnhancement,  dfc :: AbstractDataFrame, dfp :: AbstractDataFrame, v :: Variables, T = F64 )
-    return zeros( T, 0, 0, 0 ) 
-end
+# function CreateUserInteractions( u :: DefaultUserEnhancement,  dfc :: AbstractDataFrame, dfp :: AbstractDataFrame, v :: Variables, T = F64 )
+#     return zeros( T, 0, 0, 0 ) 
+# end
 
-function CreateUserRandomCoefficients( u :: DefaultUserEnhancement, dfp :: AbstractDataFrame, v :: Variables, nw :: NodesWeights, T = F64 )
-    return zeros( T, 0, 0, 0 )
-end
+# function CreateUserRandomCoefficients( u :: DefaultUserEnhancement, dfp :: AbstractDataFrame, v :: Variables, nw :: NodesWeights, T = F64 )
+#     return zeros( T, 0, 0, 0 )
+# end
 
-function CreateUserRandomCoefficients( u :: DefaultUserEnhancement, dfp :: AbstractDataFrame, v :: Variables, nw :: MSMMicroNodesWeights, T = F64 )
-    return zeros( T, 0, 0, 0, 0 )
-end
+# function CreateUserRandomCoefficients( u :: DefaultUserEnhancement, dfp :: AbstractDataFrame, v :: Variables, nw :: MSMMicroNodesWeights, T = F64 )
+#     return zeros( T, 0, 0, 0, 0 )
+# end
 
 
-function GrumpsMicroDataMode( dfp, mkt, nw :: NodesWeights, T, u, v, y, Y, Z, ℳ, ::Val{:Hog} )
-    X = CreateRandomCoefficients( dfp, v, nw, T )
-    X2 = CreateUserRandomCoefficients( u, dfp, v, nw, T )
-    if size( X2, 3 ) > 0
-        @ensure size(X,1) == size(X2,1)  "user-created random coefficient matrix has the wrong first dimension"
-        @ensure size(X,2) == size(X2,2)  "user-created random coefficient matrix has the wrong second dimension"
-        X = cat( X, X2; dims = size(X,4) )
-    end
+function GrumpsMicroDataMode( id :: Any, dfp, mkt, nw :: NodesWeights, T, v, y, Y, Z, ℳ, ::Val{:Hog} )
+    X = CreateRandomCoefficients( id, dfp, v, nw, T )
+    # X2 = CreateUserRandomCoefficients( id, dfp, v, nw, T )
+    # if size( X2, 3 ) > 0
+    #     @ensure size(X,1) == size(X2,1)  "user-created random coefficient matrix has the wrong first dimension"
+    #     @ensure size(X,2) == size(X2,2)  "user-created random coefficient matrix has the wrong second dimension"
+    #     X = cat( X, X2; dims = size(X,4) )
+    # end
     return size(Z,1) > 0 ? GrumpsMicroDataHog( String(mkt), Z, X, y, Y, nw.weights, ℳ ) : GrumpsMicroNoData( String(mkt) )
 end
 
@@ -151,20 +155,21 @@ end
 
 
 
-function GrumpsMicroDataMode( dfp, mkt, nw :: NodesWeights, T, u, v, y, Y, Z, ℳ, ::Val{:Ant} )
-    @ensure typeof( u ) <: DefaultUserEnhancement  "Cannot have micro memory mode Ant with user enhancements"
+function GrumpsMicroDataMode( id ::Any, dfp, mkt, nw :: NodesWeights, T, v, y, Y, Z, ℳ, ::Val{:Ant} )
+    # @ensure typeof( u ) <: DefaultUserEnhancement  "Cannot have micro memory mode Ant with user enhancements"
     𝒳 = ExtractMatrixFromDataFrame( T, dfp, v.randomcoefficients )
     𝒟 = nw.nodes
     return size(Z,1) > 0 ? GrumpsMicroDataAnt{T}( String(mkt), Z, 𝒳, 𝒟, y, Y, nw.weights, ℳ ) : GrumpsMicroNoData{T}( String(mkt) )
 end
 
 
-function GrumpsMicroDataMode( dfp, mkt, nw :: NodesWeights, T, u, v, y, Y, Z, ℳ, anyval )
+function GrumpsMicroDataMode( ::Any, dfp, mkt, nw :: NodesWeights, T, v, y, Y, Z, ℳ, anyval )
     @ensure false "memory mode you chose is not programmed in GrumpsMicroDataMode"
 end
 
 
 function GrumpsMicroData( 
+    id :: Any,
     mkt :: AbstractString,
     dfc :: AbstractDataFrame,
     dfp :: AbstractDataFrame, 
@@ -173,27 +178,28 @@ function GrumpsMicroData(
     rng :: AbstractRNG, 
     o :: DataOptions,
     usesmicmom :: Bool,
-    T = F64, 
-    u :: UserEnhancement = DefaultUserEnhancement()
+    T = F64
     )
 
     MustBeInDF( v.choice, dfc, "consumer" ) 
     MustBeInDF( v.product, dfp,  "product" ) 
     products = String.( string.( vcat( dfp[ :, v.product ] , v.outsidegood ) ) ) 
     @ensure NoDuplicates( products ) "unexpected duplicates in $products"
-    y, Y = CreateChoices( dfc, v, products )
+    y, Y = CreateChoices( id, dfc, v, products )
 
-    Z = CreateInteractions( dfc, dfp, v, T )
-    Z2 = CreateUserInteractions( u, dfc, dfp, v, T )
-    if size(Z2,3) > 0
-        @ensure size(Z,1) == size(Z2,1) "user-created interactions matrix has the wrong first dimension"
-        @ensure size(Z,2) == size(Z2,2) "user-created interactions matrix has the wrong first dimension"
-        Z = cat( Z, Z2; dims = 3 )
-    end
+    Z = CreateInteractions( id, dfc, dfp, v, T )
+    # if size(Z2,3) > 0
+    #     @ensure size(Z,1) == size(Z2,1) "user-created interactions matrix has the wrong first dimension"
+    #     @ensure size(Z,2) == size(Z2,2) "user-created interactions matrix has the wrong first dimension"
+    #     Z = cat( Z, Z2; dims = 3 )
+    # end
 
-    ℳ = CreateMicroInstruments( dfc, dfp, v, usesmicmom, T )
+    ℳ = CreateMicroInstruments(  id, dfc, dfp, v, usesmicmom, T )
 
-    return GrumpsMicroDataMode( dfp, mkt, nw, T, u, v, y, Y, Z, ℳ, Val( micromode(o) ) )
+    return GrumpsMicroDataMode(  id, dfp, mkt, nw, T, v, y, Y, Z, ℳ, Val( micromode(o) ) )
 end
 
+MicroData(x...; y...) = GrumpsMicroData(x...; y...)
+MicroDataMode(x...; y...) = GrumpsMicroDataMode(x...; y...)
+export MicroData, MicroDataMode
 

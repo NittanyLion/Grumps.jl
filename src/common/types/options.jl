@@ -160,6 +160,8 @@ inthreads( th :: GrumpsThreads ) = th.inner
 mktthreads( th :: GrumpsThreads ) = th.markets
 blasthreads( th :: GrumpsThreads ) = th.blas
 
+
+
 struct GrumpsOptimizationOptions <: OptimizationOptions
     θ               :: OptimOptions
     δ               :: OptimOptions 
@@ -167,13 +169,13 @@ struct GrumpsOptimizationOptions <: OptimizationOptions
     memsave         :: Bool
     maxrepeats      :: Int
     probtype        :: Symbol
-    id              :: Symbol
+    callbackid      :: Symbol
 end
 
 
-function GrumpsOptimizationOptions(; θopt = OptimOptions( Val( :θ ) ), δopt = OptimOptions( Val( :δ) ), threads = GrumpsThreads(), memsave = false, maxrepeats = 3, probtype = :fast, id = :default )
+function GrumpsOptimizationOptions(; θopt = OptimOptions( Val( :θ ) ), δopt = OptimOptions( Val( :δ) ), threads = GrumpsThreads(), memsave = false, maxrepeats = 3, probtype = :fast, callbackid = :default )
     @ensure probtype ∈ [ :fast, :robust ] "only fast and robust choice probabilities are allowed"
-    return GrumpsOptimizationOptions( θopt, δopt, threads, memsave, maxrepeats, probtype, id )
+    return GrumpsOptimizationOptions( θopt, δopt, threads, memsave, maxrepeats, probtype, callbackid )
 end
 
 
@@ -182,7 +184,7 @@ mktthreads( o :: GrumpsOptimizationOptions )    = mktthreads( o.gth )
 blasthreads( o :: GrumpsOptimizationOptions )   = blasthreads( o.gth )
 probtype( o :: GrumpsOptimizationOptions )      = o.probtype
 memsave( o :: GrumpsOptimizationOptions )       = o.memsave
-id( o :: GrumpsOptimizationOptions )            = o.id
+callbackid( o :: GrumpsOptimizationOptions )    = o.callbackid
 
 """
     OptimizationOptions(; 
@@ -192,7 +194,7 @@ id( o :: GrumpsOptimizationOptions )            = o.id
     memsave = false, 
     maxrepeats = 4, 
     probtype = :fast,
-    id = :default 
+    callbackid = :default
     )
 
 Sets the options used for numerical optimization.  *θopt* is used for the external optimization routine,
@@ -204,7 +206,7 @@ future.
 There are two ways of computing choice probabilities: robust and fast, specified by passing *:robust* or
 *:fast* in *probtype*. Fast choice probabilities are the default for good reason.
 
-Finally, specifying an *id* allows one to add callbacks, i.e. user functions that are called on each inner and 
+Finally, specifying a callback allows one to add callbacks, i.e. user functions that are called on each inner and 
 outer iteration.  See the [Callbacks](@ref) portion of the documentation.
 """
 OptimizationOptions(; x...) = GrumpsOptimizationOptions(; x...)

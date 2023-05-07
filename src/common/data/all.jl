@@ -10,9 +10,9 @@
         v                   :: Variables,
         integrators         :: GrumpsIntegrators = BothIntegrators(),
         T                   :: Type = F64,
-        u                   :: UserEnhancement = DefaultUserEnhancement();
         options             :: DataOptions = GrumpsDataOptions(),
-        threads             :: Int = 0
+        threads             :: Int = 0,
+        id                  :: Symbol = :default
         )
 
 Takes user inputs and converts them into an object that Grumps can understand.  This is synonymous with Data(...).
@@ -24,19 +24,19 @@ Takes user inputs and converts them into an object that Grumps can understand.  
 * *v*:                   variables to be used; see *Variables*
 * *integrators*:         see *BothIntegrators*, *DefaultMicroIntegrator*, and *DefaultMacroIntegrator*
 * *T*:                   floating point type; not heavily tested
-* *u*:                   not yet implemented
 * *options*:             data options to be used, see *DataOptions*
 * *threads*:             the number of parallel threads to be used in creating data
+* *id*:                  an id that can be used to define user-specific versions
 """
 function GrumpsData( 
     e                   :: GrumpsEstimator,
     ss                  :: Sources,
     v                   :: Variables,
     integrators         :: GrumpsIntegrators = BothIntegrators(),
-    T                   :: Type = F64,
-    u                   :: UserEnhancement = DefaultUserEnhancement();
+    T                   :: Type = F64;
     options             :: DataOptions = GrumpsDataOptions(),
-    threads             :: Int = 0
+    threads             :: Int = 0,
+    id                  :: Symbol = :default
     )
 
     # check compatibility of choices made 
@@ -66,8 +66,8 @@ function GrumpsData(
     fap = [ findall( x->string(x) == markets[m], s.products[:, v.market ] ) for m ∈ 1:M ]
 
 
-    dθν = length( v.randomcoefficients ) + dim( u, :randomcoefficients )
-    dθ = dθν + size(v.interactions,1) + dim( u, :interactions )
+    dθν = length( v.randomcoefficients )# + dim( u, :randomcoefficients )
+    dθ = dθν + size(v.interactions,1)# + dim( u, :interactions )
 
     # process data needed for the micro likelihood
     @warnif !usesmicrodata( e ) && isa( s.consumers, DataFrame ) "ignoring the consumer information you specified since it is not used for this estimator type"
@@ -85,7 +85,7 @@ function GrumpsData(
             if fac ≠ nothing
                 local nw = NodesWeightsOneMarket( microintegrator( integrators ), dθν, rngs[ th ], nwgmic, length( fac )  )
                 # check that all products in the consumer data set are also in the products data set
-                mic[m] = GrumpsMicroData( markets[m], view( s.consumers, fac, : ), view( s.products, fap[m], : ), v, nw, rngs[th], options, usesmicromoments( e ), T, u )
+                mic[m] = GrumpsMicroData( Val( id ), markets[m], view( s.consumers, fac, : ), view( s.products, fap[m], : ), v, nw, rngs[th], options, usesmicromoments( e ), T )
             else
                 mic[m] = GrumpsMicroNoData( markets[m] )
             end
@@ -115,7 +115,7 @@ function GrumpsData(
                 fam = fama[1]
                 local 𝒾 = findfirst( x->string( x ) == markets[m], marketsdrawn )
                 local nw = NodesWeightsOneMarket( macrointegrator( integrators ), dθν, 𝒾 == nothing ? nothing : subdfs[𝒾], v, rngs[ th ], nwgmac  )
-                mac[m] = GrumpsMacroData( markets[m], s.marketsizes[fam[1], v.marketsize], view( s.products, fap[m], : ), v, nw, isassigned( mic, m ) ? mic[m] : nothing, options, T, u )
+                mac[m] = GrumpsMacroData( Val( id ), markets[m], s.marketsizes[fam[1], v.marketsize], view( s.products, fap[m], : ), v, nw, isassigned( mic, m ) ? mic[m] : nothing, options, T )
             else
                 mac[m] = GrumpsMacroNoData{T}( markets[m] )
             end
@@ -129,7 +129,7 @@ function GrumpsData(
 
     @info "creating objects for use in product level moments term"
     # create product level data
-    plm = GrumpsPLMData( e, s, v, fap, usespenalty( e ), T( options.σ2 ) )
+    plm = GrumpsPLMData( Val( id ), e, s, v, fap, usespenalty( e ), T( options.σ2 ) )
 
     # now create variable labels
     marketproductstrings = vcat( [ [ ( c == 1 ) ? markets[m] : string( s.products[ fap[m][r], v.product ] ) for r ∈ 1:length( fap[m] ), c ∈ 1:2 ] for m ∈ 1:M ] ... )
@@ -138,9 +138,12 @@ function GrumpsData(
         v.interactions,                 # names of interaction variables
         v.randomcoefficients,           # names of random coefficients
         plm.names,                      # names of all regressor variables
-        marketproductstrings,           # names of all market, product combinations
-        u.interactionnames,             # names of all user-created interaction variables
-        u.randomcoefficientnames )      # names of all user-created random coefficients
+        marketproductstrings            # names of all market, product combinations
+        # Vector{[],
+        # []
+        # u.interactionnames,             # names of all user-created interaction variables
+        # u.randomcoefficientnames )      # names of all user-created random coefficients
+    )
     
     nrm = Vec{ GrumpsNormalization{T} }(undef, dθ )
     dims = Dimensions( dθ, dθ - dθν, dθν, length( plm.names ), length.( fap ), dimmom( plm ) + (( typeof(e) <: GrumpsGMM) ? size( v.microinstruments, 1 ) : 0 ) )

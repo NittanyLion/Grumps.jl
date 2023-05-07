@@ -9,8 +9,9 @@ push!(LOAD_PATH, "../../src")
 using Grumps, LinearAlgebra
 
 
+
 function Grumps.θcallback(  
-    ::Val{ :myid }, 
+    ::Val{:mycallback}, 
     statevec, 
     e, 
     d, 
@@ -86,7 +87,7 @@ function myprogram( nodes, draws, meth  )
     th = Grumps.GrumpsThreads( ; markets = 32 )                             
 
     # redundant unless you wish to save memory
-    o = Grumps.OptimizationOptions(; memsave = true, threads = th, id = :myid )         
+    o = Grumps.OptimizationOptions(; memsave = true, threads = th, callbackid = :mycallback)         
 
     # redundant unless you wish to have standard errors on objects other than β,θ 
     # seo = StandardErrorOptions(; δ = true )                                 
