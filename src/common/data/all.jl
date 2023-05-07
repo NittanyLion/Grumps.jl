@@ -3,40 +3,15 @@
 # data, macro likelihood data, and product level moments data.
 
 
-"""
-    GrumpsData( 
-        e                   :: GrumpsEstimator,
-        ss                  :: Sources,
-        v                   :: Variables,
-        integrators         :: GrumpsIntegrators = BothIntegrators(),
-        T                   :: Type = F64,
-        options             :: DataOptions = GrumpsDataOptions(),
-        threads             :: Int = 0,
-        id                  :: Symbol = :default
-        )
-
-Takes user inputs and converts them into an object that Grumps can understand.  This is synonymous with Data(...).
-
-*GrumpsData* takes the following arguments, of which the first three are mandatory:
-
-* *e*:                   estimator; see *Estimator*
-* *ss*:                  cata sources; see *Sources*
-* *v*:                   variables to be used; see *Variables*
-* *integrators*:         see *BothIntegrators*, *DefaultMicroIntegrator*, and *DefaultMacroIntegrator*
-* *T*:                   floating point type; not heavily tested
-* *options*:             data options to be used, see *DataOptions*
-* *threads*:             the number of parallel threads to be used in creating data
-* *id*:                  an id that can be used to define user-specific versions
-"""
 function GrumpsData( 
+    id                  :: Any,
     e                   :: GrumpsEstimator,
     ss                  :: Sources,
     v                   :: Variables,
     integrators         :: GrumpsIntegrators = BothIntegrators(),
     T                   :: Type = F64;
     options             :: DataOptions = GrumpsDataOptions(),
-    threads             :: Int = 0,
-    id                  :: Symbol = :default
+    threads             :: Int = 0
     )
 
     # check compatibility of choices made 
@@ -154,6 +129,44 @@ function GrumpsData(
     return gd
 end
 
+"""
+    GrumpsData( 
+        e                   :: GrumpsEstimator,
+        ss                  :: Sources,
+        v                   :: Variables,
+        integrators         :: GrumpsIntegrators = BothIntegrators(),
+        T                   :: Type = F64,
+        options             :: DataOptions = GrumpsDataOptions(),
+        threads             :: Int = 0,
+        id                  :: Symbol = :default
+        )
+
+Takes user inputs and converts them into an object that Grumps can understand.  This is synonymous with Data(...).
+
+*GrumpsData* takes the following arguments, of which the first three are mandatory:
+
+* *e*:                   estimator; see *Estimator*
+* *ss*:                  cata sources; see *Sources*
+* *v*:                   variables to be used; see *Variables*
+* *integrators*:         see *BothIntegrators*, *DefaultMicroIntegrator*, and *DefaultMacroIntegrator*
+* *T*:                   floating point type; not heavily tested
+* *options*:             data options to be used, see *DataOptions*
+* *threads*:             the number of parallel threads to be used in creating data
+* *id*:                  an id that can be used to define user-specific versions
+"""
+function GrumpsData( 
+    e                   :: GrumpsEstimator,
+    ss                  :: Sources,
+    v                   :: Variables,
+    integrators         :: GrumpsIntegrators = BothIntegrators(),
+    T                   :: Type = F64;
+    options             :: DataOptions = GrumpsDataOptions(),
+    threads             :: Int = 0,
+    id                  :: Symbol = :default
+    )
+    
+    return GrumpsData( Val( id ), e, ss, v, integrators, T; options = options, threads = threads )
+end
 
 
 """
@@ -163,9 +176,9 @@ end
         v                   :: Variables,
         integrators         :: GrumpsIntegrators = BothIntegrators(),
         T                   :: Type = F64,
-        u                   :: UserEnhancement = DefaultUserEnhancement();
         options             :: DataOptions = GrumpsDataOptions(),
-        threads             :: Int = 0
+        threads             :: Int = 0,
+        id                  :: Symbol = :default
         )
 
 Takes user inputs and converts them into an object that Grumps can understand.  This is synonymous with GrumpsData(...).
