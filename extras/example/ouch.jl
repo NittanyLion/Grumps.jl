@@ -4,7 +4,27 @@
 push!(LOAD_PATH, "../../src")                              
 
 
+
+
 using Grumps, LinearAlgebra
+
+
+function Grumps.θcallback(  
+    ::Val{ :myid }, 
+    statevec, 
+    e, 
+    d, 
+    o, 
+    oldx, 
+    repeatx, 
+    solution 
+        ) 
+
+    println( "hi" )
+    
+end
+
+# export θcallback
 
 # set the number of BLAS threads
 BLAS.set_num_threads(8)                                                    
@@ -13,7 +33,7 @@ function myprogram( nodes, draws, meth  )
     # set which files contain the data to be used
     s = Sources(                                                            
       consumers = "example_consumers.csv",
-      products = "_ouch_products.csv",
+      products = "example_products.csv",
       marketsizes = "example_marketsizes.csv",
       draws = "example_draws.csv"  
     )
@@ -63,16 +83,16 @@ function myprogram( nodes, draws, meth  )
 
     # no need to set this unless you wish to save memory, will not exceed number 
     # of threads Julia is started with
-    # th = Grumps.GrumpsThreads( ; markets = 32 )                             
+    th = Grumps.GrumpsThreads( ; markets = 32 )                             
 
     # redundant unless you wish to save memory
-    # o = Grumps.OptimizationOptions(; memsave = true, threads = th )         
+    o = Grumps.OptimizationOptions(; memsave = true, threads = th, id = :myid )         
 
     # redundant unless you wish to have standard errors on objects other than β,θ 
     # seo = StandardErrorOptions(; δ = true )                                 
 
     # compute estimates using automatic starting values
-    sol = grumps!( e, d )           
+    sol = grumps!( e, d, o )           
     # long version to set more options                                          
     # sol = grumps!( e, d, o, nothing, seo  )                                 
     return sol

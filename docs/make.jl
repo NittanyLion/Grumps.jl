@@ -23,6 +23,7 @@ makedocs( sitename = "Grumps.jl",
     "Things to bear in mind" => "bearinmind.md",
     "Directory structure" => "structure.md",
     "Algorithm flow" => "flow.md",
+    "Callbacks" => "callbacks.md",
     "Extending Grumps" => "extending.md",
     "Languages other than Julia" => "aliens.md",
     "Miscellanea" => "misc.md"

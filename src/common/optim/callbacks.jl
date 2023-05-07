@@ -1,7 +1,11 @@
+δcallback( whatever, statevec, e, d, o, oldx, repeatx ) = nothing
+θcallback( whatever, statevec, e, d, o, oldx, repeatx, solution ) = nothing
+export θcallback, δcallback
+
 function GrumpsδCallBack( statevec, e, d, o, oldx, repeatx )
+    δcallback( Val( id( o ) ), statevec, e, d, o, oldx, repeatx )
     return false
     state = ( typeof( statevec ) <: Vector ) ? statevec[end] : statevec
-    # @glog("Grumps ", e, " iteration ", state.iteration, " completed" )
     if true #o.δ.show_trace
         if state.iteration == 0
             printstyled( @sprintf( "%50s\n", name( e ) ); bold = true ) 
@@ -50,6 +54,10 @@ end
 
 
 function GrumpsθCallBack( statevec, e :: GrumpsEstimator, d :: GrumpsData{T}, o :: GrumpsOptimizationOptions, oldx :: Vec{T}, repeatx :: Vec{Int}, solution :: GrumpsSolution{T} ) where {T<:Flt}
+    # if applicable( Main.θcallback,  Val( id( o ) ), statevec, e, d, o, oldx, repeatx, solution ) 
+    #     Main.θcallback( Val( id( o ) ), statevec, e, d, o, oldx, repeatx, solution )
+    # end
+    θcallback( Val( id( o ) ), statevec, e, d, o, oldx, repeatx, solution )
     state = ( typeof( statevec ) <: Vector ) ? statevec[end] : statevec
     # @glog("Grumps ", e, " iteration ", state.iteration, " completed" )
     if o.θ.show_trace
@@ -87,8 +95,6 @@ function GrumpsθCallBack( statevec, e :: GrumpsEstimator, d :: GrumpsData{T}, o
             copyto!( oldx, x )
         catch
         end
-        # println( "g= ",state.metadata["g(x)"] )
-        # println( "H = ", state.metadata["h(x)"] )
     end
 
 

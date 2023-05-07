@@ -167,21 +167,22 @@ struct GrumpsOptimizationOptions <: OptimizationOptions
     memsave         :: Bool
     maxrepeats      :: Int
     probtype        :: Symbol
+    id              :: Symbol
 end
 
 
-function GrumpsOptimizationOptions(; θopt = OptimOptions( Val( :θ ) ), δopt = OptimOptions( Val( :δ) ), threads = GrumpsThreads(), memsave = false, maxrepeats = 3, probtype = :fast )
+function GrumpsOptimizationOptions(; θopt = OptimOptions( Val( :θ ) ), δopt = OptimOptions( Val( :δ) ), threads = GrumpsThreads(), memsave = false, maxrepeats = 3, probtype = :fast, id = :default )
     @ensure probtype ∈ [ :fast, :robust ] "only fast and robust choice probabilities are allowed"
-    return GrumpsOptimizationOptions( θopt, δopt, threads, memsave, maxrepeats, probtype )
+    return GrumpsOptimizationOptions( θopt, δopt, threads, memsave, maxrepeats, probtype, id )
 end
 
-OptimizationOptions(; x...) = GrumpsOptimizationOptions(; x...)
 
 inthreads( o :: GrumpsOptimizationOptions )     = inthreads( o.gth )
 mktthreads( o :: GrumpsOptimizationOptions )    = mktthreads( o.gth )
 blasthreads( o :: GrumpsOptimizationOptions )   = blasthreads( o.gth )
 probtype( o :: GrumpsOptimizationOptions )      = o.probtype
 memsave( o :: GrumpsOptimizationOptions )       = o.memsave
+id( o :: GrumpsOptimizationOptions )            = o.id
 
 """
     OptimizationOptions(; 
@@ -190,7 +191,9 @@ memsave( o :: GrumpsOptimizationOptions )       = o.memsave
     threads = GrumpsThreads(), 
     memsave = false, 
     maxrepeats = 4, 
-    probtype = :fast )
+    probtype = :fast,
+    id = :default 
+    )
 
 Sets the options used for numerical optimization.  *θopt* is used for the external optimization routine,
 *δopt* for the internal one.  These are both of type *OptimOptions*; see the *OptimOptionsθ* and *OptimOptionsδ*
@@ -198,10 +201,13 @@ methods for elaboration.  The *memsave* variable is set to false by default; tur
 consumption significantly, but will also slow down computation.  The variable *maxrepeats* may disappear in the 
 future.  
 
-Finally, there are two ways of computing choice probabilities: robust and fast, specified by passing *:robust* or
+There are two ways of computing choice probabilities: robust and fast, specified by passing *:robust* or
 *:fast* in *probtype*. Fast choice probabilities are the default for good reason.
+
+Finally, specifying an *id* allows one to add callbacks, i.e. user functions that are called on each inner and 
+outer iteration.  See the [Callbacks](@ref) portion of the documentation.
 """
-OptimizationOptions(x...) = GrumpsOptimizationOptions(x...)
+OptimizationOptions(; x...) = GrumpsOptimizationOptions(; x...)
 
 struct StandardErrorOptions
     computeθ        :: Bool
@@ -235,7 +241,8 @@ function show( io :: IO, o :: GrumpsOptimizationOptions; adorned = true )
         [:gth, "threads"],
         [:probtype, "choice probabilities"],
         [:memsave, "memory saving"],
-        [:maxrepeats, "maxrepeats"]
+        [:maxrepeats, "maxrepeats"],
+        [:id, "id" ]
             ]
         prstyled( adorned, @sprintf( "%30s: ", vr[2] ); bold = true, color = :green );  println( getfield( o, vr[1] ) )
     end
