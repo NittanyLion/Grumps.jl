@@ -47,14 +47,14 @@ This can be changed, however.  Pretty much all methods that Grumps uses to creat
 
 If one now defines a new method in one's own code with 
 ```
-    function Grumps.CreateInteractions( ::Val{ :myid }, dfc:: AbstractDataFrame, dfp:: AbstractDataFrame, v :: Variables, T = F64 )
+    function Grumps.CreateInteractions( ::Val{ :myid }, dfc, dfp, v, T )
         ...
         ...
         ...
     return Z
 end
 ```
-then Grumps will call your method instead of the default one.  But note that one would also need to adjust the corresponding macro integration part for estimators that use both micro and macro likelihoods.  For any functions for which no user-defined methods corresponding to the given `id` are defined, the default method is called.
+then Grumps will call the newly minted method instead of the default one.  But note that one would also need to adjust the corresponding macro integration part for estimators that use both micro and macro likelihoods.  For any functions for which no user-defined methods corresponding to the given `id` are defined, the default method is called.
 
 !!! note "hogs and ants"
     By default, Grumps saves on storage by storing *macro* draws and regressors separately (:Ant mode for macro).  If one wanted a regressor that could not be expressed as e.g. the product of a demographic variable and a product variable, then the functions `FillAθ!` and `FillZXθ!` in `src/common/probs/index.jl` may need to have new methods added, also, if one wants to continue using :Ant mode.  An alternative for small problems is to switch to :Hog mode for the macro likelihood (the micro likelihood uses :Hog mode by default).
