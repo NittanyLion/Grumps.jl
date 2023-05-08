@@ -44,7 +44,7 @@ function AθZXθ!(
     m :: Int 
     ) where {T<:Flt}
 
-    sm = s.marketspace[m]
+    sm = marketspace( s, m )
 
     acquire( s.semas, sm.memblockindex )
     

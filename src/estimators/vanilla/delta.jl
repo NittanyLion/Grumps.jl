@@ -23,14 +23,13 @@ function  InsideObjective1!(
         true
          ) 
      
-
     F2 = MicroObjectiveδ!( 
         F1,
         G,
         Hδδ,
         δ,
-        d.microdata,
-        s.microspace,
+        microdata( d ),
+        microspace( s ),
         o,
         false               # this is to indicate that things shouldn't be set to zero
          ) 
