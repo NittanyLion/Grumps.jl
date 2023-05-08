@@ -1,14 +1,10 @@
    
 @todo 2 "figure out when to recompute"
-@todo 4 "for all estimators, note that frugal is not compatible with for threads; need spawns"
+inside( fgh )       = fgh.inside
+outside( fgh )      = fgh.outside
 
-@todo 4 "move these"
-inside( fgh ) = fgh.inside
-outside( fgh ) = fgh.outside
-marketspace( s, m ) = s.marketspace[m]
-currentθ( s ) = s.currentθ
-microdata( d ) = d.microdata
-microspace( s ) = s.microspace 
+
+
 
 # this computes the οutside objective function for a single market (excluding the penalty term)
 function ObjectiveFunctionθ1!( 
@@ -38,9 +34,9 @@ function ObjectiveFunctionθ1!(
 
     # if computeG || computeH || !inisout( e )
     F = OutsideObjective1!(  outside( fgh ), θ, δ, e, d, o, marketspace( s, m ), computeF, computeG, computeH )
-        if computeF
-            fgh.outside.F .= F
-        end
+    if computeF
+        fgh.outside.F .= F
+    end
     # end
 
     freeAθZXθ!( e, s, o, m )

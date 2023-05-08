@@ -13,29 +13,9 @@ function MicroObjectiveδ!(
     return F
 end
 
-@todo 1 "move sizes elsewhere"
 
-function sizes( x )
-    x == nothing ? nothing : size(x)
-end
-
-
-function sizes( F, G, H, δ )
-    sizes(F), sizes(G), sizes(H), sizes(δ)
-end
-
-@todo 1 "document micllf"
 @todo 2 "parallelize MicroObjectiveθ!"
 
-
-@todo 4 "move these"
-πi( s :: MicroSpace ) = s.πi
-πri( s :: MicroSpace ) = s.πri
-πrij( s :: MicroSpace ) = s.πrij
-w( d :: MicroData ) = d.w
-Y( d :: MicroData ) = d.Y
-y( d :: MicroData ) = d.y 
-ZXθ( s :: MicroSpace ) = s.ZXθ
 
 
 FunctionValue( πi :: Vec{T}, consumers, ::Val{:micδ}, ::Val{ :Grumps } ) where {T<:Flt} = sum( log( πi[i] ) for i ∈ consumers ) 

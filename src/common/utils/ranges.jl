@@ -57,3 +57,12 @@ end
 Ranges( v ) = Ranges( [ length(x) for x ∈ v ]  )
 
 
+
+function sizes( x )
+    x == nothing ? nothing : size(x)
+end
+
+
+function sizes( F, G, H, δ )
+    sizes(F), sizes(G), sizes(H), sizes(δ)
+end

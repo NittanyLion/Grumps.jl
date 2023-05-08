@@ -222,4 +222,10 @@ isempty( ::GrumpsMicroNoData ) = true
 isempty( ::GrumpsMacroNoData ) = true
 
 
+w( d :: MicroData ) = d.w
+Y( d :: MicroData ) = d.Y
+y( d :: MicroData ) = d.y 
+microdata( d )      = d.microdata
+
+
 

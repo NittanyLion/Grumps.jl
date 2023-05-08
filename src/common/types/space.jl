@@ -43,6 +43,11 @@ struct GrumpsMicroSpace{T<:Flt} <: MicroSpace{T}
 
 end
 
+πi( s :: MicroSpace )   = s.πi
+πri( s :: MicroSpace )  = s.πri
+πrij( s :: MicroSpace ) = s.πrij
+ZXθ( s :: MicroSpace )  = s.ZXθ
+
 
 function MicroSpaceArraysNeeded( R :: Int, S :: Int, J :: Int, dθ :: Int )
     return [ 
@@ -215,4 +220,7 @@ end
 GrumpsSpace( e :: GrumpsEstimator, d :: GrumpsData{T}, o :: OptimizationOptions, memblock :: MemBlockian{T} ) where {T<:Flt} = GrumpsSpace( d, memblock )
 
 
+marketspace( s, m )     = s.marketspace[m]
+currentθ( s )           = s.currentθ
+microspace( s )         = s.microspace 
 
