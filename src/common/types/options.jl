@@ -9,15 +9,16 @@ struct GrumpsDataOptions <: DataOptions
     macromode       ::  Symbol
     balance         ::  Symbol
     σ2              ::  F64
+    id              ::  Symbol
 
-    function GrumpsDataOptions( mic :: Symbol, mac:: Symbol, balance :: Symbol, σ2 :: F64 = 1.0 )
+    function GrumpsDataOptions( mic :: Symbol, mac:: Symbol, balance :: Symbol, σ2 :: F64 = 1.0, id = :Grumps )
         @ensure mic ∈ [ :Hog, :Ant ] "only Hog and Ant are allowed for micromode"
         @ensure mac ∈ [ :Hog, :Ant ] "only Hog and Ant are allowed for macromode"
         @ensure balance ∈ [ :micro, :macro, :none ] "only micro macro and none are allowed for balance"
         @ensure σ2 > 0  "error variance should be positive"
-        new( mic, mac, :balance, σ2  )
+        new( mic, mac, :balance, σ2, id  )
     end
-    GrumpsDataOptions(; micromode = :Hog, macromode = :Ant, balance = :micro, σ2 = 1.0 ) = new( micromode, macromode, balance, σ2 )
+    GrumpsDataOptions(; micromode = :Hog, macromode = :Ant, balance = :micro, σ2 = 1.0, id = :Grumps ) = new( micromode, macromode, balance, σ2, id )
 end
 
 """
@@ -26,10 +27,12 @@ end
         macromode   = :Ant
         balance     = :micro
         σ2          = 1.0
+        id          = :Grumps
     )
 
 Specifies how Grumps should store its data and what it should store.  The first three options are best left alone, unless you know what it
-is you're doing.  The last option is the variance of ξ, i.e. the error variance in the product level moments.
+is you're doing.  The **σ2** option is the variance of ξ, i.e. the error variance in the product level moments.  The **id** option is used to extend
+Grumps with other data constructions.
 """
 DataOptions( x...; kwargs... ) = GrumpsDataOptions( x...; kwargs... )
 
@@ -39,7 +42,7 @@ macromode( o :: GrumpsDataOptions ) = o.macromode
 balance( o :: GrumpsDataOptions ) = o.balance
 σ2( o :: GrumpsDataOptions ) = o.σ2
 s2( o :: GrumpsDataOptions ) = σ2( o )
-
+id( o :: GrumpsDataOptions ) = o.id
 
 
 abstract type OptimizationOptions end
@@ -169,13 +172,13 @@ struct GrumpsOptimizationOptions <: OptimizationOptions
     memsave         :: Bool
     maxrepeats      :: Int
     probtype        :: Symbol
-    callbackid      :: Symbol
+    id              :: Symbol
 end
 
 
-function GrumpsOptimizationOptions(; θopt = OptimOptions( Val( :θ ) ), δopt = OptimOptions( Val( :δ) ), threads = GrumpsThreads(), memsave = false, maxrepeats = 3, probtype = :fast, callbackid = :default )
+function GrumpsOptimizationOptions(; θopt = OptimOptions( Val( :θ ) ), δopt = OptimOptions( Val( :δ) ), threads = GrumpsThreads(), memsave = false, maxrepeats = 3, probtype = :fast, id = :Grumps )
     @ensure probtype ∈ [ :fast, :robust ] "only fast and robust choice probabilities are allowed"
-    return GrumpsOptimizationOptions( θopt, δopt, threads, memsave, maxrepeats, probtype, callbackid )
+    return GrumpsOptimizationOptions( θopt, δopt, threads, memsave, maxrepeats, probtype, id )
 end
 
 
@@ -184,7 +187,7 @@ mktthreads( o :: GrumpsOptimizationOptions )    = mktthreads( o.gth )
 blasthreads( o :: GrumpsOptimizationOptions )   = blasthreads( o.gth )
 probtype( o :: GrumpsOptimizationOptions )      = o.probtype
 memsave( o :: GrumpsOptimizationOptions )       = o.memsave
-callbackid( o :: GrumpsOptimizationOptions )    = o.callbackid
+id( o :: GrumpsOptimizationOptions )            = o.id
 
 """
     OptimizationOptions(; 
@@ -194,7 +197,7 @@ callbackid( o :: GrumpsOptimizationOptions )    = o.callbackid
     memsave = false, 
     maxrepeats = 4, 
     probtype = :fast,
-    callbackid = :default
+    id = :Grumps
     )
 
 Sets the options used for numerical optimization.  *θopt* is used for the external optimization routine,

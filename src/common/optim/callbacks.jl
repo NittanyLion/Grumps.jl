@@ -3,7 +3,7 @@
 export θcallback, δcallback
 
 function GrumpsδCallBack( statevec, e, d, o, oldx, repeatx )
-    δcallback( Val( callbackid( o ) ), statevec, e, d, o, oldx, repeatx )
+    δcallback( Val( id( o ) ), statevec, e, d, o, oldx, repeatx )
     return false
     state = ( typeof( statevec ) <: Vector ) ? statevec[end] : statevec
     if true #o.δ.show_trace
@@ -54,10 +54,7 @@ end
 
 
 function GrumpsθCallBack( statevec, e :: GrumpsEstimator, d :: GrumpsData{T}, o :: GrumpsOptimizationOptions, oldx :: Vec{T}, repeatx :: Vec{Int}, solution :: GrumpsSolution{T} ) where {T<:Flt}
-    # if applicable( Main.θcallback,  Val( id( o ) ), statevec, e, d, o, oldx, repeatx, solution ) 
-    #     Main.θcallback( Val( id( o ) ), statevec, e, d, o, oldx, repeatx, solution )
-    # end
-    θcallback( Val( callbackid( o ) ), statevec, e, d, o, oldx, repeatx, solution )
+    θcallback( Val( id( o ) ), statevec, e, d, o, oldx, repeatx, solution )
     state = ( typeof( statevec ) <: Vector ) ? statevec[end] : statevec
     # @glog("Grumps ", e, " iteration ", state.iteration, " completed" )
     if o.θ.show_trace

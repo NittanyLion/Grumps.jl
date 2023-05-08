@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- This file was created with the aha Ansi HTML Adapter. https://github.com/theZiz/aha -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="application/xml+xhtml; charset=UTF-8"/>
+<title>stdin</title>
+</head>
+<body>
+<pre>
+
+<span style="text-decoration:blink;"></span><span style="font-weight:bold;text-decoration:blink;">  ________               _____ __________  _________</span><span style="text-decoration:blink;"></span>
+<span style="text-decoration:blink;"></span><span style="font-weight:bold;text-decoration:blink;"> /  _____/______ __ __  /     \\______   \/   _____/</span><span style="text-decoration:blink;"></span>
+<span style="text-decoration:blink;"></span><span style="font-weight:bold;text-decoration:blink;">/   \  __\_  __ \  |  \/  \ /  \|     ___/\_____  \ </span><span style="text-decoration:blink;"></span>
+<span style="text-decoration:blink;"></span><span style="font-weight:bold;text-decoration:blink;">\    \_\  \  | \/  |  /    Y    \    |    /        \</span><span style="text-decoration:blink;"></span>
+<span style="text-decoration:blink;"></span><span style="font-weight:bold;text-decoration:blink;"> \______  /__|  |____/\____|__  /____|   /_______  /</span><span style="text-decoration:blink;"></span>
+<span style="text-decoration:blink;"></span><span style="font-weight:bold;text-decoration:blink;">        \/                    \/                 \/ </span><span style="text-decoration:blink;"></span>
+
+<span style="color:green;"></span><span style="font-weight:bold;color:green;"> Please note:</span><span style="color:green;"></span>
+1: read the complete manual on github
+2: read the paper at http://joris.pinkse.org/paper/grumps/
+3: this is a preliminary version: bugs are to be expected, sanity checking and documentation are incomplete
+4: still need to put in designed quadrature, so go easy on the random coefficients for now
+5: does not do CUDA
+6: uses multithreading, but no distributed computing
+7: because of the way the random numbers for MC integration are drawn / multithreading, successive optimizations with the same data may not produce the exact same results
+8: the gmm version should not be used: stick with grumps (or the cheap version thereof), mle, and sc: gmm is inferior to begin with and the gmm code is not ready for prime time
+9: if you see unexpected behavior, please send me code and data so that I can replicate
+10: all of the user-level commands are documented; e.g. use ?Save
+11: please check the memory conservation documentation if memory becomes an issue
+12: please direct all questions/suggestions/comments to Joris Pinkse at joris@psu.edu
+
+starting vector = [0.0, 0.0, 0.0, -0.6931471805599453, -0.6931471805599453]
+
+<span style="color:green;">■ </span><span style="color:red;">■ </span><span style="color:blue;">■ </span><span style="font-weight:bold;">Conformant Likelihood with Exogeneity Restrictions</span>
+<span style="color:green;">■ </span><span style="color:red;">■ </span><span style="color:blue;">■ </span><span style="font-weight:bold;">__________________________________________________</span>
+<span style="font-weight:bold;">itr   </span><span style="color:red;"> obj fun value   </span><span style="color:blue;"> gradient norm   </span><span style="color:green;">     time    </span><span style="color:purple;">            theta coefficients</span>
+<span style="font-weight:bold;">---   </span><span style="color:red;">--------------   </span><span style="color:blue;">--------------   </span><span style="color:blue;">   -------</span>
+<span style="font-weight:bold;">  0   </span><span style="color:red;">+6491.83651459   </span><span style="color:blue;"> 1255.37971376   </span><span style="color:green;">   0.00   </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.07 </span><span style="color:purple;">  +0.13 </span>
+<span style="font-weight:bold;">  1   </span><span style="color:red;">+5756.91545381   </span><span style="color:blue;">  228.82775995   </span><span style="color:green;">   2.22   </span><span style="color:purple;">  +0.60 </span><span style="color:purple;">  +0.15 </span><span style="color:purple;">  +0.36 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.10 </span>
+<span style="font-weight:bold;">  2   </span><span style="color:red;">+5711.11008748   </span><span style="color:blue;">   31.95206086   </span><span style="color:green;">   3.65   </span><span style="color:purple;">  +1.03 </span><span style="color:purple;">  +0.10 </span><span style="color:purple;">  +0.48 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.10 </span>
+<span style="font-weight:bold;">  3   </span><span style="color:red;">+5711.11008748   </span><span style="color:blue;">   31.95206086   </span><span style="color:green;">   4.27   </span><span style="color:purple;">  +1.03 </span><span style="color:purple;">  +0.10 </span><span style="color:purple;">  +0.48 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.10 </span>
+<span style="font-weight:bold;">  4   </span><span style="color:red;">+5709.77442331   </span><span style="color:blue;">    2.04306556   </span><span style="color:green;">   5.30   </span><span style="color:purple;">  +1.10 </span><span style="color:purple;">  +0.10 </span><span style="color:purple;">  +0.50 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.16 </span>
+<span style="font-weight:bold;">  5   </span><span style="color:red;">+5709.20265379   </span><span style="color:blue;">   13.96035082   </span><span style="color:green;">   6.36   </span><span style="color:purple;">  +1.17 </span><span style="color:purple;">  +0.08 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.44 </span>
+<span style="font-weight:bold;">  6   </span><span style="color:red;">+5708.83534392   </span><span style="color:blue;">    0.27144579   </span><span style="color:green;">   7.85   </span><span style="color:purple;">  +1.25 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.03 </span><span style="color:purple;">  +0.41 </span>
+<span style="font-weight:bold;">  7   </span><span style="color:red;">+5708.82128948   </span><span style="color:blue;">    1.00153913   </span><span style="color:green;">   8.90   </span><span style="color:purple;">  +1.24 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.01 </span><span style="color:purple;">  +0.40 </span>
+<span style="font-weight:bold;">  8   </span><span style="color:red;">+5708.81451809   </span><span style="color:blue;">    0.14846590   </span><span style="color:green;">  10.44   </span><span style="color:purple;">  +1.24 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.40 </span>
+<span style="font-weight:bold;">  9   </span><span style="color:red;">+5708.81239343   </span><span style="color:blue;">    0.01824550   </span><span style="color:green;">  11.45   </span><span style="color:purple;">  +1.24 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.40 </span>
+<span style="font-weight:bold;"> 10   </span><span style="color:red;">+5708.81165840   </span><span style="color:blue;">    0.00231161   </span><span style="color:green;">  14.56   </span><span style="color:purple;">  +1.24 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.40 </span>
+<span style="font-weight:bold;"> 11   </span><span style="color:red;">+5708.81139313   </span><span style="color:blue;">    0.00036992   </span><span style="color:green;">  15.97   </span><span style="color:purple;">  +1.24 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.40 </span>
+<span style="font-weight:bold;"> 12   </span><span style="color:red;">+5708.81129619   </span><span style="color:blue;">    0.00007574   </span><span style="color:green;">  17.42   </span><span style="color:purple;">  +1.24 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.40 </span>
+[1.240927386697807, 0.057282210117563896, 0.5120913771180028, 7.127727868104438e-5, 0.3973529338430769]
+
+5708.811296189739
+<span style="font-weight:bold;">Coefficient estimates:</span>
+<span style="color:green;"></span><span style="font-weight:bold;color:green;">Coefficient estimates for θ: </span><span style="color:green;"></span>
+   +1.240927 <span style="color:red;">(   +0.204001) </span><span style="color:red;">   +6.082960 </span>income
+   +0.057282 (   +0.076912)    +0.744772 income * ibu
+   +0.512091 <span style="color:red;">(   +0.031163) </span><span style="color:red;">  +16.432864 </span>age * ibu
+   +0.000071 (        +NaN)         +NaN rc on ibu
+   +0.397353 <span style="color:red;">(   +0.131339) </span><span style="color:red;">   +3.025391 </span>rc on abv
+<span style="color:green;"></span><span style="font-weight:bold;color:green;">Coefficient estimates for β: </span><span style="color:green;"></span>
+   -7.612450 <span style="color:red;">(   +0.331436) </span><span style="color:red;">  -22.968116 </span>constant
+   +1.945458 <span style="color:red;">(   +0.159890) </span><span style="color:red;">  +12.167459 </span>ibu
+   +0.777109 <span style="color:red;">(   +0.078720) </span><span style="color:red;">   +9.871863 </span>abv
+<span style="color:green;"></span><span style="font-weight:bold;color:green;">Convergence criteria:</span><span style="color:green;"></span>
+<span style="font-weight:bold;">                       minimum: </span>5708.811296189739
+<span style="font-weight:bold;">                    iterations: </span>12
+<span style="font-weight:bold;">       iteration_limit_reached: </span>false
+<span style="font-weight:bold;">                     converged: </span>true
+<span style="font-weight:bold;">                   f_converged: </span>false
+<span style="font-weight:bold;">                   g_converged: </span>true
+<span style="font-weight:bold;">                   x_converged: </span>false
+<span style="font-weight:bold;">                       f_calls: </span>13
+<span style="font-weight:bold;">                       g_calls: </span>13
+<span style="font-weight:bold;">                       h_calls: </span>12
+<span style="font-weight:bold;">                f_trace (last): </span>5708.811296189739
+<span style="font-weight:bold;">           g_norm_trace (last): </span>7.574006333843641e-5
+<span style="font-weight:bold;">                x_trace (last): </span>[1.2464774314057883, 0.12709550166185254, 0.6166041197556433, -7.641283990193736, 0.4049334741510264]
+
+
+starting vector = [0.0, 0.0, 0.0, -0.6931471805599453, -0.6931471805599453]
+
+<span style="color:green;">■ </span><span style="color:red;">■ </span><span style="color:blue;">□ </span><span style="font-weight:bold;">Conformant Likelihood with Exogeneity Restrictions (cheap version)</span>
+<span style="color:green;">■ </span><span style="color:red;">■ </span><span style="color:blue;">■ </span><span style="font-weight:bold;">__________________________________________________________________</span>
+<span style="font-weight:bold;">itr   </span><span style="color:red;"> obj fun value   </span><span style="color:blue;"> gradient norm   </span><span style="color:green;">     time    </span><span style="color:purple;">            theta coefficients</span>
+<span style="font-weight:bold;">---   </span><span style="color:red;">--------------   </span><span style="color:blue;">--------------   </span><span style="color:blue;">   -------</span>
+<span style="font-weight:bold;">  0   </span><span style="color:red;">+6491.79163823   </span><span style="color:blue;"> 1255.21686991   </span><span style="color:green;">   0.00   </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.07 </span><span style="color:purple;">  +0.13 </span>
+<span style="font-weight:bold;">  1   </span><span style="color:red;">+5757.01929984   </span><span style="color:blue;">  228.83251309   </span><span style="color:green;">   0.88   </span><span style="color:purple;">  +0.60 </span><span style="color:purple;">  +0.15 </span><span style="color:purple;">  +0.36 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.10 </span>
+<span style="font-weight:bold;">  2   </span><span style="color:red;">+5711.19691364   </span><span style="color:blue;">   31.94651540   </span><span style="color:green;">   1.52   </span><span style="color:purple;">  +1.03 </span><span style="color:purple;">  +0.10 </span><span style="color:purple;">  +0.48 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.10 </span>
+<span style="font-weight:bold;">  3   </span><span style="color:red;">+5711.19691364   </span><span style="color:blue;">   31.94651540   </span><span style="color:green;">   1.77   </span><span style="color:purple;">  +1.03 </span><span style="color:purple;">  +0.10 </span><span style="color:purple;">  +0.48 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.10 </span>
+<span style="font-weight:bold;">  4   </span><span style="color:red;">+5709.90220031   </span><span style="color:blue;">    1.96560985   </span><span style="color:green;">   2.41   </span><span style="color:purple;">  +1.10 </span><span style="color:purple;">  +0.10 </span><span style="color:purple;">  +0.50 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.16 </span>
+<span style="font-weight:bold;">  5   </span><span style="color:red;">+5709.35654058   </span><span style="color:blue;">   13.46851854   </span><span style="color:green;">   3.05   </span><span style="color:purple;">  +1.16 </span><span style="color:purple;">  +0.08 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.43 </span>
+<span style="font-weight:bold;">  6   </span><span style="color:red;">+5709.02720861   </span><span style="color:blue;">    0.48369524   </span><span style="color:green;">   3.72   </span><span style="color:purple;">  +1.25 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.03 </span><span style="color:purple;">  +0.41 </span>
+<span style="font-weight:bold;">  7   </span><span style="color:red;">+5708.99539760   </span><span style="color:blue;">    0.71754768   </span><span style="color:green;">   4.38   </span><span style="color:purple;">  +1.24 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.01 </span><span style="color:purple;">  +0.39 </span>
+<span style="font-weight:bold;">  8   </span><span style="color:red;">+5708.98571498   </span><span style="color:blue;">    0.09864700   </span><span style="color:green;">   5.04   </span><span style="color:purple;">  +1.24 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.39 </span>
+<span style="font-weight:bold;">  9   </span><span style="color:red;">+5708.98245832   </span><span style="color:blue;">    0.01140822   </span><span style="color:green;">   5.74   </span><span style="color:purple;">  +1.24 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.39 </span>
+<span style="font-weight:bold;"> 10   </span><span style="color:red;">+5708.98129965   </span><span style="color:blue;">    0.00132002   </span><span style="color:green;">   6.40   </span><span style="color:purple;">  +1.24 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.39 </span>
+<span style="font-weight:bold;"> 11   </span><span style="color:red;">+5708.98087760   </span><span style="color:blue;">    0.00024443   </span><span style="color:green;">   7.04   </span><span style="color:purple;">  +1.24 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.39 </span>
+<span style="font-weight:bold;"> 12   </span><span style="color:red;">+5708.98072290   </span><span style="color:blue;">    0.00008988   </span><span style="color:green;">   7.72   </span><span style="color:purple;">  +1.24 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.39 </span>
+[1.2362134243797211, 0.05859706104898305, 0.511702877776711, 6.049845584558446e-5, 0.39149054246117926]
+
+5708.980722895053
+<span style="font-weight:bold;">Coefficient estimates:</span>
+<span style="color:green;"></span><span style="font-weight:bold;color:green;">Coefficient estimates for θ: </span><span style="color:green;"></span>
+   +1.236213 <span style="color:red;">(   +0.204768) </span><span style="color:red;">   +6.037134 </span>income
+   +0.058597 (   +0.077032)    +0.760689 income * ibu
+   +0.511703 <span style="color:red;">(   +0.031198) </span><span style="color:red;">  +16.401989 </span>age * ibu
+   +0.000060 (        +NaN)         +NaN rc on ibu
+   +0.391491 <span style="color:red;">(   +0.135949) </span><span style="color:red;">   +2.879692 </span>rc on abv
+<span style="color:green;"></span><span style="font-weight:bold;color:green;">Coefficient estimates for β: </span><span style="color:green;"></span>
+   -7.620290 <span style="color:red;">(   +0.330656) </span><span style="color:red;">  -23.046004 </span>constant
+   +1.950623 <span style="color:red;">(   +0.159511) </span><span style="color:red;">  +12.228779 </span>ibu
+   +0.777539 <span style="color:red;">(   +0.078988) </span><span style="color:red;">   +9.843800 </span>abv
+<span style="color:green;"></span><span style="font-weight:bold;color:green;">Convergence criteria:</span><span style="color:green;"></span>
+<span style="font-weight:bold;">                       minimum: </span>5708.980722895053
+<span style="font-weight:bold;">                    iterations: </span>12
+<span style="font-weight:bold;">       iteration_limit_reached: </span>false
+<span style="font-weight:bold;">                     converged: </span>true
+<span style="font-weight:bold;">                   f_converged: </span>false
+<span style="font-weight:bold;">                   g_converged: </span>true
+<span style="font-weight:bold;">                   x_converged: </span>false
+<span style="font-weight:bold;">                       f_calls: </span>13
+<span style="font-weight:bold;">                       g_calls: </span>13
+<span style="font-weight:bold;">                       h_calls: </span>12
+<span style="font-weight:bold;">                f_trace (last): </span>5708.980722895053
+<span style="font-weight:bold;">           g_norm_trace (last): </span>8.98783519246967e-5
+<span style="font-weight:bold;">                x_trace (last): </span>[1.2417423859027412, 0.1300128408915418, 0.6161363315735594, -7.805243753254544, 0.39006994422034685]
+
+
+starting vector = [0.0, 0.0, 0.0, -0.6931471805599453, -0.6931471805599453]
+
+<span style="color:green;">■ </span><span style="color:red;">■ </span><span style="color:blue;">□ </span><span style="font-weight:bold;">                            Grumps unpenalized MLE</span>
+<span style="color:green;">■ </span><span style="color:red;">■ </span><span style="color:blue;">□ </span><span style="font-weight:bold;">                            ______________________</span>
+<span style="font-weight:bold;">itr   </span><span style="color:red;"> obj fun value   </span><span style="color:blue;"> gradient norm   </span><span style="color:green;">     time    </span><span style="color:purple;">            theta coefficients</span>
+<span style="font-weight:bold;">---   </span><span style="color:red;">--------------   </span><span style="color:blue;">--------------   </span><span style="color:blue;">   -------</span>
+<span style="font-weight:bold;">  0   </span><span style="color:red;">+6491.76556621   </span><span style="color:blue;"> 1255.21858482   </span><span style="color:green;">   0.00   </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.07 </span><span style="color:purple;">  +0.13 </span>
+<span style="font-weight:bold;">  1   </span><span style="color:red;">+5756.92624525   </span><span style="color:blue;">  228.67049445   </span><span style="color:green;">   0.78   </span><span style="color:purple;">  +0.60 </span><span style="color:purple;">  +0.15 </span><span style="color:purple;">  +0.36 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.10 </span>
+<span style="font-weight:bold;">  2   </span><span style="color:red;">+5711.19306524   </span><span style="color:blue;">   31.89373589   </span><span style="color:green;">   1.43   </span><span style="color:purple;">  +1.03 </span><span style="color:purple;">  +0.10 </span><span style="color:purple;">  +0.48 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.10 </span>
+<span style="font-weight:bold;">  3   </span><span style="color:red;">+5711.19306524   </span><span style="color:blue;">   31.89373589   </span><span style="color:green;">   1.68   </span><span style="color:purple;">  +1.03 </span><span style="color:purple;">  +0.10 </span><span style="color:purple;">  +0.48 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.10 </span>
+<span style="font-weight:bold;">  4   </span><span style="color:red;">+5709.89994493   </span><span style="color:blue;">    1.95669417   </span><span style="color:green;">   2.85   </span><span style="color:purple;">  +1.10 </span><span style="color:purple;">  +0.10 </span><span style="color:purple;">  +0.50 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.16 </span>
+<span style="font-weight:bold;">  5   </span><span style="color:red;">+5709.14796822   </span><span style="color:blue;">   13.36491688   </span><span style="color:green;">   3.51   </span><span style="color:purple;">  +1.16 </span><span style="color:purple;">  +0.08 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.43 </span>
+<span style="font-weight:bold;">  6   </span><span style="color:red;">+5708.84737280   </span><span style="color:blue;">    0.30023271   </span><span style="color:green;">   4.16   </span><span style="color:purple;">  +1.25 </span><span style="color:purple;">  +0.05 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.03 </span><span style="color:purple;">  +0.42 </span>
+<span style="font-weight:bold;">  7   </span><span style="color:red;">+5708.82649589   </span><span style="color:blue;">    0.63283035   </span><span style="color:green;">   4.81   </span><span style="color:purple;">  +1.25 </span><span style="color:purple;">  +0.05 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.01 </span><span style="color:purple;">  +0.42 </span>
+<span style="font-weight:bold;">  8   </span><span style="color:red;">+5708.81698407   </span><span style="color:blue;">    0.09478512   </span><span style="color:green;">   5.48   </span><span style="color:purple;">  +1.25 </span><span style="color:purple;">  +0.05 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.42 </span>
+<span style="font-weight:bold;">  9   </span><span style="color:red;">+5708.81378400   </span><span style="color:blue;">    0.01085586   </span><span style="color:green;">   6.16   </span><span style="color:purple;">  +1.25 </span><span style="color:purple;">  +0.05 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.42 </span>
+<span style="font-weight:bold;"> 10   </span><span style="color:red;">+5708.81264159   </span><span style="color:blue;">    0.00139101   </span><span style="color:green;">   6.81   </span><span style="color:purple;">  +1.25 </span><span style="color:purple;">  +0.05 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.42 </span>
+<span style="font-weight:bold;"> 11   </span><span style="color:red;">+5708.81222550   </span><span style="color:blue;">    0.00024099   </span><span style="color:green;">   7.46   </span><span style="color:purple;">  +1.25 </span><span style="color:purple;">  +0.05 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.42 </span>
+<span style="font-weight:bold;"> 12   </span><span style="color:red;">+5708.81207298   </span><span style="color:blue;">    0.00008861   </span><span style="color:green;">   8.14   </span><span style="color:purple;">  +1.25 </span><span style="color:purple;">  +0.05 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.42 </span>
+[1.2538917624524444, 0.054063081911842135, 0.5136531444644136, 5.971709089246445e-5, 0.42321503740154054]
+
+5708.812072976238
+<span style="font-weight:bold;">Coefficient estimates:</span>
+<span style="color:green;"></span><span style="font-weight:bold;color:green;">Coefficient estimates for θ: </span><span style="color:green;"></span>
+   +1.253892 <span style="color:red;">(   +0.207809) </span><span style="color:red;">   +6.033871 </span>income
+   +0.054063 (   +0.077662)    +0.696136 income * ibu
+   +0.513653 <span style="color:red;">(   +0.031567) </span><span style="color:red;">  +16.271993 </span>age * ibu
+   +0.000060 (        +NaN)         +NaN rc on ibu
+   +0.423215 <span style="color:red;">(   +0.145467) </span><span style="color:red;">   +2.909353 </span>rc on abv
+<span style="color:green;"></span><span style="font-weight:bold;color:green;">Coefficient estimates for β: </span><span style="color:green;"></span>
+   -7.618713 <span style="color:red;">(   +0.332721) </span><span style="color:red;">  -22.898185 </span>constant
+   +1.944688 <span style="color:red;">(   +0.160771) </span><span style="color:red;">  +12.096019 </span>ibu
+   +0.784351 <span style="color:red;">(   +0.080859) </span><span style="color:red;">   +9.700231 </span>abv
+<span style="color:green;"></span><span style="font-weight:bold;color:green;">Convergence criteria:</span><span style="color:green;"></span>
+<span style="font-weight:bold;">                       minimum: </span>5708.812072976238
+<span style="font-weight:bold;">                    iterations: </span>12
+<span style="font-weight:bold;">       iteration_limit_reached: </span>false
+<span style="font-weight:bold;">                     converged: </span>true
+<span style="font-weight:bold;">                   f_converged: </span>false
+<span style="font-weight:bold;">                   g_converged: </span>true
+<span style="font-weight:bold;">                   x_converged: </span>false
+<span style="font-weight:bold;">                       f_calls: </span>13
+<span style="font-weight:bold;">                       g_calls: </span>13
+<span style="font-weight:bold;">                       h_calls: </span>12
+<span style="font-weight:bold;">                f_trace (last): </span>5708.812072976238
+<span style="font-weight:bold;">           g_norm_trace (last): </span>8.860956626442877e-5
+<span style="font-weight:bold;">                x_trace (last): </span>[1.259499790299343, 0.11995302735123622, 0.6184846282408991, -7.818243335717998, 0.4679889987937174]
+
+
+starting vector = [0.0, 0.0, 0.0, -0.6931471805599453, -0.6931471805599453]
+
+<span style="color:green;">□ </span><span style="color:red;">■ </span><span style="color:blue;">□ </span><span style="font-weight:bold;">                              Share Constraint MLE</span>
+<span style="color:green;">■ </span><span style="color:red;">■ </span><span style="color:blue;">□ </span><span style="font-weight:bold;">                              ____________________</span>
+<span style="font-weight:bold;">itr   </span><span style="color:red;"> obj fun value   </span><span style="color:blue;"> gradient norm   </span><span style="color:green;">     time    </span><span style="color:purple;">            theta coefficients</span>
+<span style="font-weight:bold;">---   </span><span style="color:red;">--------------   </span><span style="color:blue;">--------------   </span><span style="color:blue;">   -------</span>
+<span style="font-weight:bold;">  0   </span><span style="color:red;">+6492.03444325   </span><span style="color:blue;"> 1255.22462307   </span><span style="color:green;">   0.00   </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.07 </span><span style="color:purple;">  +0.13 </span>
+<span style="font-weight:bold;">  1   </span><span style="color:red;">+5753.93466795   </span><span style="color:blue;">  216.88402603   </span><span style="color:green;">   0.55   </span><span style="color:purple;">  +0.55 </span><span style="color:purple;">  +0.17 </span><span style="color:purple;">  +0.37 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.10 </span>
+<span style="font-weight:bold;">  2   </span><span style="color:red;">+5711.33262777   </span><span style="color:blue;">   27.75638503   </span><span style="color:green;">   0.93   </span><span style="color:purple;">  +0.99 </span><span style="color:purple;">  +0.12 </span><span style="color:purple;">  +0.48 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.10 </span>
+<span style="font-weight:bold;">  3   </span><span style="color:red;">+5711.33262777   </span><span style="color:blue;">   27.75638503   </span><span style="color:green;">   1.07   </span><span style="color:purple;">  +0.99 </span><span style="color:purple;">  +0.12 </span><span style="color:purple;">  +0.48 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.10 </span>
+<span style="font-weight:bold;">  4   </span><span style="color:red;">+5710.20178249   </span><span style="color:blue;">    1.83381475   </span><span style="color:green;">   1.45   </span><span style="color:purple;">  +1.09 </span><span style="color:purple;">  +0.10 </span><span style="color:purple;">  +0.50 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.15 </span>
+<span style="font-weight:bold;">  5   </span><span style="color:red;">+5709.43290836   </span><span style="color:blue;">   13.20862870   </span><span style="color:green;">   1.84   </span><span style="color:purple;">  +1.16 </span><span style="color:purple;">  +0.08 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.03 </span><span style="color:purple;">  +0.42 </span>
+<span style="font-weight:bold;">  6   </span><span style="color:red;">+5709.11974343   </span><span style="color:blue;">    1.12974481   </span><span style="color:green;">   2.22   </span><span style="color:purple;">  +1.24 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.01 </span><span style="color:purple;">  +0.42 </span>
+<span style="font-weight:bold;">  7   </span><span style="color:red;">+5709.10183525   </span><span style="color:blue;">    0.38755514   </span><span style="color:green;">   2.60   </span><span style="color:purple;">  +1.25 </span><span style="color:purple;">  +0.05 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.43 </span>
+<span style="font-weight:bold;">  8   </span><span style="color:red;">+5709.09978598   </span><span style="color:blue;">    0.02189785   </span><span style="color:green;">   2.97   </span><span style="color:purple;">  +1.25 </span><span style="color:purple;">  +0.05 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.42 </span>
+<span style="font-weight:bold;">  9   </span><span style="color:red;">+5709.09922486   </span><span style="color:blue;">    0.01119331   </span><span style="color:green;">   3.35   </span><span style="color:purple;">  +1.25 </span><span style="color:purple;">  +0.05 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.42 </span>
+<span style="font-weight:bold;"> 10   </span><span style="color:red;">+5709.09903131   </span><span style="color:blue;">    0.00526800   </span><span style="color:green;">   3.72   </span><span style="color:purple;">  +1.25 </span><span style="color:purple;">  +0.05 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.42 </span>
+<span style="font-weight:bold;"> 11   </span><span style="color:red;">+5709.09896218   </span><span style="color:blue;">    0.00258081   </span><span style="color:green;">   4.08   </span><span style="color:purple;">  +1.25 </span><span style="color:purple;">  +0.05 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.42 </span>
+<span style="font-weight:bold;"> 12   </span><span style="color:red;">+5709.09893701   </span><span style="color:blue;">    0.00124110   </span><span style="color:green;">   4.46   </span><span style="color:purple;">  +1.25 </span><span style="color:purple;">  +0.05 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.42 </span>
+<span style="font-weight:bold;"> 13   </span><span style="color:red;">+5709.09892787   </span><span style="color:blue;">    0.00060249   </span><span style="color:green;">   4.85   </span><span style="color:purple;">  +1.25 </span><span style="color:purple;">  +0.05 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.42 </span>
+[1.2539140937805102, 0.054012030046035886, 0.5136125362386389, 3.5238463247490096e-6, 0.4229793918198807]
+
+5709.098927867758
+<span style="font-weight:bold;">Coefficient estimates:</span>
+<span style="color:green;"></span><span style="font-weight:bold;color:green;">Coefficient estimates for θ: </span><span style="color:green;"></span>
+   +1.253914 (unavailable ) income
+   +0.054012 (unavailable ) income * ibu
+   +0.513613 (unavailable ) age * ibu
+   +0.000004 (unavailable ) rc on ibu
+   +0.422979 (unavailable ) rc on abv
+<span style="color:green;"></span><span style="font-weight:bold;color:green;">Coefficient estimates for β: </span><span style="color:green;"></span>
+   -7.620918 (unavailable ) constant
+   +1.945479 (unavailable ) ibu
+   +0.785030 (unavailable ) abv
+<span style="color:green;"></span><span style="font-weight:bold;color:green;">Convergence criteria:</span><span style="color:green;"></span>
+<span style="font-weight:bold;">                       minimum: </span>5709.098927867758
+<span style="font-weight:bold;">                    iterations: </span>13
+<span style="font-weight:bold;">       iteration_limit_reached: </span>false
+<span style="font-weight:bold;">                     converged: </span>true
+<span style="font-weight:bold;">                   f_converged: </span>true
+<span style="font-weight:bold;">                   g_converged: </span>false
+<span style="font-weight:bold;">                   x_converged: </span>false
+<span style="font-weight:bold;">                       f_calls: </span>14
+<span style="font-weight:bold;">                       g_calls: </span>14
+<span style="font-weight:bold;">                       h_calls: </span>13
+<span style="font-weight:bold;">                f_trace (last): </span>5709.098927867758
+<span style="font-weight:bold;">           g_norm_trace (last): </span>0.0006024946043090099
+<span style="font-weight:bold;">                x_trace (last): </span>[1.2595222215042192, 0.11983975549105308, 0.6184357322812569, -10.64830849581607, 0.4674320450260873]
+
+
+starting vector = [0.0, 0.0, 0.0, -0.6931471805599453, -0.6931471805599453]
+
+<span style="color:green;">■ </span><span style="color:red;">□ </span><span style="color:blue;">□ </span><span style="font-weight:bold;">                                       Mixed Logit</span>
+<span style="color:green;">■ </span><span style="color:red;">□ </span><span style="color:blue;">□ </span><span style="font-weight:bold;">                                       ___________</span>
+<span style="font-weight:bold;">itr   </span><span style="color:red;"> obj fun value   </span><span style="color:blue;"> gradient norm   </span><span style="color:green;">     time    </span><span style="color:purple;">            theta coefficients</span>
+<span style="font-weight:bold;">---   </span><span style="color:red;">--------------   </span><span style="color:blue;">--------------   </span><span style="color:blue;">   -------</span>
+<span style="font-weight:bold;">  0   </span><span style="color:red;">+6463.66677032   </span><span style="color:blue;"> 1254.63297096   </span><span style="color:green;">   0.00   </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.07 </span><span style="color:purple;">  +0.13 </span>
+<span style="font-weight:bold;">  1   </span><span style="color:red;">+5728.41552728   </span><span style="color:blue;">  228.48859694   </span><span style="color:green;">   0.97   </span><span style="color:purple;">  +0.59 </span><span style="color:purple;">  +0.15 </span><span style="color:purple;">  +0.36 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.10 </span>
+<span style="font-weight:bold;">  2   </span><span style="color:red;">+5682.65708317   </span><span style="color:blue;">   31.96536950   </span><span style="color:green;">   1.71   </span><span style="color:purple;">  +1.02 </span><span style="color:purple;">  +0.11 </span><span style="color:purple;">  +0.48 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.10 </span>
+<span style="font-weight:bold;">  3   </span><span style="color:red;">+5682.65708317   </span><span style="color:blue;">   31.96536950   </span><span style="color:green;">   2.03   </span><span style="color:purple;">  +1.02 </span><span style="color:purple;">  +0.11 </span><span style="color:purple;">  +0.48 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.10 </span>
+<span style="font-weight:bold;">  4   </span><span style="color:red;">+5681.24174147   </span><span style="color:blue;">    2.16449301   </span><span style="color:green;">   2.75   </span><span style="color:purple;">  +1.09 </span><span style="color:purple;">  +0.10 </span><span style="color:purple;">  +0.50 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.17 </span>
+<span style="font-weight:bold;">  5   </span><span style="color:red;">+5680.27177108   </span><span style="color:blue;">   14.70074112   </span><span style="color:green;">   3.50   </span><span style="color:purple;">  +1.16 </span><span style="color:purple;">  +0.08 </span><span style="color:purple;">  +0.51 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.46 </span>
+<span style="font-weight:bold;">  6   </span><span style="color:red;">+5679.91161752   </span><span style="color:blue;">    0.23120606   </span><span style="color:green;">   4.23   </span><span style="color:purple;">  +1.26 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.52 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.45 </span>
+<span style="font-weight:bold;">  7   </span><span style="color:red;">+5679.90810814   </span><span style="color:blue;">    6.31894539   </span><span style="color:green;">   4.95   </span><span style="color:purple;">  +1.26 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.52 </span><span style="color:purple;">  +0.12 </span><span style="color:purple;">  +0.45 </span>
+<span style="font-weight:bold;">  8   </span><span style="color:red;">+5679.82903626   </span><span style="color:blue;">    1.58987241   </span><span style="color:green;">   5.69   </span><span style="color:purple;">  +1.26 </span><span style="color:purple;">  +0.07 </span><span style="color:purple;">  +0.53 </span><span style="color:purple;">  +0.15 </span><span style="color:purple;">  +0.45 </span>
+<span style="font-weight:bold;">  9   </span><span style="color:red;">+5679.82903626   </span><span style="color:blue;">    1.58987241   </span><span style="color:green;">   6.87   </span><span style="color:purple;">  +1.26 </span><span style="color:purple;">  +0.07 </span><span style="color:purple;">  +0.53 </span><span style="color:purple;">  +0.15 </span><span style="color:purple;">  +0.45 </span>
+<span style="font-weight:bold;"> 10   </span><span style="color:red;">+5679.80252508   </span><span style="color:blue;">    0.56802728   </span><span style="color:green;">   7.61   </span><span style="color:purple;">  +1.26 </span><span style="color:purple;">  +0.07 </span><span style="color:purple;">  +0.53 </span><span style="color:purple;">  +0.17 </span><span style="color:purple;">  +0.45 </span>
+<span style="font-weight:bold;"> 11   </span><span style="color:red;">+5679.74814740   </span><span style="color:blue;">    2.85545752   </span><span style="color:green;">   8.35   </span><span style="color:purple;">  +1.26 </span><span style="color:purple;">  +0.08 </span><span style="color:purple;">  +0.54 </span><span style="color:purple;">  +0.22 </span><span style="color:purple;">  +0.45 </span>
+<span style="font-weight:bold;"> 12   </span><span style="color:red;">+5679.74814740   </span><span style="color:blue;">    2.85545752   </span><span style="color:green;">   8.66   </span><span style="color:purple;">  +1.26 </span><span style="color:purple;">  +0.08 </span><span style="color:purple;">  +0.54 </span><span style="color:purple;">  +0.22 </span><span style="color:purple;">  +0.45 </span>
+<span style="font-weight:bold;"> 13   </span><span style="color:red;">+5679.69867719   </span><span style="color:blue;">    1.06056138   </span><span style="color:green;">   9.42   </span><span style="color:purple;">  +1.26 </span><span style="color:purple;">  +0.09 </span><span style="color:purple;">  +0.55 </span><span style="color:purple;">  +0.25 </span><span style="color:purple;">  +0.45 </span>
+<span style="font-weight:bold;"> 14   </span><span style="color:red;">+5679.62800516   </span><span style="color:blue;">    4.87050174   </span><span style="color:green;">  10.18   </span><span style="color:purple;">  +1.26 </span><span style="color:purple;">  +0.11 </span><span style="color:purple;">  +0.57 </span><span style="color:purple;">  +0.32 </span><span style="color:purple;">  +0.46 </span>
+<span style="font-weight:bold;"> 15   </span><span style="color:red;">+5679.52713380   </span><span style="color:blue;">    4.46158404   </span><span style="color:green;">  10.92   </span><span style="color:purple;">  +1.25 </span><span style="color:purple;">  +0.14 </span><span style="color:purple;">  +0.60 </span><span style="color:purple;">  +0.39 </span><span style="color:purple;">  +0.46 </span>
+<span style="font-weight:bold;"> 16   </span><span style="color:red;">+5679.43505125   </span><span style="color:blue;">    3.73303903   </span><span style="color:green;">  11.67   </span><span style="color:purple;">  +1.25 </span><span style="color:purple;">  +0.17 </span><span style="color:purple;">  +0.63 </span><span style="color:purple;">  +0.46 </span><span style="color:purple;">  +0.47 </span>
+<span style="font-weight:bold;"> 17   </span><span style="color:red;">+5679.36000434   </span><span style="color:blue;">    3.26800892   </span><span style="color:green;">  13.31   </span><span style="color:purple;">  +1.25 </span><span style="color:purple;">  +0.21 </span><span style="color:purple;">  +0.66 </span><span style="color:purple;">  +0.53 </span><span style="color:purple;">  +0.47 </span>
+<span style="font-weight:bold;"> 18   </span><span style="color:red;">+5679.30247545   </span><span style="color:blue;">    2.24252529   </span><span style="color:green;">  14.05   </span><span style="color:purple;">  +1.26 </span><span style="color:purple;">  +0.24 </span><span style="color:purple;">  +0.70 </span><span style="color:purple;">  +0.60 </span><span style="color:purple;">  +0.48 </span>
+<span style="font-weight:bold;"> 19   </span><span style="color:red;">+5679.26608085   </span><span style="color:blue;">    1.94952562   </span><span style="color:green;">  14.79   </span><span style="color:purple;">  +1.26 </span><span style="color:purple;">  +0.27 </span><span style="color:purple;">  +0.73 </span><span style="color:purple;">  +0.66 </span><span style="color:purple;">  +0.49 </span>
+<span style="font-weight:bold;"> 20   </span><span style="color:red;">+5679.24535568   </span><span style="color:blue;">    0.85287446   </span><span style="color:green;">  15.53   </span><span style="color:purple;">  +1.26 </span><span style="color:purple;">  +0.30 </span><span style="color:purple;">  +0.75 </span><span style="color:purple;">  +0.71 </span><span style="color:purple;">  +0.49 </span>
+<span style="font-weight:bold;"> 21   </span><span style="color:red;">+5679.23763504   </span><span style="color:blue;">    0.67482440   </span><span style="color:green;">  16.32   </span><span style="color:purple;">  +1.27 </span><span style="color:purple;">  +0.32 </span><span style="color:purple;">  +0.78 </span><span style="color:purple;">  +0.75 </span><span style="color:purple;">  +0.49 </span>
+<span style="font-weight:bold;"> 22   </span><span style="color:red;">+5679.23580756   </span><span style="color:blue;">    0.09694961   </span><span style="color:green;">  17.05   </span><span style="color:purple;">  +1.27 </span><span style="color:purple;">  +0.33 </span><span style="color:purple;">  +0.79 </span><span style="color:purple;">  +0.77 </span><span style="color:purple;">  +0.49 </span>
+<span style="font-weight:bold;"> 23   </span><span style="color:red;">+5679.23568217   </span><span style="color:blue;">    0.01860260   </span><span style="color:green;">  17.83   </span><span style="color:purple;">  +1.27 </span><span style="color:purple;">  +0.33 </span><span style="color:purple;">  +0.79 </span><span style="color:purple;">  +0.77 </span><span style="color:purple;">  +0.49 </span>
+<span style="font-weight:bold;"> 24   </span><span style="color:red;">+5679.23568124   </span><span style="color:blue;">    0.00006152   </span><span style="color:green;">  18.55   </span><span style="color:purple;">  +1.27 </span><span style="color:purple;">  +0.33 </span><span style="color:purple;">  +0.79 </span><span style="color:purple;">  +0.77 </span><span style="color:purple;">  +0.49 </span>
+[1.2719982912937204, 0.3316939880221826, 0.7923152480677972, 0.7738865029638847, 0.4949772238113911]
+
+5679.235681236138
+<span style="font-weight:bold;">Coefficient estimates:</span>
+<span style="color:green;"></span><span style="font-weight:bold;color:green;">Coefficient estimates for θ: </span><span style="color:green;"></span>
+   +1.271998 <span style="color:red;">(   +0.228662) </span><span style="color:red;">   +5.562785 </span>income
+   +0.331694 (   +0.290817)    +1.140559 income * ibu
+   +0.792315 <span style="color:red;">(   +0.293570) </span><span style="color:red;">   +2.698894 </span>age * ibu
+   +0.773887 (   +0.521147)    +1.484967 rc on ibu
+   +0.494977 <span style="color:red;">(   +0.205161) </span><span style="color:red;">   +2.412627 </span>rc on abv
+<span style="color:green;"></span><span style="font-weight:bold;color:green;">Coefficient estimates for β: </span><span style="color:green;"></span>
+  -12.927233 (+3344.447290)    -0.003865 constant
+   +4.081188 (+1429.749148)    +0.002854 ibu
+   +1.357557 ( +365.383489)    +0.003715 abv
+<span style="color:green;"></span><span style="font-weight:bold;color:green;">Convergence criteria:</span><span style="color:green;"></span>
+<span style="font-weight:bold;">                       minimum: </span>5679.235681236138
+<span style="font-weight:bold;">                    iterations: </span>24
+<span style="font-weight:bold;">       iteration_limit_reached: </span>false
+<span style="font-weight:bold;">                     converged: </span>true
+<span style="font-weight:bold;">                   f_converged: </span>true
+<span style="font-weight:bold;">                   g_converged: </span>true
+<span style="font-weight:bold;">                   x_converged: </span>false
+<span style="font-weight:bold;">                       f_calls: </span>25
+<span style="font-weight:bold;">                       g_calls: </span>25
+<span style="font-weight:bold;">                       h_calls: </span>22
+<span style="font-weight:bold;">                f_trace (last): </span>5679.235681236138
+<span style="font-weight:bold;">           g_norm_trace (last): </span>6.151665075715407e-5
+<span style="font-weight:bold;">                x_trace (last): </span>[1.277687300546665, 0.7359494984460048, 0.9540188879049243, 1.6513189100699066, 0.6246203352764027]
+
+
+starting vector = [0.0, 0.0, 0.0, -0.6931471805599453, -0.6931471805599453]
+current θ = [0.0, 0.0, 0.0, 0.5, 0.5]
+
+<span style="color:green;">□ </span><span style="color:red;">□ </span><span style="color:blue;">□ </span><span style="font-weight:bold;">                            GMM with smart moments</span>
+<span style="color:green;">□ </span><span style="color:red;">□ </span><span style="color:blue;">□ </span><span style="font-weight:bold;">                            ______________________</span>
+<span style="font-weight:bold;">itr   </span><span style="color:red;"> obj fun value   </span><span style="color:blue;"> gradient norm   </span><span style="color:green;">     time    </span><span style="color:purple;">            theta coefficients</span>
+<span style="font-weight:bold;">---   </span><span style="color:red;">--------------   </span><span style="color:blue;">--------------   </span><span style="color:blue;">   -------</span>
+<span style="font-weight:bold;">  0   </span><span style="color:red;"> +225.64777601   </span><span style="color:blue;">  433.39976784   </span><span style="color:green;">   0.00   </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.07 </span><span style="color:purple;">  +0.13 </span>
+current θ = [0.8216580238357286, 0.09664986717074374, 0.5675983569523803, 0.4991916781930444, 0.44329118693538455]
+current θ = [0.8216580238357286, 0.09664986717074374, 0.5675983569523803, 0.4991916781930444, 0.44329118693538455]
+<span style="font-weight:bold;">  1   </span><span style="color:red;">   +7.97650293   </span><span style="color:blue;">   46.46926184   </span><span style="color:green;">   0.51   </span><span style="color:purple;">  +0.82 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.47 </span><span style="color:purple;">  +0.07 </span><span style="color:purple;">  +0.12 </span>
+current θ = [1.1281972854261486, 0.11381866927068453, 0.7518498650410754, 0.4991309557348431, 0.4342539678022617]
+current θ = [1.1281972854261486, 0.11381866927068453, 0.7518498650410754, 0.4991309557348431, 0.4342539678022617]
+<span style="font-weight:bold;">  2   </span><span style="color:red;">   +0.17010956   </span><span style="color:blue;">    5.09635609   </span><span style="color:green;">   0.86   </span><span style="color:purple;">  +1.12 </span><span style="color:purple;">  +0.05 </span><span style="color:purple;">  +0.62 </span><span style="color:purple;">  +0.07 </span><span style="color:purple;">  +0.12 </span>
+current θ = [1.1706803284609968, 0.13351254352358566, 0.7879910967349535, 0.49826335155260115, 0.43764850925761806]
+current θ = [1.1706803284609968, 0.13351254352358566, 0.7879910967349535, 0.49826335155260115, 0.43764850925761806]
+<span style="font-weight:bold;">  3   </span><span style="color:red;">   +0.00104316   </span><span style="color:blue;">    0.15271338   </span><span style="color:green;">   1.58   </span><span style="color:purple;">  +1.17 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.65 </span><span style="color:purple;">  +0.07 </span><span style="color:purple;">  +0.12 </span>
+current θ = [1.1724751787797345, 0.13322550952214504, 0.7885397224876493, 0.47417297230063776, 0.4427649983322953]
+current θ = [1.1724751787797345, 0.13322550952214504, 0.7885397224876493, 0.47417297230063776, 0.4427649983322953]
+<span style="font-weight:bold;">  4   </span><span style="color:red;">   +0.00086520   </span><span style="color:blue;">    0.00311281   </span><span style="color:green;">   1.93   </span><span style="color:purple;">  +1.17 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.65 </span><span style="color:purple;">  +0.07 </span><span style="color:purple;">  +0.12 </span>
+current θ = [1.1728855843485704, 0.1239191328048266, 0.7801691409086154, 0.2410682743075329, 0.4334423788585876]
+<span style="font-weight:bold;">  5   </span><span style="color:red;">   +0.00086520   </span><span style="color:blue;">    0.00311281   </span><span style="color:green;">   2.17   </span><span style="color:purple;">  +1.17 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.65 </span><span style="color:purple;">  +0.07 </span><span style="color:purple;">  +0.12 </span>
+current θ = [1.1725919242280305, 0.13091617857814913, 0.7864690635891444, 0.40039090711726333, 0.44052089780565556]
+current θ = [1.1725919242280305, 0.13091617857814913, 0.7864690635891444, 0.40039090711726333, 0.44052089780565556]
+<span style="font-weight:bold;">  6   </span><span style="color:red;">   +0.00085169   </span><span style="color:blue;">    0.02909222   </span><span style="color:green;">   2.55   </span><span style="color:purple;">  +1.17 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.65 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.12 </span>
+current θ = [1.1726748503592934, 0.12959218826459815, 0.7851806533251785, 0.33806768653935376, 0.4391123709574945]
+current θ = [1.1726748503592934, 0.12959218826459815, 0.7851806533251785, 0.33806768653935376, 0.4391123709574945]
+<span style="font-weight:bold;">  7   </span><span style="color:red;">   +0.00083406   </span><span style="color:blue;">    0.02081874   </span><span style="color:green;">   2.90   </span><span style="color:purple;">  +1.17 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.65 </span><span style="color:purple;">  +0.05 </span><span style="color:purple;">  +0.12 </span>
+current θ = [1.1728044158722357, 0.12789588709185548, 0.7834820835454854, 0.2570654370959879, 0.437370343248081]
+current θ = [1.1728044158722357, 0.12789588709185548, 0.7834820835454854, 0.2570654370959879, 0.437370343248081]
+<span style="font-weight:bold;">  8   </span><span style="color:red;">   +0.00082530   </span><span style="color:blue;">    0.03659836   </span><span style="color:green;">   3.25   </span><span style="color:purple;">  +1.17 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.65 </span><span style="color:purple;">  +0.04 </span><span style="color:purple;">  +0.12 </span>
+current θ = [1.1728641652250273, 0.12757980762297058, 0.7830512274197367, 0.21419425611587267, 0.4370350504398379]
+current θ = [1.1728641652250273, 0.12757980762297058, 0.7830512274197367, 0.21419425611587267, 0.4370350504398379]
+<span style="font-weight:bold;">  9   </span><span style="color:red;">   +0.00080869   </span><span style="color:blue;">    0.00991263   </span><span style="color:green;">   3.63   </span><span style="color:purple;">  +1.17 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.65 </span><span style="color:purple;">  +0.03 </span><span style="color:purple;">  +0.12 </span>
+current θ = [1.172977958904276, 0.12671596527241438, 0.7820435018349421, 0.1526916632258016, 0.4361617893856799]
+current θ = [1.172977958904276, 0.12671596527241438, 0.7820435018349421, 0.1526916632258016, 0.4361617893856799]
+<span style="font-weight:bold;"> 10   </span><span style="color:red;">   +0.00080332   </span><span style="color:blue;">    0.02148967   </span><span style="color:green;">   3.96   </span><span style="color:purple;">  +1.17 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.65 </span><span style="color:purple;">  +0.02 </span><span style="color:purple;">  +0.12 </span>
+current θ = [1.173036406571775, 0.1265479032055707, 0.7817297978731846, 0.11450677237653427, 0.43599148310092256]
+current θ = [1.173036406571775, 0.1265479032055707, 0.7817297978731846, 0.11450677237653427, 0.43599148310092256]
+<span style="font-weight:bold;"> 11   </span><span style="color:red;">   +0.00079588   </span><span style="color:blue;">    0.00805917   </span><span style="color:green;">   4.31   </span><span style="color:purple;">  +1.17 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.65 </span><span style="color:purple;">  +0.02 </span><span style="color:purple;">  +0.12 </span>
+current θ = [1.1730960250357267, 0.12635677404625142, 0.7814005852999276, 0.08162725320021327, 0.43580503322231834]
+current θ = [1.1730960250357267, 0.12635677404625142, 0.7814005852999276, 0.08162725320021327, 0.43580503322231834]
+<span style="font-weight:bold;"> 12   </span><span style="color:red;">   +0.00079262   </span><span style="color:blue;">    0.00600137   </span><span style="color:green;">   4.66   </span><span style="color:purple;">  +1.17 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.65 </span><span style="color:purple;">  +0.01 </span><span style="color:purple;">  +0.12 </span>
+current θ = [1.173173485452763, 0.12616377416652852, 0.7810091037928929, 0.044784108438764014, 0.43561686227732255]
+current θ = [1.173173485452763, 0.12616377416652852, 0.7810091037928929, 0.044784108438764014, 0.43561686227732255]
+<span style="font-weight:bold;"> 13   </span><span style="color:red;">   +0.00079030   </span><span style="color:blue;">    0.00803727   </span><span style="color:green;">   5.04   </span><span style="color:purple;">  +1.17 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.65 </span><span style="color:purple;">  +0.01 </span><span style="color:purple;">  +0.12 </span>
+current θ = [1.173196269330026, 0.12619428625812978, 0.7809614895981392, 0.026372828194094467, 0.4356541883153948]
+current θ = [1.173196269330026, 0.12619428625812978, 0.7809614895981392, 0.026372828194094467, 0.4356541883153948]
+<span style="font-weight:bold;"> 14   </span><span style="color:red;">   +0.00078851   </span><span style="color:blue;">    0.00182234   </span><span style="color:green;">   5.38   </span><span style="color:purple;">  +1.17 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.65 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.12 </span>
+current θ = [1.17322028976003, 0.12618317278240762, 0.7808791379010726, 0.01340183696727086, 0.43564875630840594]
+current θ = [1.17322028976003, 0.12618317278240762, 0.7808791379010726, 0.01340183696727086, 0.43564875630840594]
+<span style="font-weight:bold;"> 15   </span><span style="color:red;">   +0.00078780   </span><span style="color:blue;">    0.00136891   </span><span style="color:green;">   5.71   </span><span style="color:purple;">  +1.17 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.65 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.12 </span>
+current θ = [1.1732325410248166, 0.12618333440170956, 0.7808413575435775, 0.005788865002730867, 0.43565225974412786]
+current θ = [1.1732325410248166, 0.12618333440170956, 0.7808413575435775, 0.005788865002730867, 0.43565225974412786]
+<span style="font-weight:bold;"> 16   </span><span style="color:red;">   +0.00078743   </span><span style="color:blue;">    0.00088919   </span><span style="color:green;">   6.05   </span><span style="color:purple;">  +1.17 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.65 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.12 </span>
+current θ = [1.1732356054379403, 0.12618530047112106, 0.7808338841434737, 0.0023845363301633594, 0.43565577440624953]
+current θ = [1.1732356054379403, 0.12618530047112106, 0.7808338841434737, 0.0023845363301633594, 0.43565577440624953]
+<span style="font-weight:bold;"> 17   </span><span style="color:red;">   +0.00078727   </span><span style="color:blue;">    0.00038870   </span><span style="color:green;">   6.41   </span><span style="color:purple;">  +1.17 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.65 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.12 </span>
+current θ = [1.1732366937489975, 0.1261855839614026, 0.7808310029957928, 0.0009268134111725324, 0.4356568173946076]
+current θ = [1.1732366937489975, 0.1261855839614026, 0.7808310029957928, 0.0009268134111725324, 0.4356568173946076]
+<span style="font-weight:bold;"> 18   </span><span style="color:red;">   +0.00078721   </span><span style="color:blue;">    0.00017180   </span><span style="color:green;">   6.76   </span><span style="color:purple;">  +1.17 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.65 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.12 </span>
+current θ = [1.1732369326033794, 0.12618562978062972, 0.7808304112138632, 0.0003498458492630634, 0.43565711838333104]
+current θ = [1.1732369326033794, 0.12618562978062972, 0.7808304112138632, 0.0003498458492630634, 0.43565711838333104]
+<span style="font-weight:bold;"> 19   </span><span style="color:red;">   +0.00078718   </span><span style="color:blue;">    0.00006918   </span><span style="color:green;">   7.09   </span><span style="color:purple;">  +1.17 </span><span style="color:purple;">  +0.06 </span><span style="color:purple;">  +0.65 </span><span style="color:purple;">  +0.00 </span><span style="color:purple;">  +0.12 </span>
+current θ = [1.1732369326033794, 0.12618562978062972, 0.7808304112138632, 0.0003498458492630634, 0.43565711838333104]
+[1.1680129973238935, 0.05687212894554148, 0.6484817531426558, 5.19272480799611e-5, 0.11546779304452058]
+
+0.0007871825552188388
+<span style="font-weight:bold;">Coefficient estimates:</span>
+<span style="color:green;"></span><span style="font-weight:bold;color:green;">Coefficient estimates for θ: </span><span style="color:green;"></span>
+   +1.168013 (unavailable ) income
+   +0.056872 (unavailable ) income * ibu
+   +0.648482 (unavailable ) age * ibu
+   +0.000052 (unavailable ) rc on ibu
+   +0.115468 (unavailable ) rc on abv
+<span style="color:green;"></span><span style="font-weight:bold;color:green;">Coefficient estimates for β: </span><span style="color:green;"></span>
+   -7.601487 (unavailable ) constant
+   +1.807848 (unavailable ) ibu
+   +0.740802 (unavailable ) abv
+<span style="color:green;"></span><span style="font-weight:bold;color:green;">Convergence criteria:</span><span style="color:green;"></span>
+<span style="font-weight:bold;">                       minimum: </span>0.0007871825552188388
+<span style="font-weight:bold;">                    iterations: </span>19
+<span style="font-weight:bold;">       iteration_limit_reached: </span>false
+<span style="font-weight:bold;">                     converged: </span>true
+<span style="font-weight:bold;">                   f_converged: </span>false
+<span style="font-weight:bold;">                   g_converged: </span>true
+<span style="font-weight:bold;">                   x_converged: </span>false
+<span style="font-weight:bold;">                       f_calls: </span>20
+<span style="font-weight:bold;">                       g_calls: </span>20
+<span style="font-weight:bold;">                       h_calls: </span>19
+<span style="font-weight:bold;">                f_trace (last): </span>0.0007871825552188388
+<span style="font-weight:bold;">           g_norm_trace (last): </span>6.917777964366311e-5
+<span style="font-weight:bold;">                x_trace (last): </span>[1.1732369326033794, 0.12618562978062972, 0.7808304112138632, -7.9580179311758545, -0.8308997707543406]
+
+
+</pre>
+</body>
+</html>

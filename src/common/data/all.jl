@@ -114,10 +114,6 @@ function GrumpsData(
         v.randomcoefficients,           # names of random coefficients
         plm.names,                      # names of all regressor variables
         marketproductstrings            # names of all market, product combinations
-        # Vector{[],
-        # []
-        # u.interactionnames,             # names of all user-created interaction variables
-        # u.randomcoefficientnames )      # names of all user-created random coefficients
     )
     
     nrm = Vec{ GrumpsNormalization{T} }(undef, dθ )
@@ -138,7 +134,6 @@ end
         T                   :: Type = F64,
         options             :: DataOptions = GrumpsDataOptions(),
         threads             :: Int = 0,
-        id                  :: Symbol = :default
         )
 
 Takes user inputs and converts them into an object that Grumps can understand.  This is synonymous with Data(...).
@@ -152,7 +147,6 @@ Takes user inputs and converts them into an object that Grumps can understand.  
 * *T*:                   floating point type; not heavily tested
 * *options*:             data options to be used, see *DataOptions*
 * *threads*:             the number of parallel threads to be used in creating data
-* *id*:                  an id that can be used to define user-specific versions
 """
 function GrumpsData( 
     e                   :: GrumpsEstimator,
@@ -161,11 +155,10 @@ function GrumpsData(
     integrators         :: GrumpsIntegrators = BothIntegrators(),
     T                   :: Type = F64;
     options             :: DataOptions = GrumpsDataOptions(),
-    threads             :: Int = 0,
-    id                  :: Symbol = :default
+    threads             :: Int = 0
     )
     
-    return GrumpsData( Val( id ), e, ss, v, integrators, T; options = options, threads = threads )
+    return GrumpsData( Val( id( options ) ), e, ss, v, integrators, T; options = options, threads = threads )
 end
 
 

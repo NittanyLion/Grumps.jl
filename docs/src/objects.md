@@ -135,3 +135,5 @@ show( io :: IO, mt :: MimeCSV, sol :: GrumpsSolution; kwargs... )
     To save estimation results directly to a LaTeX tabular, just use a `.tex` extension in the filename.  For instance, write `Save( "results.tex", sol )` if your solution is in the variable `sol`.
 
 
+!!! tip "Saving output printed to terminal"
+    To save the terminal output to html, one can use [Aha](https://github.com/theZiz/aha), the Ansi HTML Adapter, which is a small program (unrelated to Julia) that converts terminal output to html.  The way that would work on Linux and Mac (after successful installation) if one ran Grumps directly from the command line is to append `| aha > myrun.html`, e.g. `julia -t auto myprogram.jl | aha > myrun.html`.

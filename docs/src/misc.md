@@ -10,7 +10,8 @@ Grumps uses three packages that have significant overhead when they are first ca
 3. run `julia makesystemimage.jl`
 4. then, in the future, run `julia -J *location of image.so* *other options*`
 
-**Note that this procedure would have to be repeated every time you upgrade Julia to a new version**
+!!! warning "New Julia versions"
+    This procedure would have to be repeated every time you upgrade Julia to a new version"
 
 ## Random tips
 

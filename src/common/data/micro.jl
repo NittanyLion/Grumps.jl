@@ -39,7 +39,7 @@ end
         
     CreateInteractions reads data from consumer and product dataframes and returns an array of interactions.
 """
-function CreateInteractions( ::Any, dfc:: AbstractDataFrame, dfp:: AbstractDataFrame, v :: Variables, T = F64 )
+function CreateInteractions( id ::Any, dfc:: AbstractDataFrame, dfp:: AbstractDataFrame, v :: Variables, T = F64 )
     MustBeInDF( v.interactions[:,1], dfc, "consumer data frame" )
     MustBeInDF( v.interactions[:,2], dfp, "product data frame" )
 

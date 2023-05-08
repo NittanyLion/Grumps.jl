@@ -2,13 +2,65 @@
 
 Grumps can be extended in multiple ways.  Below three possibilities are discussed, namely using an existing estimator for a different data format, introducing a new *estimator*, and introducing a new *integrator*.
 
+## examining output at each iteration
+
+On each iteration of both the inner and outer optimization steps, Grumps calls a callback function.  By default the callback for the inner optimization does nothing and the callback for the outer optimization prints a summary of progress.  Users can add to this by defining their own callback functions named `δcallback` and `θcallback` respectively.  These are called before Grumps continues with its own callback routine.  
+
+To do this, one has to pass an `id` to [`OptimizationOptions()`](@ref) and define a callback that is specifically for this id.  The id should be a symbol, i.e. a word preceded by a colon.  For instance, one can specify `id = :myid` and define the callback
+```
+    function Grumps.θcallback( ::Val{ :myid }, statevec, e, d, o, oldx, repeatx, solution ) 
+
+        println( "hi" )
+        
+    end
+``` 
+Then include `o = OptimizationOptions(; id = :myid )` (possibly with other options) in the program and pass `o` as an argument to `grumps!`.
+
+This will print "hi" on every $θ$ iteration.  The first argument of `Grumps.θcallback` specifies which id this callback refers to (in case there is more than one), `statevec` is the state vector of the `Optim` package (see the documentation of that package for details), `oldx` is the $θ$-vector value of the previous iteration, and `repeatx` is a single element vector that indicates how often the same value of the parameter vector has been repeated.  Messing with the values of the arguments is not recommended.  The `Grumps.δcallback` function has the same syntax but lacks the `solution` argument.
+
+If the `id` variable is set but no user callbacks are defined then Grumps will only execute the default callbacks.
+
+!!! note "Do not overuse Grumps.δcallback"
+    If one has many markets then the δ callback is called *a lot*. Be prepared for a lot of output.  The θ callback is not called nearly as often.
+
+
 ## using a new data format
 
-The most general way of doing this is to fill the `GrumpsData` object with something of your own creation.  An easier way of doing this is to use the `UserEnhancement` argument in the call to [`Data()`](@ref).  
+The format of Grumps is limited to specifications that are linear in parameters.  This cannot be altered.  The way that data are entered moreover presumes that there are only interactions of demographics and product level variables, interactions of random coefficients and product level variables, product level regressors (where product level regressors can include a constant), a quality variable $\xi$, and an error term $\epsilon$.
 
-!!! danger "The user enhancement code has not been tested yet and needs work."
-    Use it at your own risk.
+This can be changed, however.  Pretty much all methods that Grumps uses to create data take an input parameter named `id`.  This corresponds to the `id` set in [`DataOptions()`](@ref), which is `:Grumps` by default.  This id can be set to any other symbol.  For instance, if one set `id` to `:myid` then one could add any of the methods taking an `id` in any of the Julia code files in `src/common/data` with one's own version.  For instance, the following method is defined in `micro.jl`:
+```
+    function CreateInteractions( id ::Any, dfc:: AbstractDataFrame, dfp:: AbstractDataFrame, v :: Variables, T = F64 )
+        MustBeInDF( v.interactions[:,1], dfc, "consumer data frame" )
+        MustBeInDF( v.interactions[:,2], dfp, "product data frame" )
 
+        S = nrow( dfc )
+        J = nrow( dfp ) + 1
+        dθz = size( v.interactions, 1 )
+        Z = zeros( T, S, J, dθz )
+        for t ∈ 1:dθz, j ∈ 1:J-1, i ∈ 1:S
+            Z[i,j,t] = dfc[i, v.interactions[t,1] ] * dfp[j, v.interactions[t,2] ]
+        end
+        return Z
+    end
+```
+
+If one now defines a new method in one's own code with 
+```
+    function Grumps.CreateInteractions( ::Val{ :myid }, dfc:: AbstractDataFrame, dfp:: AbstractDataFrame, v :: Variables, T = F64 )
+        ...
+        ...
+        ...
+    return Z
+end
+```
+then Grumps will call your method instead of the default one.  But note that one would also need to adjust the corresponding macro integration part for estimators that use both micro and macro likelihoods.  For any functions for which no user-defined methods corresponding to the given `id` are defined, the default method is called.
+
+!!! note "Hogs and ants"
+    By default, Grumps saves on storage by storing *macro* draws and regressors separately (:Ant mode for macro).  If one wanted a regressor that could not be expressed as e.g. the product of a demographic variable and a product variable, then the functions `FillAθ!` and `FillZXθ!` in `src/common/probs/index.jl` may need to have new methods added, also.
+
+!!! warning "two ids"
+    There is one id for data creation passed in [`DataOptions()`](@ref) and one id for the optimization process passed in [`OptimizationOptions()`](@ref).  These ids *can* be different, but in most instances it is better to set these to the same value.  Note that the id used in `FillAθ!` and `FillZXθ!` is the optimization process id, not the data storage id.
 
 
 ## adding a new estimator
