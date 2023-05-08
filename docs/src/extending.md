@@ -56,8 +56,8 @@ end
 ```
 then Grumps will call your method instead of the default one.  But note that one would also need to adjust the corresponding macro integration part for estimators that use both micro and macro likelihoods.  For any functions for which no user-defined methods corresponding to the given `id` are defined, the default method is called.
 
-!!! note "Hogs and ants"
-    By default, Grumps saves on storage by storing *macro* draws and regressors separately (:Ant mode for macro).  If one wanted a regressor that could not be expressed as e.g. the product of a demographic variable and a product variable, then the functions `FillAθ!` and `FillZXθ!` in `src/common/probs/index.jl` may need to have new methods added, also.
+!!! note "hogs and ants"
+    By default, Grumps saves on storage by storing *macro* draws and regressors separately (:Ant mode for macro).  If one wanted a regressor that could not be expressed as e.g. the product of a demographic variable and a product variable, then the functions `FillAθ!` and `FillZXθ!` in `src/common/probs/index.jl` may need to have new methods added, also, if one wants to continue using :Ant mode.  An alternative for small problems is to switch to :Hog mode for the macro likelihood (the micro likelihood uses :Hog mode by default).
 
 !!! warning "two ids"
     There is one id for data creation passed in [`DataOptions()`](@ref) and one id for the optimization process passed in [`OptimizationOptions()`](@ref).  These ids *can* be different, but in most instances it is better to set these to the same value.  Note that the id used in `FillAθ!` and `FillZXθ!` is the optimization process id, not the data storage id.
