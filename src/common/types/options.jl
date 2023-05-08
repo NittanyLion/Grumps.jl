@@ -210,7 +210,7 @@ There are two ways of computing choice probabilities: robust and fast, specified
 *:fast* in *probtype*. Fast choice probabilities are the default for good reason.
 
 Finally, specifying a callback allows one to add callbacks, i.e. user functions that are called on each inner and 
-outer iteration.  See the [Callbacks](@ref) portion of the documentation.
+outer iteration.  See the [Extending Grumps](@ref) portion of the documentation.
 """
 OptimizationOptions(; x...) = GrumpsOptimizationOptions(; x...)
 
