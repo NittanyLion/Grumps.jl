@@ -4,10 +4,9 @@
 push!(LOAD_PATH, "../../src")                              
 
 
-using Grumps, LinearAlgebra
+using Grumps
 
 # set the number of BLAS threads
-BLAS.set_num_threads(8)                                                    
 
 function myprogram( nodes, draws, meth  )
     # set which files contain the data to be used

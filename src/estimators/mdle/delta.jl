@@ -5,7 +5,7 @@ function  InsideObjective1!(
     Hδθ     :: HType{T},
     θ       :: Vec{T},
     δ       :: Vec{T}, 
-    e       :: GrumpsVanillaEstimator, 
+    e       :: GrumpsMDLEEstimator, 
     d       :: GrumpsMarketData{T}, 
     o       :: OptimizationOptions, 
     s       :: GrumpsMarketSpace{T}, 

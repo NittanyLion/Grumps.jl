@@ -40,13 +40,13 @@ the *Estimator( s :: String )* method is usually a better choice.
 
 Possible choices include:
 
-*:pml* the full Grumps maximum likelihood estimator  
+*:cler* the full Grumps maximum likelihood estimator  
 
 *:cheap* an alternative with the same limit distribution that is faster to compute
 
-*:vanilla* the unpenalized Grumps maximum likelihood estimator
+*:mdle* the minimum distance likelihood estimator
 
-*:shareconstraint* the unpenalized Grumps maximum likelihood estimator with share constraints
+*:shareconstraint* the MDLE estimator with share constraints
 
 *:gmm* GMM estimator that uses both micro and macro moments
 

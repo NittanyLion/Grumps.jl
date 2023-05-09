@@ -44,8 +44,8 @@ end
 
 Creates a GrumpsSources object with source type entries of type T where the entries are provided in the optional parameters.
 
-Grumps (potentially) uses four data sources: a data source for consumer-level data, one for product-level data, one for market size information, and one for demographic draws.  Only the
-product-level data are required, but are by themselves insufficient.  For instance, for BLP95 one needs information on products, market sizes, and demographics; for the Grumps estimator one needs
+Grumps (potentially) uses four data sources: a data source for consumer-level data, one for product-level data, one for market size information, and one for demographic draws.  See [Spreadsheet formats](@ref) for data layouts. Only the
+product-level data are required, but are by themselves insufficient.  For instance, for BLP95 one needs information on products, market sizes, and demographics; for the Grumps CLER estimator one needs
 all four types of data; for a multinomial logit both consumer and product information are needed.  Not all data are needed for all markets.  For instance, it is ok for some estimators for there to
 be consumer-level data in some markets but not others.
 

@@ -6,7 +6,7 @@ push!(LOAD_PATH, "../../src")
 
 
 
-using Grumps, LinearAlgebra, PyCall, RCall
+using Grumps, LinearAlgebra, PyCall#, RCall
 
 
 function compute_stuff( meth  )
@@ -20,7 +20,7 @@ function compute_stuff( meth  )
     
     v = Variables( 
         "choice = income * constant + income * ibu + age * ibu + rc * ibu + rc * abv",
-        "share = constant + ibu + abv / constant, ibu, abv, IVgh_ibu, IVgh_abv";
+        "share = constant + ibu + abv | constant, ibu, abv, IVgh_ibu, IVgh_abv";
         outsidegood = "product 11"                                
     )
     
@@ -35,16 +35,16 @@ def print_my_stuff_in_python(x):
 
 """
 
-R"""
-print_my_stuff_in_R <- function(x) cat( "R: ", x, "\n" ) 
-"""
+# R"""
+# print_my_stuff_in_R <- function(x) cat( "R: ", x, "\n" ) 
+# """
 
 function myprogram( )
     sol = compute_stuff( :cheap )
     θcoef =  getθcoef( sol )
     println( "Julia: $θcoef \n" )
     py"print_my_stuff_in_python"(θcoef)
-    R"print_my_stuff_in_R"(θcoef)
+    # R"print_my_stuff_in_R"(θcoef)
 end
 
 

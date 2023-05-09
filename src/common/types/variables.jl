@@ -50,6 +50,7 @@ end
 """
     Variables( ; 
       market              :: Symbol = :market,
+      product             :: Symbol = :product,
       choice              :: Symbol = :choice,
       interactions        :: Mat{Symbol} = [],
       randomcoefficients  :: Vec{Symbol} = [],
@@ -78,22 +79,21 @@ There is a separation between variables that go into the individual consumer uti
 coefficient.  By contrast, *regressors* go into the mean utility component and are regressors in the "second stage" (where β is recovered).
 One can use the special symbol *:constant* to indicate a constant is to be used; the spreadsheet need not include a column with that heading.
 
-Note that there are three ways that dummy variables can be entered as second stage regressors.  The first is via *regressors*, in which case
+Note that there are three ways that dummy variables can be entered as second stage regressors, which can be useful to incorporate brand, firm, or market effects into δ.  The first is via *regressors*, in which case
 the onus is on the user to ensure that they have the correct numerical values.  The second possibility is via the *dummies* argument.  For 
-each symbol passed via the *dummies* argument, Grumps will examine the corresponding column of the product data set (which can contain descriptive
-entries that need not be numerical) and turn it into dummy variables.  If the coefficient on the dummies is of no interest then it is better to
+each symbol passed via the *dummiesi
 pass one via the *nuisancedummy* argument since it saves both computation time and memory.  There can only be at most one categorical variable that can
 be converted to nuisance dummies, but there can be arbitrarily many categories.  These dummies and nuisance dummies are automatically assumed to be
 exogenous and will be included in the instruments, also.
 
-*market* refers to the variable containing the market indicator in all input datasets.  Strings work best for the market indicators themselves,
+*market* refers to the variable containing the market indicator in all input datasets.  Strings (e.g. "Amarillo, Texas") work best for the market indicators themselves,
 but it is not a requirement.
 
-*product* refers to the variable containing the product indicator in the product dataset. Strings work best for the product indicators themselves,
+*product* refers to the variable containing the product indicator in the product dataset. Strings (e.g. "Camry") work best for the product indicators themselves,
 but it is not a requirement.
 
 *choice* refers to the variable indicating the choice indicator in the consumer level datasets.  Strings work best for the choice indicators themselves,
-but it is not a requirement.
+but it is not a requirement.  These should take the values of the *product* column in the products data set or of the *outsidegood*.
 
 *interactions* refers to the variables indicating consumer and product variable interactions (each row contains consumer variable, product variable)
 
@@ -115,7 +115,7 @@ but it is not a requirement.
 
 *microinstruments* refers to micro instruments, which are only relevant for gmm style procedures
 
-*user* refers to a list of variables to be added to the consumer-product interactions using a user-specified procedure
+*user* refers to a list of variables to be added to the consumer-product interactions using a user-specified procedure.  This is only needed if the Grumps specification itself does not suffice: see [Extending Grumps](@ref) for details.
 """
 function Variables( ; 
     market              :: Symbol = :market,
@@ -225,50 +225,13 @@ is no need to include a constant in one's data.
 
 The *macrospec* argument takes the form 
 
-"share = constant + logmpg + loghp + logfootprint + msrp / constant, logmpg, loghp, logfootprint, logcurbweight, lagplcon"
+"share = constant + logmpg + loghp + logfootprint + msrp | constant, logmpg, loghp, logfootprint, logcurbweight, lagplcon"
 
-where *share* are product-level market shares, everything between = and / represents regressors, and everything after / represents 
+where *share* are product-level market shares, everything between = and | represents regressors, and everything after | represents 
 instruments; both regressors and instruments are for the product level moments portion.  One can again use *constant* to indicate a constant
 is used, which need not be included in one's data.
 
-Note that there are three ways that dummy variables can be entered as second stage regressors.  The first is via *macrospec*, in which case
-the onus is on the user to ensure that they have the correct numerical values.  The second possibility is via the *dummyspec* argument.  For 
-each variable passed via the *dummyspec* argument, Grumps will examine the corresponding column of the product data set (which can contain descriptive
-entries that need not be numerical) and turn it into dummy variables.  If the coefficient on the dummies is of no interest then it is better to
-pass one via the *nuisancedummyspec* argument since it saves both computation time and memory.  There can only be at most one categorical variable that can
-be converted to nuisance dummies, but there can be arbitrarily many categories.  These dummies and nuisance dummies are automatically assumed to be
-exogenous and will be included in the instruments, also.
-
-*market* refers to the variable containing the market indicator in all input datasets.  Strings work best for the market indicators themselves,
-but it is not a requirement.
-
-*product* refers to the variable containing the product indicator in the product dataset. Strings work best for the product indicators themselves,
-but it is not a requirement.
-
-*choice* refers to the variable indicating the choice indicator in the consumer level datasets.  Strings work best for the choice indicators themselves,
-but it is not a requirement.
-
-*interactions* refers to the variables indicating consumer and product variable interactions (each row contains consumer variable, product variable)
-
-*randomcoefficients* refers to the product level variables that have a random coefficient on them
-
-*outsidegood* refers to the label used for the outside good
-
-*share* refers to the label used for the product level share; these are shares where the denominator includes the outside good
-
-*marketsize* refers to the size of the market (number of people)
-
-*regressors* refers to the label used for the second stage regressors
-
-*instruments* refers to the label used for the second stage instruments
-
-*dummies* refers to discrete variables to be converted to second stage dummy regressors and instruments
-
-*nuisancedummy* refers to at most one variable to be converted to a second stage dummy regressors and instrument whose coefficient value is of no interest
-
-*microinstruments* refers to micro instruments, which are only relevant for gmm style procedures
-
-*user* refers to a list of variables to be added to the consumer-product interactions using a user-specified procedure
+For the remaining arguments, see the description of the other method [`Variables()`](@ref).
 """
 function Variables( 
     microspec           :: String,
@@ -308,8 +271,8 @@ function Variables(
     macspec = strip.( split( macrospec, "=") )
     @ensure length( macspec ) == 2 "macro specification should have exactly one equal sign"
     share = Symbol( macspec[1] )
-    macspecrhs = strip.( split( macspec[2], '/') )
-    @ensure length( macspecrhs ) == 2 "macro specification should contain both regressors and instruments separated by /"
+    macspecrhs = strip.( split( macspec[2], '|') )
+    @ensure length( macspecrhs ) == 2 "macro specification should contain both regressors and instruments separated by |"
     regressors = Symbol.( strip.( split( macspecrhs[1], '+' ) ) )
     instruments = Symbol.( strip.( split( macspecrhs[2], ',' ) ) )
     dummies = length( strip( dummyspec ) ) == 0 ? Symbol[] : Symbol.( strip.( split( dummyspec, ',' ) ) )

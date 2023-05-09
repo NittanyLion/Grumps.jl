@@ -3,7 +3,6 @@
 @todo 2 "make CreateK more efficient"
 
 function CreateK( e :: GrumpsMLE, s :: Sources, v :: Variables, dδ :: Int, σ2 :: T, ::Val{ false }, fap :: Vec{ Vec{Int} } ) where {T<:Flt}
-    # return typeof( e ) ≠ GrumpsCheapEstimator ? zeros( T, dδ , 0  ) : CreateK( GrumpsPMLEstimatorInstance, s, v, dδ, σ2, Val( true ), fap ) 
     return zeros( T, dδ , 0  )
 end
 
@@ -20,7 +19,7 @@ function CreateK( e :: Union{ GrumpsPenalized, GrumpsGMM, GrumpsMLE }, s :: Sour
     @ensure length( inst ) == length( v.instruments )  "duplication of instruments"
     if length( regs ) == length( inst )
         @info "exactly identified so there is no penalization"
-        return CreateK( GrumpsVanillaEstimatorInstance, s, v, dδ, σ2, Val( false ), fap )
+        return CreateK( GrumpsMDLEEstimatorInstance, s, v, dδ, σ2, Val( false ), fap )
     end
     @ensure length( regs ) < length( inst ) "underidentification not allowed"
 

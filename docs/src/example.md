@@ -1,7 +1,7 @@
 # Example program
 
 Below is a documented example program.  You can find a closely
-related example program in the `extras/example` folder.
+related example program in the [`extras/example`](https://github.com/NittanyLion/Grumps.jl/tree/main/extras/example) folder.
 
 ```
  # set relative path of location of Grumps.jl; won't be needed 
