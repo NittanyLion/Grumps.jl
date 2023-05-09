@@ -10,15 +10,25 @@
 
 ## Overview
 
-**Grumps.jl** is a package for computing random coefficients demand models, including:
-1. the conformant likelihood with exogeneity restrictions (CLER) estimator of Grieco, Murry, Pinkse, and Sagl (2022)
+**Grumps.jl** is a package for computing random coefficients demand models using consumer and product level data. The main estimators are introduced in [Grieco, Murry, Pinkse, and Sagl (2022)](http://joris.pinkse.org/paper/grumps/), including:
+1. the conformant likelihood with exogeneity restrictions (CLER) estimator
 2. an asymptotically equivalent less expensive alternative thereof
-3. the unpenalized likelihood estimator of Grieco, Murry, Pinkse, and Sagl (2022)
-4. GMM type random coefficient models in the style of Berry, Levinsohn, and Pakes (2004)
-5. GMM type random coefficient models in the style of Berry, Levinsohn, and Pakes (1995)
-6. Mixed logit models
-7. Multinomial logit models
+3. the mixed data likelihood estimator (MDLE)
+4. the share constrained likelihood estimator
 
+    In addition, other estimators have been implemented: 
+
+5. mixed logit models (consumer level data only)
+6. multinomial logit models (consumer level data only)
+7. GMM type random coefficient models in the style of Berry, Levinsohn, and Pakes (2004) (in process, not recommended)
+
+$(\hat\delta,\hat\theta,\hat\beta) = \text{argmin}_{\delta,\theta,\beta} \big( - \log \hat L(\delta,\theta) + \hat\Pi(\delta,\beta) \big),$
+
+where $\log \hat L$ is the sum of a micro loglikelihood and a macro loglikelihood and $\hat\Pi$ is a quadratic penalty term.  Any of the three components can be omitted if so desired. 
+
+Typically, $\log \hat L$ is a sum over markets, products, and consumers whereas $\hat\Pi$ is a GMM-style squared norm of a vector-valued sum over markets.  Please see [Grieco, Murry, Pinkse, and Sagl (2022)](http://joris.pinkse.org/paper/grumps/) for details.
+
+Several extensions are possible, which may require additions to the code. 
 
 ## Documentation
 
