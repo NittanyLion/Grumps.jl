@@ -39,7 +39,7 @@ Within `common` there are a number of folders depending on the role they play in
 
 ## estimators folder
 
-The `estimators` folder contains a number of folders, one per estimator.  Each folder corresponds to a specific estimator.  For instance, `pml` contains code specific to the main Grumps estimator.
+The `estimators` folder contains a number of folders, one per estimator.  Each folder corresponds to a specific estimator.  For instance, `cler` contains code specific to the main Grumps estimator.
 
 ## integrators folder
 

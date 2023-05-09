@@ -31,7 +31,7 @@ To use **Grumps.jl** consider the following program, which computes the penalize
         )
         println( v )
 
-        e = Estimator( "pml" )
+        e = Estimator( "cler" )
 
         d = Data( e, s, v )
 
@@ -70,7 +70,7 @@ There are moreover random coefficients on the ibu and abv variables.  The produc
 !!! tip "Objects can be printed"
     Most variables with data types created by Grumps can be printed.  For instance, the `println( v )` line tells Grumps to print the variable `v`, which in this case contains information about the specification. `println( d )` works too after the `Data` call.
 
-It then tells Grumps that it wants to use the full Grumps maximum likelihood estimator with penalized deviations from the macro moments in [`Estimator()`](@ref).  You could also have entered another descriptive string; **Grumps** is good at figuring out what you want.  Or you can use a symbol, like :pml.  In the `Data` call, it reads the data needed from the sources indicated in the `Sources` call using the information specified in the `Variables` call.
+It then tells Grumps that it wants to use the full Grumps maximum likelihood estimator with penalized deviations from the macro moments in [`Estimator()`](@ref).  You could also have entered another descriptive string; **Grumps** is good at figuring out what you want.  Or you can use a symbol, like :cler.  In the `Data` call, it reads the data needed from the sources indicated in the `Sources` call using the information specified in the `Variables` call.
 
 The `grumps!` call then asks Grumps to compute the estimates.  The exclamation mark (`bang`) signifies that `grumps!` can change its arguments (this is standard Julia custom). `grumps!` uses this functionality to return internally specified options when called with the defaults. 
 
