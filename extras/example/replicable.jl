@@ -56,7 +56,7 @@ function myprogram( nodes, draws, meth  )
     e = Estimator( meth )                                                     
 
     # this puts the data into a form Grumps can process
-    d = Data( e, s, v; threads = 1 ) 
+    d = Data( e, s, v; replicable = true ) 
     # there are longhand forms if you wish to set additional parameters
     # d = Data( e, s, v, BothIntegrators( ms, Ms ); threads = 32 )            
 

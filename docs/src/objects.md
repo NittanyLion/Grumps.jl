@@ -18,6 +18,7 @@ Variables( ::String, ::String, ::String, ::String )
 ```
 
 
+
 ## Optimization options
 
 The default optimization options are sensible, in which case this section can be skipped.  But for those who want to play with tolerances and such, have at it.
@@ -94,6 +95,10 @@ It takes as inputs the various choices made by the user and then creates an appr
 ```@docs
 Data()
 ```
+
+!!! tip "Ensuring replicability"
+    If you need replicability, set `replicable=true`.  This means that you will get exactly the same results if you run the program multiple times.  The downside of enforcing replicability is that it slows down data object generation since the data objects are then not generated in parallel.  Optimization itself will still be done in parallel however.
+
 
 ## Algorithm call
 

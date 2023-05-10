@@ -3,6 +3,34 @@
 # data, macro likelihood data, and product level moments data.
 
 
+
+function MicroCreation!( replicable, markets, s, v, integrators, dθν, rngs, nwgmic, mic, id, fap, options, e, T, m )
+    th = replicable ? 1 : threadid()
+    fac = findall( x->string(x) == markets[m], s.consumers[:, v.market] )
+    if fac ≠ nothing
+        nw = NodesWeightsOneMarket( microintegrator( integrators ), dθν, rngs[ th ], nwgmic, length( fac )  )
+        # check that all products in the consumer data set are also in the products data set
+        mic[m] = GrumpsMicroData( Val( id ), markets[m], view( s.consumers, fac, : ), view( s.products, fap[m], : ), v, nw, rngs[th], options, usesmicromoments( e ), T )
+    else
+        mic[m] = GrumpsMicroNoData( markets[m] )
+    end
+end
+
+function MacroCreation!( replicable, markets, s, v, marketsdrawn, integrators, dθν, subdfs, rngs, nwgmac, id, fap, mic, mac, T, options, m )
+    th = replicable ? 1 : threadid()
+    fama = findall( x->string(x) == markets[m], s.marketsizes[:, v.market] )
+    if fama ≠ nothing
+        @warnif length( fama ) > 1 "multiple lines in the market sizes data with the same market name; using the first one"
+        fam = fama[1]
+        𝒾 = findfirst( x->string( x ) == markets[m], marketsdrawn )
+        nw = NodesWeightsOneMarket( macrointegrator( integrators ), dθν, 𝒾 == nothing ? nothing : subdfs[𝒾], v, rngs[ th ], nwgmac  )
+        mac[m] = GrumpsMacroData( Val( id ), markets[m], s.marketsizes[fam[1], v.marketsize], view( s.products, fap[m], : ), v, nw, isassigned( mic, m ) ? mic[m] : nothing, options, T )
+    else
+        mac[m] = GrumpsMacroNoData{T}( markets[m] )
+    end
+end
+
+
 function GrumpsData( 
     id                  :: Any,
     e                   :: GrumpsEstimator,
@@ -11,7 +39,7 @@ function GrumpsData(
     integrators         :: GrumpsIntegrators = BothIntegrators(),
     T                   :: Type = F64;
     options             :: DataOptions = GrumpsDataOptions(),
-    threads             :: Int = 0
+    replicable          :: Bool = false
     )
 
     # check compatibility of choices made 
@@ -23,10 +51,9 @@ function GrumpsData(
 
     # initialize random numbers
     @info "creating random number generators"
-    if threads ≤ 0 
-        threads = nthreads()
-    end
-    threads = min( nthreads(), threads )
+    replicable && @warn "replicability set to false: this is faster, but you will get different results from one run to the next"
+    replicable || @warn "replicability set to true: this is slower, but you will get the same results from one run to the next"
+
     rngs = RandomNumberGenerators( nthreads() )
 
     @ensure isa( s.products, DataFrame )   "was expecting a DataFrame for product data"
@@ -47,24 +74,19 @@ function GrumpsData(
     # process data needed for the micro likelihood
     @warnif !usesmicrodata( e ) && isa( s.consumers, DataFrame ) "ignoring the consumer information you specified since it is not used for this estimator type"
     @ensure !usesmicrodata( e ) || isa( s.consumers, DataFrame ) "this estimator type requires consumer information; please pass consumer info in Sources"
-    sema = Semaphore( threads )
 
     @info "creating data objects for micro likelihood"
     if isa( s.consumers, DataFrame ) && usesmicrodata( e )
         MustBeInDF( [ v.market, v.choice ], s.consumers, "consumers" )
         nwgmic = NodesWeightsGlobal( microintegrator( integrators ), dθν, rngs[1]  )
-        @threads for m ∈ 1:M
-            acquire( sema )
-            local th = threads == 1 ? 1 : threadid()
-            local fac = findall( x->string(x) == markets[m], s.consumers[:, v.market] )
-            if fac ≠ nothing
-                local nw = NodesWeightsOneMarket( microintegrator( integrators ), dθν, rngs[ th ], nwgmic, length( fac )  )
-                # check that all products in the consumer data set are also in the products data set
-                mic[m] = GrumpsMicroData( Val( id ), markets[m], view( s.consumers, fac, : ), view( s.products, fap[m], : ), v, nw, rngs[th], options, usesmicromoments( e ), T )
-            else
-                mic[m] = GrumpsMicroNoData( markets[m] )
+        if replicable 
+            for m ∈ 1:M
+                MicroCreation!( replicable, markets, s, v, integrators, dθν, rngs, nwgmic, mic, id, fap, options, e, T, m )
             end
-            release( sema )
+        else
+            @threads for m ∈ 1:M
+                MicroCreation!( replicable, markets, s, v, integrators, dθν, rngs, nwgmic, mic, id, fap, options, e, T, m )
+            end
         end
     else
         for m ∈ 1:M
@@ -81,21 +103,31 @@ function GrumpsData(
         nwgmac = NodesWeightsGlobal( macrointegrator( integrators ), dθ, s.draws, v, rngs[1] )
         subdfs = groupby( s.draws, v.market )
         marketsdrawn = [ subdfs[m][1,v.market] for m ∈ eachindex( subdfs ) ]
-        @threads for m ∈ 1:M
-            acquire( sema )
-            local th = threads == 1 ? 1 : threadid()
-            local fama = findall( x->string(x) == markets[m], s.marketsizes[:, v.market] )
-            if fama ≠ nothing
-                @warnif length( fama ) > 1 "multiple lines in the market sizes data with the same market name; using the first one"
-                fam = fama[1]
-                local 𝒾 = findfirst( x->string( x ) == markets[m], marketsdrawn )
-                local nw = NodesWeightsOneMarket( macrointegrator( integrators ), dθν, 𝒾 == nothing ? nothing : subdfs[𝒾], v, rngs[ th ], nwgmac  )
-                mac[m] = GrumpsMacroData( Val( id ), markets[m], s.marketsizes[fam[1], v.marketsize], view( s.products, fap[m], : ), v, nw, isassigned( mic, m ) ? mic[m] : nothing, options, T )
-            else
-                mac[m] = GrumpsMacroNoData{T}( markets[m] )
+
+        if replicable
+            for m ∈ 1:M
+                MacroCreation!( replicable, markets, s, v, marketsdrawn, integrators, dθν, subdfs, rngs, nwgmac, id, fap, mic, mac, T, options, m )
             end
-            release( sema )
+        else
+            @threads for m ∈ 1:M 
+                MacroCreation!( replicable, markets, s, v, marketsdrawn, integrators, dθν, subdfs, rngs, nwgmac, id, fap, mic, mac, T, options, m )
+            end
         end
+        # for m ∈ 1:M
+        #     acquire( sema )
+        #     local th = threads == 1 ? 1 : threadid()
+        #     local fama = findall( x->string(x) == markets[m], s.marketsizes[:, v.market] )
+        #     if fama ≠ nothing
+        #         @warnif length( fama ) > 1 "multiple lines in the market sizes data with the same market name; using the first one"
+        #         fam = fama[1]
+        #         local 𝒾 = findfirst( x->string( x ) == markets[m], marketsdrawn )
+        #         local nw = NodesWeightsOneMarket( macrointegrator( integrators ), dθν, 𝒾 == nothing ? nothing : subdfs[𝒾], v, rngs[ th ], nwgmac  )
+        #         mac[m] = GrumpsMacroData( Val( id ), markets[m], s.marketsizes[fam[1], v.marketsize], view( s.products, fap[m], : ), v, nw, isassigned( mic, m ) ? mic[m] : nothing, options, T )
+        #     else
+        #         mac[m] = GrumpsMacroNoData{T}( markets[m] )
+        #     end
+        #     release( sema )
+        # end
     else
         for m ∈ 1:M
             mac[m] = GrumpsMacroNoData{T}( markets[m] )
@@ -133,7 +165,7 @@ end
         integrators         :: GrumpsIntegrators = BothIntegrators(),
         T                   :: Type = F64,
         options             :: DataOptions = GrumpsDataOptions(),
-        threads             :: Int = 0,
+        replicable          :: Bool = false
         )
 
 Takes user inputs and converts them into an object that Grumps can understand.  This is synonymous with Data(...).
@@ -146,7 +178,7 @@ Takes user inputs and converts them into an object that Grumps can understand.  
 * *integrators*:         see *BothIntegrators*, *DefaultMicroIntegrator*, and *DefaultMacroIntegrator*
 * *T*:                   floating point type; not heavily tested
 * *options*:             data options to be used, see *DataOptions*
-* *threads*:             the number of parallel threads to be used in creating data
+* *replicable*:          whether results must be replicable (slows down speed of data creation if set to true)
 """
 function GrumpsData( 
     e                   :: GrumpsEstimator,
@@ -155,10 +187,10 @@ function GrumpsData(
     integrators         :: GrumpsIntegrators = BothIntegrators(),
     T                   :: Type = F64;
     options             :: DataOptions = GrumpsDataOptions(),
-    threads             :: Int = 0
+    replicable          :: Bool = false
     )
     
-    return GrumpsData( Val( id( options ) ), e, ss, v, integrators, T; options = options, threads = threads )
+    return GrumpsData( Val( id( options ) ), e, ss, v, integrators, T; options = options, replicable = replicable )
 end
 
 
@@ -170,8 +202,7 @@ end
         integrators         :: GrumpsIntegrators = BothIntegrators(),
         T                   :: Type = F64,
         options             :: DataOptions = GrumpsDataOptions(),
-        threads             :: Int = 0,
-        id                  :: Symbol = :default
+        replicable          :: Bool = false
         )
 
 Takes user inputs and converts them into an object that Grumps can understand.  This is synonymous with GrumpsData(...).
@@ -186,6 +217,6 @@ Takes user inputs and converts them into an object that Grumps can understand.  
 * *T*:                   floating point type; not heavily tested
 * *u*:                   not yet implemented
 * *options*:             data options to be used, see *DataOptions*
-* *threads*:             the number of parallel threads to be used in creating data
+* *replicable*:          whether results must be replicable (slows down speed of data creation if set to true)
 """
 Data(x...; y...) = GrumpsData(x...; y... )
