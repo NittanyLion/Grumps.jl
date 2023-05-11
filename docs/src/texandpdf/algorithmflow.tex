@@ -3,20 +3,24 @@
 
 \usepackage{fontspec}
 \setmainfont{Times New Roman}
-\usepackage[paperwidth=15in,paperheight=6.25in,margin=0.5in]{geometry}
+\usepackage[paperwidth=15in,paperheight=6.75in,margin=0.5in]{geometry}
 \usepackage[svgnames]{xcolor}
 \usepackage{tikz}
+\usepackage{pagecolor}
+
 \pagestyle{empty}
 % \tikzset{Method/.style={Red, draw=Blue, fill=LightYellow, minimum size=5mm}}
-\tikzset{All/.style={Black, draw=Black, fill=LightGrey, minimum size=5mm}}
+\tikzset{All/.style={Black, draw=Black, fill=Pink, minimum size=5mm}}
 \tikzset{Vanilla/.style={Black, draw=Black, fill=LightYellow, minimum size=5mm}}
 \tikzset{Grumps/.style={Black, draw=Black, fill=LightGreen, minimum size=5mm}}
 \newcommand\mynode[4]{\node[#1] (#2) at (#3) {#4}}
 \newcommand\method[2]{\begin{tabular}{c}\textbf{#1}\\\emph{#2}\end{tabular}}
 \newcommand\makenode[5]{\mynode{#1}{#2}{#3}{\method{#4}{#5}}}
-\newcommand\jorisdraw[2]{\draw[thick,-latex] (#1.east)--(#2.west);}
-\newcommand\grumpsdraw[2]{\draw[Green,thick,-latex] (#1.east)--(#2.west);}
-\newcommand\vanilladraw[2]{\draw[Brown,thick,-latex] (#1.east)--(#2.west);}
+\newcommand\jorisdraw[2]{\draw[Grey,ultra thick,-latex] (#1.east)--(#2.west);}
+\newcommand\grumpsdraw[2]{\draw[Green,ultra thick,-latex] (#1.east)--(#2.west);}
+\newcommand\vanilladraw[2]{\draw[Brown,ultra thick,-latex] (#1.east)--(#2.west);}
+
+\pagecolor{white}
 
 \begin{document}
 
@@ -65,8 +69,8 @@
 
 {\LARGE
 \begin{enumerate}
-    \item The above flow is for the CLER estimator (green) and MLE (yellow); the share constraint estimator flow is the same as that for MLE, albeit that in the inner loop, no minimization takes place over the micro contribution.  The cheap version of the CLER estimator also follows the MLE path.
-    \item The main difference between CLER and MLE is that MLE uses the optimization code found in the Optim package, whereas CLER uses a hacked version thereof that can be found in common/optim/pmlalgo.
+    \item The above flow is for the CLER estimator (green) and MDLE (yellow); the share constraint estimator flow is the same as that for MDLE, albeit that in the inner loop, no minimization takes place over the micro contribution.  The cheap version of the CLER estimator also follows the MDLE path.
+    \item The main difference between CLER and MDLE is that MDLE uses the optimization code found in the Optim package, whereas CLER uses a modified version thereof that can be found in common/optim/pmlalgo.
 \end{enumerate}
 }
 \end{document}

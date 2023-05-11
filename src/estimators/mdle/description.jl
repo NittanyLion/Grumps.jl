@@ -1,4 +1,4 @@
-name( ::Val{:mdle} ) = "Minimum distance likelihood estimator"
+name( ::Val{:mdle} ) = "Mixed data likelihood estimator"
 
 
 function Description( e :: Symbol, v ::Val{ :mdle} )

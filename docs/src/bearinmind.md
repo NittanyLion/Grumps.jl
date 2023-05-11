@@ -16,7 +16,15 @@ The estimation procedure in [Grieco, Murry, Pinkse, and Sagl (2022)](http://jori
 
 ## Efficiency
 
-The estimation procedure in [Grieco, Murry, Pinkse, and Sagl (2022)](http://joris.pinkse.org/paper/grumps/) requires an optimal weight matrix for the product level moments (GMM) portion if there is overidentification in the product level moments.  Currently, the algorithm assumes homoskedasticity and independence and produces correct estimates and standard errors under that assumption.  However, to obtain efficiency under those conditions one would have to estimate the error variance $\sigma_\xi^2$ and rerun the algorithm using the estimated $\sigma_\xi^2$ as a weight: see [`DataOptions`](@ref) on how to enter that choice.  Absent homoskedasticity and independence, one can transform the instruments to achieve the same goal.  This is something the use will have to do for herself in the current version of Grumps.  Note that the second stage can be started at the first stage estimates and should not take long to converge (relative to the first stage).
+The estimation procedure in [Grieco, Murry, Pinkse, and Sagl (2022)](http://joris.pinkse.org/paper/grumps/) is efficient if an optimal weight matrix for the product level moments (GMM) portion is used whenever there is overidentification in the product level moments.  This is usually accomplished in a two step procedure.  
+
+The procedure that is currently implemented in Grumps is a single step procedure with weight matrix $(B^T B)^{-1}$.  This produces estimates that are consistent with valid standard errors but that are not necessarily fully efficient.  
+
+Under the assumption of homoskedasticity of the $\xi$'s in the paper, all that is required is to set $\sigma_\xi^2$ to the estimated variance of $\xi$ from a first stage; see [`DataOptions()`](@ref) on how to enter that choice.  Efficient estimation under heteroskedasticity and/or dependence will be implemented in a future version.
+
+!!! tip "Starting values of second stage"
+    One can use the first stage estimates as starting values of the second stage.  Since the first stage estimates converge at the optimal rate, also, this second stage optimization should converge quickly.
+
 
 ## Floating point numbers
 

@@ -184,7 +184,7 @@ function GrumpsData(
     e                   :: GrumpsEstimator,
     ss                  :: Sources,
     v                   :: Variables,
-    integrators         :: GrumpsIntegrators = BothIntegrators(),
+    integrators         :: GrumpsIntegrators,
     T                   :: Type = F64;
     options             :: DataOptions = GrumpsDataOptions(),
     replicable          :: Bool = false
@@ -193,13 +193,13 @@ function GrumpsData(
     return GrumpsData( Val( id( options ) ), e, ss, v, integrators, T; options = options, replicable = replicable )
 end
 
-
 """
-    Data( 
+    GrumpsData( 
         e                   :: GrumpsEstimator,
         ss                  :: Sources,
         v                   :: Variables,
-        integrators         :: GrumpsIntegrators = BothIntegrators(),
+        microintegrator     :: MicroIntegrator = DefaultMicroIntegrator(),
+        microintegrator     :: MacroIntegrator = DefaultMacroIntegrator(),
         T                   :: Type = F64,
         options             :: DataOptions = GrumpsDataOptions(),
         replicable          :: Bool = false
@@ -213,10 +213,53 @@ Takes user inputs and converts them into an object that Grumps can understand.  
 * *ss*:                  cata sources; see *Sources*
 * *v*:                   variables to be used; see *Variables*
 * *o*:                   optimization options to be used   
-* *integrators*:         see *BothIntegrators*, *DefaultMicroIntegrator*, and *DefaultMacroIntegrator*
+* *microintegrator*:     micro integrator see [Choice of integration method (integrators)](@ref)
+* *macrointegrator*:     macro integrator see [Choice of integration method (integrators)](@ref)
 * *T*:                   floating point type; not heavily tested
 * *u*:                   not yet implemented
 * *options*:             data options to be used, see *DataOptions*
+* *replicable*:          whether results must be replicable (slows down speed of data creation if set to true)
+"""
+function GrumpsData( 
+    e                   :: GrumpsEstimator,
+    ss                  :: Sources,
+    v                   :: Variables,
+    microintegrator     :: MicroIntegrator = DefaultMicroIntegrator(),
+    macrointegrator     :: MacroIntegrator = DefaultMacroIntegrator(),
+    T                   :: Type = F64;
+    options             :: DataOptions = GrumpsDataOptions(),
+    replicable          :: Bool = false
+    )
+    
+    return GrumpsData( e, ss, v, BothIntegrators( microintegrator, macrointegrator ), T; options = options, replicable = replicable )
+end
+
+
+"""
+    Data( 
+        e                   :: GrumpsEstimator,
+        ss                  :: Sources,
+        v                   :: Variables,
+        microintegrator     :: MicroIntegrator = DefaultMicroIntegrator(),
+        microintegrator     :: MacroIntegrator = DefaultMacroIntegrator(),
+        T                   :: Type = F64,
+        options             :: DataOptions = GrumpsDataOptions(),
+        replicable          :: Bool = false
+        )
+
+Takes user inputs and converts them into an object that Grumps can understand.  This is synonymous with GrumpsData(...).
+
+*Data* takes the following arguments, of which the first three are mandatory:
+
+* *e*:                   estimator; see [Estimator choice](@ref)
+* *ss*:                  data sources; see [Data entry](@ref)
+* *v*:                   variables to be used; see [Data entry](@ref)
+* *o*:                   optimization options to be used   
+* *microintegrator*:     micro integrator see [Choice of integration method (integrators)](@ref)
+* *macrointegrator*:     macro integrator see [Choice of integration method (integrators)](@ref)
+* *T*:                   floating point type; not heavily tested
+* *u*:                   not yet implemented
+* *options*:             data options to be used, see [Data storage options](@ref)
 * *replicable*:          whether results must be replicable (slows down speed of data creation if set to true)
 """
 Data(x...; y...) = GrumpsData(x...; y... )

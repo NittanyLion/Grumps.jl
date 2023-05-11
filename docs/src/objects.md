@@ -52,14 +52,7 @@ StandardErrorOptions()
 
 Grumps can compute quite a few estimators and one can specify which estimator to use by passing the return value of a call to `Estimator` to the optimization routine.
 
-The easiest way to call `Estimator` is by passing it a string that describes what it is that you want to do.  The following estimators are currently defined:
-* the full Grumps (CLER) estimator
-* a less expensive alternative estimator with the same limit distribution as the CLER estimator
-* Grumps-style maximum likelihood, i.e. CLER without penalty
-* ditto, but imposing share constraints
-* GMM estimator that uses both micro and macro moments and uses quadrature instead of Monte Carlo draws in the micro moments.  The micro moments are smart in that they condition on $z_{im}$ instead of integrating it out.
-* a mixed logit estimator
-
+The easiest way to call `Estimator` is by passing it a string that describes what it is that you want to do. 
 For a description of these estimators, see [Estimators](@ref).
 
 ```@docs
@@ -70,21 +63,35 @@ Estimators()
 
 ## Choice of integration method (integrators)
 
-Grumps uses separate integration methods for the micro and macro components. The default choices are simple with small numbers of nodes and draws. For micro, it is Hermitian quadrature, for macro it's Monte Carlo draws. One gets the defaults if the choices are omitted.  The defaults chosen here are small in the sense that they emphasize speed / storage over accuracy.   To change the number of nodes or draws, simply call BothIntegrators with as argument(s), whichever of the two you
-wish to change.  For instance, `integ = BothIntegrators( DefaultMicroIntegrator( 19 ) )` uses the default micro integrator with 19 nodes per dimension and the
-default macro integrator with the default number of draws.
+Grumps uses separate integration methods for the micro and macro components. This section will discuss the default choices, which are the only integrators implemented as part of the package.  Users may implement their own integration routines, see [adding an integrator](@ref).   
 
-The procedure is to create the integrators using a call to BothIntegrators with the desired integrators as arguments and then pass this in your call to `Data`.
+For integrating the micro likelihood (over $\nu$), the default method is Hermitian quadrature which assumes $\nu$ is standard normally distributed. Users may select the number of nodes per dimension. 
+
+For integrating the macro likelihood (over $\nu$ and $z$), the default method is Monte Carlo integration. In this default, $\nu$ is assumed to be standard normally distributed.  The distribution of $z$ can either be (1) assumed to be standard normally distributed or (2) simulated using draws from its distribution provided by the user. Option (2) should be used in applications where a sample of $z$ is available (e.g., consumer survey); the sample should be specified as the draws spreadsheet described in [Spreadsheet formats](@ref). 
+
+!!! tip "Default Integration"
+    One gets defaults if the integrator arguments are omitted in the call to [`Data()`](@ref).  The default integrators use a small number of nodes / draws in the sense that they emphasize speed / storage over accuracy, unless specified otherwise as documented below.
+
+
 ```@docs
-BothIntegrators( :: MicroIntegrator{T}, ::MacroIntegrator{T} ) where {T<:AbstractFloat}
 DefaultMicroIntegrator( ::Int, ::Type )
+DefaultMicroIntegrator( ::Type )
 DefaultMacroIntegrator( ::Int, ::Type )
+DefaultMacroIntegrator( ::Type )
+```
+
+!!! warning "Default macro integrator options and draws"
+    Unless specified otherwise, the default macro integrator uses Monte Carlo integration with $R = 10,000$ draws unless otherwise specified.  If one does not specify randomization then the default macro integrator simply uses the first $R$ lines of draws for each market for demographics ($z$ draws) and combines them with $R$ draws from the distribution of the random coefficients ($\nu$ draws), both of which are then interacted with the product level regressors ($x$ variables).  If the spreadsheet does not contain enough rows corresponding to a market then the program will cycle and throw a warning.  With randomization with replacement, $R$ numbers are drawn from the draws spreadsheet regardless of the number of lines in the spreadsheet.  Without replacement, the same occurs and if the spreadsheet does not contain enough lines corresponding to the market, all lines are added and then the procedure is repeated.  In other words, there is replacement by necessity.  Again, a warning will be displayed. With randomization, the random numbers are drawn separately for each market.
+
+The remaining integration methods are only germane for GMM, which is in progress.
+
+```@docs
 MSMMicroIntegrator( :: Int, ::Type )
+MSMMicroIntegrator( ::Type )
 ```
 
 
-!!! warning "Default macro integrator options"
-    By default, the default macro integrator uses Monte Carlo integration with $R = 10,000$ draws unless otherwise specified.  If one does not specify randomization then the default macro integrator simply uses the first $R$ lines of draws for each market for demographics ($z$ draws) and combines them with $R$ draws from the distribution of the random coefficients ($\nu$ draws), both of which are then interacted with the product level regressors ($x$ variables).  If the spreadsheet does not contain enough rows corresponding to a market then the program will cycle and throw a warning.  With randomization with replacement, $R$ numbers are drawn from the draws spreadsheet regardless of the number of lines in the spreadsheet.  Without replacement, the same occurs and if the spreadsheet does not contain enough lines corresponding to the market, all lines are added and then the procedure is repeated.  In other words, there is replacement by necessity.  Again, a warning will be displayed. With randomization, the random numbers are drawn separately for each market.
+
 
 
 ## Data object creation
@@ -109,11 +116,11 @@ Once all data structures have been put together, one can call the algorithm.  Th
 
 ## Retrieving results
 
-As noted above, Grumps will return its results in a `GrumpsSolution` variable that can be queried or saved as follows.  You can also simply call one of the `print` or 
+As noted above, Grumps will return its results in a variable of type `GrumpsSolution` that can be queried or saved as follows.  You can also simply call one of the `print` or 
 related functions on any of these objects.
 
 Finally, you can call any of `minimum`, `iterations`, `iteration_limit_reached`, `converged`, `f_converged`, `g_converged`, `x_converged`, `f_calls`, `g_calls`, `h_calls`,
-`f_trace`, `g_norm_trace`, `x_trace` on a `GrumpsSolution` or a `GrumpsConvergence` object in the same way that you would query the return value in the [Optim package](https://github.com/JuliaNLSolvers/Optim.jl/), albeit that they are not in the namespace by default so use `Grumps.converged` instead of `converged`.
+`f_trace`, `g_norm_trace`, `x_trace` on a `GrumpsSolution` object in the same way that you would query the return value in the [Optim package](https://github.com/JuliaNLSolvers/Optim.jl/), albeit that they are not in the namespace by default. E.g., if `sol` is a `GrumpsSolution` object,  use `Grumps.converged(sol)` instead of `converged(sol)`.
 
 ```@docs
 getθ( sol :: GrumpsSolution )
@@ -129,7 +136,7 @@ getβcoef( sol :: GrumpsSolution )
 Save( fn :: AbstractString, mt :: MimeText, x :: Any; kwargs... )
 Save( fn :: AbstractString, x :: Any; kwargs... )
 show( io :: IO, e :: GrumpsEstimate{T}, s :: String = ""; adorned = true, printstde = true, printtstat = true ) where {T<:AbstractFloat}
-show( io :: IO, est :: Vector{ GrumpsEstimate{T} }, s :: String = ""; adorned = true, header = false, printstde = true, printtstat = true ) where {T<:AbstractFloat}
+show( io :: IO, est :: Vector{ GrumpsEstimate{T} }, s :: String = ""; adorned = true, header = false, printstde = true, printtstat = trVariables()ue ) where {T<:AbstractFloat}
 show( io :: IO, convergence :: Grumps.GrumpsConvergence{T}; header = false, adorned = true ) where {T<:AbstractFloat}
 show( io :: IO, sol :: GrumpsSolution{T}; adorned = true, printθ = true, printβ = true, printδ = false, printconvergence = true ) where {T<:AbstractFloat}
 show( io :: IO, mt :: MimeTex, sol :: GrumpsSolution; kwargs... ) 

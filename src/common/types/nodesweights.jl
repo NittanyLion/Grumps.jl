@@ -46,7 +46,7 @@ end
 
 
 """
-    DefaultMicroIntegrator( n :: Int, T :: Type; options = nothing )
+    DefaultMicroIntegrator( n :: Int, T :: Type = Float64; options = nothing )
 
 Creates a basic quadrature Integrator using n nodes in each dimension.  Type T can be omitted, in which case it is Float64. The options variable is ignored.
 """
@@ -58,7 +58,7 @@ end
 """
     DefaultMicroIntegrator( T :: Type; options = nothing )
 
-Creates a basic quadrature Integrator using 11 nodes in each dimension.  This number is likely too small, so use the other method to pick your number.  Type T can be omitted, in which case it is Float64.  The options variable is ignored.
+Creates a basic quadrature Integrator using 11 nodes in each dimension.   Type T can be omitted, in which case it is Float64.  The options variable is ignored.
 """
 function DefaultMicroIntegrator( T = F64; options = nothing )
     DefaultMicroIntegrator( 11, T )

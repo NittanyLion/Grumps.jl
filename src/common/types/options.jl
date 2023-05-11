@@ -25,7 +25,8 @@ end
     DataOptions(; 
         micromode   = :Hog
         macromode   = :Ant
-        balance    ::Val{ :myid }= 1.0
+        balance     = :micro
+        σ2          = 1.0
         id          = :Grumps
     )
 

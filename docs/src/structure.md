@@ -8,6 +8,8 @@ There are really two folders with sources:
 
 ## src folder
 
+Grumps is open source.  If you clone the repository at [the github site](https://github.com/NittanyLion/Grumps.jl) you will have accesss to the full directory tree.
+
 Within `src` you will find the main package file `Grumps.jl` plus `includes.jl`, which loads all source code, and `exports.jl` which contains all exported symbols, i.e. symbols that you can use directly in your program without prefacing it with `Grumps.`.
 
 Beyond that, you will find several folders in `src`:

@@ -1,4 +1,4 @@
-name( ::Val{:shareconstraint} ) = "Share Constraint MLE"
+name( ::Val{:shareconstraint} ) = "Mixed Logit with Share Constraint"
 
 
 function Description( e :: Symbol, v ::Val{ :shareconstraint } )
