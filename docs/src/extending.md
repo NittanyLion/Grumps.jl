@@ -136,4 +136,46 @@ Grumps preallocates space for choice probabilities and related objects and reuse
 
 ## adding an integrator
 
-**to be done**
+The default integrators used by Grumps (see [`DefaultMicroIntegrator( ::Int, ::Type )`](@ref) and [`DefaultMacroIntegrator( ::Int, ::Type )`](@ref)) are limited in their functionality.  It is possible to define a new integrator. 
+
+!!! warning "Adding integrators is untested"
+    Proceed with caution, ask for help if stuck.
+
+The way to accomplish this is to create a new folder in `src/integrators` and create a Julia file with the same name in that folder.  For instance, the folder could be called `myintegrator` and the file in that folder `myintegrator.jl`.
+
+There are two types of integrators.  The example below will be for a micro integrator: the procedure for adding a macro integrator is similar.
+
+Consider the definition of the `DefaultMicroIntegrator` in `src/common/types/nodesweights.jl`:
+```
+    struct DefaultMicroIntegrator{T<:Flt} <: MicroIntegrator{T}   
+        n   :: Int
+    end
+```
+
+This defines a MicroIntegrator called `DefaultMicroIntegrator` that uses a single integer-valued parameter `n` and can handle arbitrary floating point numbers (`Flt` is shorthand for `AbstractFloat`).  We need to define a constructor for that, which is defined in the same file, namely:
+
+```
+function DefaultMicroIntegrator( n :: Int, T = F64; options = nothing )
+    @ensure n > 0  "n must be positive"
+    DefaultMicroIntegrator{T}( n )
+end
+```
+
+This is how one creates a variable of type `DefaultMicroIntegrator`.  This constructor requires `n` to be specified, takes `Float64` as the default floating point type, and does not use any further options.  The `options` argument is there in case one wants to define additional inputs to the integrator.
+
+For every integrator, one should define two methods: `NodesWeightsGlobal` and `NodesWeightsOneMarket`.  For the `DefaultMicroIntegrator` the method `NodesWeightsGlobal` is lengthy and its contents below are omitted.  Its `NodesWeightsOneMarket` method is very short and it is displayed in its entirety.  The full method definitions can be found in `src/common/integration/micro.jl`.
+
+```
+function NodesWeightsGlobal( ms :: DefaultMicroIntegrator{T}, d :: Int,  rng :: AbstractRNG ) where {T<:Flt}
+    ( lengthy content omitted )
+  return GrumpsNodesWeights{T}(n, w)
+end
+
+function NodesWeightsOneMarket( ms :: DefaultMicroIntegrator{T}, d :: Int, rng :: AbstractRNG, nwgmic :: GrumpsNodesWeights{T}, S :: Int ) where {T<:Flt}
+   return nwgmic
+end
+```
+
+The reason that there is both a global method and a method for a single market is that for some integrators (like `DefaultMicroIntegrator`) the nodes and weights are the same for each market so only have to be generated once in `NodesWeightsGlobal` and can then simply be reused for every market.  This is why `NodesWeightsOneMarket` for `DefaultMicroIntegrator` simply returns its `nwgmic` argument: those are simply the nodes and weights generated in `NodesWeightsGlobal`.
+
+For the `DefaultMacroIntegrator` the converse is true: `NodesWeightsGlobal` does nothing and `NodesWeightsOneMarket` does all the work.  These methods can be found in `src/common/integration/macro.jl`, where it should be noted that the prototypes for macro integrators differ from those for micro integrators.
