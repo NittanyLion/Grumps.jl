@@ -62,7 +62,7 @@ function myprogram( nodes, draws, meth  )
     # this puts the data into a form Grumps can process
     d = Data( e, s, v ) 
     # there are longhand forms if you wish to set additional parameters
-    # d = Data( e, s, v, BothIntegrators( ms, Ms ); threads = 32 )            
+    # d = Data( e, s, v, ms, Ms; replicable = true )            
 
     # no need to set this unless you wish to save memory, will not exceed number 
     # of threads Julia is started with

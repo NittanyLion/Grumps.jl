@@ -96,6 +96,7 @@ struct DefaultMacroIntegrator{T<:Flt} <: MacroIntegrator{T}
     n               :: Int
     randomize       :: Bool
     replacement     :: Bool
+    weights         :: Symbol
 end
 
 """
@@ -104,20 +105,32 @@ end
 Creates a basic Monte Carlo Integrator using n draws.  Type T can be omitted, in which case it is Float64.
 The optional *options* argument can be used to indicate two possible changes from the default, namely
 *:randomize* can be used to require randomization and *:replacement* to indicate randomization with 
-replacement.  Note that *options* is either nothing or a vector of symbols.  The default for both is false.
+replacement. The default for both is false. Note that *options* is either nothing or a vector of symbols.  
+A further use of *options* is to specify a column heading containing weight; this symbol should correspond
+to the desired column heading in the draws spreadsheet. 
 """
 function DefaultMacroIntegrator( n :: Int, T::Type = F64; options :: Union{Vec{Symbol}, Nothing} = nothing )
     replacement = randomize = false
+    weights = :uniform
     if options ≠ nothing
-        :randomize ∈ options && ( randomize = true )
-        :replacement ∈ options && ( randomize = replacement = true )
+        for o ∈ options
+            o == :randomize  && ( randomize = true )
+            o == :replacement && ( randomize = replacement = true )
+            if o ∉ [ :randomize, :replacement ]
+                if weights == :uniform
+                    weights = o
+                else
+                    @warn "unknown extra option $o ignored"
+                end
+            end
+        end
     end
     if randomize == false 
         @info "no randomization chosen for macro integrator: just selecting from the start of the draws data if provided"
     else
         @info "drawing $( replacement ? "with" : "without" ) replacement from the draws data if provided"
     end 
-    DefaultMacroIntegrator{T}( n, randomize, replacement )
+    DefaultMacroIntegrator{T}( n, randomize, replacement, weights )
 end
 
 """
@@ -126,6 +139,8 @@ end
 Creates a basic Monte Carlo Integrator using 10 000 draws.  This is less than recommended, so use the other method to set a number of your choosing.  Type T can be omitted, in which case it is Float64. The optional *options* argument can be used to indicate two possible changes from the default, namely
 *:randomize* can be used to require randomization and *:replacement* to indicate randomization with 
 replacement.  Note that *options* is either nothing or a vector of symbols.  The defaults for both is false.
+A further use of *options* is to specify a column heading containing weight; this symbol should correspond
+to the desired column heading in the draws spreadsheet. 
 """
 function DefaultMacroIntegrator( T::Type = F64; options :: Union{Vec{Symbol}, Nothing} = nothing )
     DefaultMacroIntegrator( 10_000, T; options = options )

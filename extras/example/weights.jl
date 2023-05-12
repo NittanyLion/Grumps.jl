@@ -47,18 +47,17 @@ function myprogram( nodes, draws, meth  )
 
     # these are the defaults so this line can be omitted, albeit that the default 
     # number of nodes is small
-    # ms = DefaultMicroIntegrator( nodes ) 
+    ms = DefaultMicroIntegrator( nodes ) 
     # these are the defaults so this line can be omitted, albeit that the default 
     # number of draws is small                                   
-    # Ms = DefaultMacroIntegrator( draws )                                    
-
+    Ms = DefaultMacroIntegrator( draws; options = [:weight, :randomize] )
     # creates an estimator object
     e = Estimator( meth )                                                     
 
     # this puts the data into a form Grumps can process
-    d = Data( e, s, v ) 
+    # d = Data( e, s, v ) 
     # there are longhand forms if you wish to set additional parameters
-    # d = Data( e, s, v, ms, Ms; replicable = false )            
+    d = Data( e, s, v, ms, Ms; replicable = false )            
 
     # no need to set this unless you wish to save memory, will not exceed number 
     # of threads Julia is started with
@@ -79,7 +78,7 @@ end
 
 
 for nodes ∈ [ 11 ] # , 17, 25]
-    for draws ∈ [ 10_000 ]  # , 100_000 ]
+    for draws ∈ [ 1_000_000 ]  # , 100_000 ]
         # other descriptive strings are allowed, as are the exact symbols
         for meth ∈ [ "grumps", "cheap", "mle", "grumps share constraints", "mixed logit", "gmm" ]         
             # run the program
