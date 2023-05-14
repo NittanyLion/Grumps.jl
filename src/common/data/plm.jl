@@ -92,6 +92,9 @@ function CreateK( e :: Union{ GrumpsPenalized, GrumpsGMM, GrumpsMLE }, s :: Sour
         Q = inv( Ctilde' * Ctilde )
         Ztilde = Ztilde - Ctilde * Q * Ctilde' * Ztilde
         Xtilde = Xtilde - Ctilde * Q * Ctilde' * Xtilde
+        # N = nullspace( Ctilde' )
+        # Ztilde = N * ( N' * Ztilde )
+        # Xtilde = N * ( N' * Xtilde )
     end
     UZ, = svd( Ztilde; alg = LinearAlgebra.QRIteration() )
     UX, = svd( Xtilde; alg = LinearAlgebra.QRIteration() )
