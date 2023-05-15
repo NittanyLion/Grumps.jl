@@ -1,117 +1,11 @@
 
 
-@todo 2 "make CreateK more efficient"
-
-function CreateK( e :: GrumpsMLE, s :: Sources, v :: Variables, dδ :: Int, σ2 :: T, ::Val{ false }, fap :: Vec{ Vec{Int} } ) where {T<:Flt}
-    return zeros( T, dδ , 0  )
-end
-
-@todo 2 "there is duplication in CreateK versus the function below"
-@todo 3 "the functions in this file should be checked carefully, especially CreateK"
-
-function CreateK( e :: Union{ GrumpsPenalized, GrumpsGMM, GrumpsMLE }, s :: Sources, v :: Variables, dδ :: Int, σ2 :: T, ::Val{ true }, fap :: Vec{ Vec{ Int } } ) where {T<:Flt} 
-
-    @info "creating 𝒦, as expected "
-
-    regs = sort( unique( v.regressors ) )
-    inst = sort( unique( v.instruments ) )
-    @ensure length( regs ) == length( v.regressors )  "duplication of regressors"
-    @ensure length( inst ) == length( v.instruments )  "duplication of instruments"
-    if length( regs ) == length( inst )
-        @info "exactly identified so there is no penalization"
-        return CreateK( GrumpsMDLEEstimatorInstance, s, v, dδ, σ2, Val( false ), fap )
-    end
-    @ensure length( regs ) < length( inst ) "underidentification not allowed"
-
-    inboth = intersect( regs, inst )
-    onlyregs = setdiff( regs, inboth )
-    onlyinst = setdiff( inst, inboth )
-    @ensure v.nuisancedummy ∉ union( regs, inst, v.dummies )  "nuisance dummy should not be included in the regressors and instruments"
-    
-    dumsunsorted, = ExtractDummiesFromDataFrame( T, s.products, v.dummies )
-    𝒹unsorted = v.nuisancedummy == :none ? nothing : ExtractVectorFromDataFrame( s.products, v.nuisancedummy )
-    𝒳tildeunsorted = ExtractMatrixFromDataFrame( T, s.products, onlyregs )
-    𝒵tildeunsorted = ExtractMatrixFromDataFrame( T, s.products, onlyinst )
-    Ctildeunsorted = ExtractMatrixFromDataFrame( T, s.products, inboth )
-    
-    dinboth, dregs, dinst, ddums = length( inboth ), length( onlyregs ), length( onlyinst ), size( dumsunsorted, 2 )
-
-    
-    
-    Ctilde = zeros( T, dδ, dinboth + ddums )
-    Xtilde = zeros( T, dδ, dregs )
-    Ztilde = zeros( T, dδ, dinst )
-    𝒹 = v.nuisancedummy == :none ? nothing :  similar( 𝒹unsorted )
-
-    markets = 1:length( fap )
-    ranges = Ranges( fap )
-    for m ∈ markets
-        if dregs > 0
-            Xtilde[ ranges[m], : ] = 𝒳tildeunsorted[ fap[m], :]
-        end
-        if dinst > 0
-            Ztilde[ ranges[m], : ] = 𝒵tildeunsorted[ fap[m], : ]
-        end
-        if dinboth > 0
-            Ctilde[ ranges[m], 1 : dinboth ] = Ctildeunsorted[ fap[m], : ]
-            Ctilde[ ranges[m], dinboth + 1 : dinboth + ddums ] = dumsunsorted[ fap[m], : ]
-        end
-        if v.nuisancedummy ≠ :none
-             𝒹[ ranges[m] ] = 𝒹unsorted[ fap[m] ]
-        end
-    end 
-
-
-    if 𝒹 ≠ nothing
-        # difference out nuisance dummies
-        u = sort( unique( 𝒹unsorted ) )
-        nd = length( u ) - 1
-        @ensure nd  > 0   "nuisance dummy should take more than one value"
-        for t ∈ 1:nd 
-            ind = findall( x->x == u[t], 𝒹 )
-            zsum = sum( Ztilde[ ind, : ]; dims = 1 ) / length( ind )
-            for 𝒶 ∈ eachindex( zsum )
-                Ztilde[ ind, 𝒶 ] .-= zsum[ 𝒶 ]
-            end 
-            xsum = sum( Xtilde[ ind, : ]; dims = 1 ) / length( ind )
-            for 𝒶 ∈ eachindex( xsum )
-                Xtilde[ ind, 𝒶 ] .-= xsum[ 𝒶 ]
-            end 
-            csum = sum( Ctilde[ ind, : ]; dims = 1 ) / length( ind )
-            for 𝒶 ∈ eachindex( csum )
-                Ctilde[ ind, 𝒶 ] .-= csum[ 𝒶 ]
-            end 
-        end
-    end
-
-    
-
-    @ensure rank( Ctilde ) == size( Ctilde, 2 )  "collinearity in regressors common to X,Z"
-
-    if dinboth > 0
-        Q = inv( Ctilde' * Ctilde )
-        Ztilde = Ztilde - Ctilde * Q * Ctilde' * Ztilde
-        Xtilde = Xtilde - Ctilde * Q * Ctilde' * Xtilde
-        # N = nullspace( Ctilde' )
-        # Ztilde = N * ( N' * Ztilde )
-        # Xtilde = N * ( N' * Xtilde )
-    end
-    UZ, = svd( Ztilde; alg = LinearAlgebra.QRIteration() )
-    UX, = svd( Xtilde; alg = LinearAlgebra.QRIteration() )
-
-    V = dregs > 0 ? UZ * nullspace( UX'UZ ) : UZ
-
-    @ensure rank( V ) == dinst - dregs "underidentified"
-    return V / sqrt( σ2 )
-end
 
 
 
-
-function GrumpsPLMData( id :: Any, e :: Estimator, s :: Sources, v :: Variables, fap :: Vec{ Vec{Int} }, usepenaltyterm :: Bool, σ2 :: T ) where {T<:Flt}
+function GrumpsPLMData( id :: Any, e :: Estimator, s :: Sources, v :: Variables, fap :: Vec{ Vec{Int} }, usepenaltyterm :: Bool, V :: VarξInput{T}, template :: VarξTemplate )  where {T<:Flt}
+    @ensure T <: AbstractFloat "was expecting floating point type"
     @ensure isa( s.products, DataFrame )   "was expecting a DataFrame for product data"
-
-
         
     ( dumsunsorted, dumbnames ) = ExtractDummiesFromDataFrame( T, s.products, v.dummies )
     𝒹unsorted = v.nuisancedummy == :none ? nothing : ExtractVectorFromDataFrame( s.products, v.nuisancedummy ) 
@@ -150,10 +44,49 @@ function GrumpsPLMData( id :: Any, e :: Estimator, s :: Sources, v :: Variables,
     end 
     𝒳̂ = 𝒵 * ( 𝒵 \ 𝒳 )
 
-    𝒦 = CreateK( e, s, v, dδ, T(σ2), Val( usepenaltyterm ), fap )
-    return GrumpsPLMData( 𝒳, 𝒳̂, vcat( String.( v.regressors ), dumbnames ), size(𝒵,2), 𝒦,  σ2 )
+    𝒦 = CreateK( e, s, v, dδ, V, Val( usepenaltyterm ), fap, T )
+    return GrumpsPLMData( 𝒳, 𝒳̂, vcat( String.( v.regressors ), dumbnames ), size(𝒵,2), 𝒦, template )
 end
 
 PLMData( x...; y... ) = GrumpsPLMData(x...; y...)
 export PLMData
 
+
+function Template( id :: Any, :: VarξHomoskedastic, dfp :: DataFrame, fap :: Vec{ Vec{Int} } ) 
+    @info "will compute ξ variance matrix for next stage assuming homoskedasticity"
+    J = length( fap )
+    return spzeros( Bool, J, J )
+end
+
+function Template( id :: Any, :: VarξHeteroskedastic, dfp :: DataFrame, fap :: Vec{ Vec{Int} } ) 
+    @info "will compute ξ variance matrix for next stage assuming heteroskedasticity"
+    J = length( fap )
+    return sparse( I, J, J )
+end
+
+function Template( id :: Any, ou :: VarξClustering, dfp :: DataFrame, fap :: Vec{ Vec{Int} } ) 
+    clon = clusteron( ou )
+    @info "will compute ξ variance matrix for next stage assuming clustering on $clon"
+    MustBeInDF( clon, dfp, "$clon not found in products DataFrame" )
+
+    J = length( fap )
+    A = Matrix{Int64}(undef, 0, 2)
+    dumsunsorted, = ExtractDummiesFromDataFrame( Bool, dfp, [clon] )
+    dums = similar( dumsunsorted )
+    ranges = Ranges( fap )
+    for m ∈ eachindex( fap )
+        dums[ranges[m],:] = dumsunsorted[fap[m],:]
+    end
+    for c ∈ axes( dums, 2 )
+        v = findall( dums[:,c] )
+        for i ∈ v, j ∈ v
+            A = vcat( A, [i j ] )
+        end
+    end
+    S = sparse( A[:,1], A[:,2], fill(true, size(A,1) ) )
+    return S
+end
+
+
+Template( id :: Any, options :: DataOptions, dfp :: DataFrame, fap :: Vec{ Vec{Int} } ) = 
+    Template( id, VarξOutput( options ), dfp, fap )

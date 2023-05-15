@@ -7,7 +7,6 @@ end
 
 
 struct GrumpsVersionPenalty <: GrumpsVersion
-    σ2      :: Float64
 end
 
 

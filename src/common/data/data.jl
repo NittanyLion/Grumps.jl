@@ -1,4 +1,4 @@
-for fn ∈ [ "show", "balance", "names", "micro", "macro", "plm", "all", "dims" ]
+for fn ∈ [ "show", "balance", "names", "micro", "macro", "K", "plm", "all", "dims" ]
     include( "$(fn).jl")
 end
 

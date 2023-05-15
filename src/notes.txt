@@ -1,10 +1,9 @@
 read the manual at https://nittanylion.github.io/Grumps.jl completely
 read the paper at http://joris.pinkse.org/paper/grumps/
 this is a preliminary version: bugs are to be expected, sanity checking and documentation are incomplete
-still need to put in designed quadrature, so go easy on the random coefficients for now
+still need to put in designed quadrature
 does not do CUDA
 uses multithreading, but no distributed computing
-because of the way the random numbers for MC integration are drawn / multithreading, successive optimizations with the same data may not produce the exact same results
 the gmm version should not be used: stick with grumps (or the cheap version thereof), mle, and sc: gmm is inferior to begin with and the gmm code is not ready for prime time
 if you see unexpected behavior, please send me code and data so that I can replicate
 all of the user-level commands are documented; e.g. use ?Save

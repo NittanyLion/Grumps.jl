@@ -113,21 +113,6 @@ function GrumpsData(
                 MacroCreation!( replicable, markets, s, v, marketsdrawn, integrators, dθν, subdfs, rngs, nwgmac, id, fap, mic, mac, T, options, m )
             end
         end
-        # for m ∈ 1:M
-        #     acquire( sema )
-        #     local th = threads == 1 ? 1 : threadid()
-        #     local fama = findall( x->string(x) == markets[m], s.marketsizes[:, v.market] )
-        #     if fama ≠ nothing
-        #         @warnif length( fama ) > 1 "multiple lines in the market sizes data with the same market name; using the first one"
-        #         fam = fama[1]
-        #         local 𝒾 = findfirst( x->string( x ) == markets[m], marketsdrawn )
-        #         local nw = NodesWeightsOneMarket( macrointegrator( integrators ), dθν, 𝒾 == nothing ? nothing : subdfs[𝒾], v, rngs[ th ], nwgmac  )
-        #         mac[m] = GrumpsMacroData( Val( id ), markets[m], s.marketsizes[fam[1], v.marketsize], view( s.products, fap[m], : ), v, nw, isassigned( mic, m ) ? mic[m] : nothing, options, T )
-        #     else
-        #         mac[m] = GrumpsMacroNoData{T}( markets[m] )
-        #     end
-        #     release( sema )
-        # end
     else
         for m ∈ 1:M
             mac[m] = GrumpsMacroNoData{T}( markets[m] )
@@ -136,7 +121,12 @@ function GrumpsData(
 
     @info "creating objects for use in product level moments term"
     # create product level data
-    plm = GrumpsPLMData( Val( id ), e, s, v, fap, usespenalty( e ), T( options.σ2 ) )
+    template = Template( Val( id ), options, s.products, fap )
+    # function Template( options )
+    #     @warn "template feature not yet implemented"
+    #     spzeros(Bool,0,0)
+    # end
+    plm = GrumpsPLMData( Val( id ), e, s, v, fap, usespenalty( e ), VarianceMatrixξ( options ), template )
 
     # now create variable labels
     marketproductstrings = vcat( [ [ ( c == 1 ) ? markets[m] : string( s.products[ fap[m][r], v.product ] ) for r ∈ 1:length( fap[m] ), c ∈ 1:2 ] for m ∈ 1:M ] ... )
@@ -153,6 +143,7 @@ function GrumpsData(
     @info "creating data objects"
     gd = GrumpsData{T}( mic, mac, plm, varnames, nrm, dims )
     @info "balancing"
+    println( options )
     Balance!( gd, Val( options.balance ) )
     return gd
 end
