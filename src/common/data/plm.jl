@@ -44,7 +44,7 @@ function GrumpsPLMData( id :: Any, e :: Estimator, s :: Sources, v :: Variables,
     end 
     𝒳̂ = 𝒵 * ( 𝒵 \ 𝒳 )
 
-    𝒦 = CreateK( e, s, v, dδ, V, Val( usepenaltyterm ), fap, T )
+    𝒦 = CreateK( e, s, v, dδ, V, Val( usepenaltyterm ), fap )
     return GrumpsPLMData( 𝒳, 𝒳̂, vcat( String.( v.regressors ), dumbnames ), size(𝒵,2), 𝒦, template )
 end
 

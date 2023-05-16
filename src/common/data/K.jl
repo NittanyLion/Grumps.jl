@@ -1,13 +1,12 @@
 
-function CreateK( e :: GrumpsMLE , s :: Sources, v :: Variables, dδ :: Int, V :: Any, ::Val{ false }, fap :: Vec{ Vec{ Int } }, T :: Type ) 
+function CreateK( e :: GrumpsMLE , s :: Sources, v :: Variables, dδ :: Int, V :: VarξInput{T}, ::Val{ false }, fap :: Vec{ Vec{ Int } } ) where {T<:Flt}
     return zeros( T, dδ , 0  )
 end
 
 
 
-function CreateK( e :: Union{ GrumpsPenalized, GrumpsGMM, GrumpsMLE }, s :: Sources, v :: Variables, dδ :: Int, V :: Any, ::Val{ true }, fap :: Vec{ Vec{ Int } }, T :: Type ) 
+function CreateK( e :: Union{ GrumpsPenalized, GrumpsGMM, GrumpsMLE }, s :: Sources, v :: Variables, dδ :: Int, V :: VarξInput{T}, ::Val{ true }, fap :: Vec{ Vec{ Int } } ) where {T<:Flt}
 
-    @info "creating 𝒦, as expected "
 
     regs = sort( unique( v.regressors ) )
     inst = sort( unique( v.instruments ) )

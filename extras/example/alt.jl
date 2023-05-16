@@ -3,7 +3,11 @@
  # once Julia is a formal package
 push!(LOAD_PATH, "../../src")                              
 
+
+const SplashColor = "Paul does not like blinking"
+
 using Grumps, LinearAlgebra
+
 
 # set the number of BLAS threads
 

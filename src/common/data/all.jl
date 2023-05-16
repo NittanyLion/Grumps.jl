@@ -122,10 +122,6 @@ function GrumpsData(
     @info "creating objects for use in product level moments term"
     # create product level data
     template = Template( Val( id ), options, s.products, fap )
-    # function Template( options )
-    #     @warn "template feature not yet implemented"
-    #     spzeros(Bool,0,0)
-    # end
     plm = GrumpsPLMData( Val( id ), e, s, v, fap, usespenalty( e ), VarianceMatrixξ( options ), template )
 
     # now create variable labels
