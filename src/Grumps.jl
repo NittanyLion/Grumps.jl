@@ -18,7 +18,7 @@ const GrumpsColor = [ :red, :green, :yellow, :blue, :magenta, :cyan ]
 
 function __init__()
     println()
-    if isdefined( Main, :SplashColor )
+    if isdefined( Main, :SplashColor ) || rand() > 0.5
         count = 0
         for 𝓁 ∈ readlines( "$(@__DIR__)/splash.txt" )  
             count = mod( count, 6 ) + 1

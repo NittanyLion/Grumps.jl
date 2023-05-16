@@ -4,7 +4,6 @@
 push!(LOAD_PATH, "../../src")                              
 
 
-const SplashColor = "Paul does not like blinking"
 
 using Grumps, LinearAlgebra
 

@@ -4,6 +4,7 @@ this is a preliminary version: bugs are to be expected, sanity checking and docu
 still need to put in designed quadrature
 does not do CUDA
 uses multithreading, but no distributed computing
+the two step version is work in progress
 the gmm version should not be used: stick with grumps (or the cheap version thereof), mle, and sc: gmm is inferior to begin with and the gmm code is not ready for prime time
 if you see unexpected behavior, please send me code and data so that I can replicate
 all of the user-level commands are documented; e.g. use ?Save
