@@ -6,9 +6,9 @@ The global objective function is nearly convex in $\delta$, so convergence of th
 
 The most frequent case in which this would go wrong is when one or more of the $\theta^\nu$ coefficients goes to zero and gets stuck.  This is more likely to happen when there are identification problems, e.g. when $\theta^z \approx 0$ and the product level moments do not provide much identifying power.  Just try a few other starting values.
 
-## Number of random coefficients
+## Memory consumption
 
-The program will become memory-hungry when the number of random coefficients is increased (assuming micro data are used).  There is a secondary problem that estimating many random coefficients will make estimating those random coefficients accurately more questionable.  Look at the `memsave` option to reduce memory consumption.
+The program will become memory-hungry when the number of random coefficients is increased (assuming micro data are used).    Look at the `memsave` option to reduce memory consumption.
 
 ## Zero shares
 
