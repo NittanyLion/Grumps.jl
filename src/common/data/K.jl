@@ -17,6 +17,9 @@ function CreateK( e :: Union{ GrumpsPenalized, GrumpsGMM, GrumpsMLE }, s :: Sour
         return CreateK( GrumpsMDLEEstimatorInstance, s, v, dδ, V, Val( false ), fap )
     end
     @ensure length( regs ) < length( inst ) "underidentification not allowed"
+    V == V' || @warn "the V(ξ) matrix you entered is not (perfectly symmetric)"
+
+    varrat =  6.0 * ( typeof( V ) == UniformScaling{T} ? V[1,1]  : tr( V ) /  size( V, 1 ) ) / ( pi^2 );  0.5 ≤  varrat ≤ 2.0 || @warn "tr( V(ξ) ) / (J V(ε) ) = $varrat"
 
     inboth = intersect( regs, inst )
     onlyregs = setdiff( regs, inboth )
