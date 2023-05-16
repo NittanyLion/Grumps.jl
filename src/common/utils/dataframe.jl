@@ -86,3 +86,10 @@ function ExtractDummiesFromDataFrame( T :: Type, dfp :: AbstractDataFrame, cols 
 end
 
 
+function ExtractDummiesFromDataFrameNoDrop( T :: Type, dfp :: AbstractDataFrame, cols :: Vec{Symbol} )
+    E, = ExtractDummiesFromDataFrame( T, dfp, cols )
+    @info "$(size(E))"
+    X = [ T( 1 - sum( E[i,1:end-1] ) ) for i ∈ axes( E, 1 ) ]
+    return hcat( E, X )
+end
+

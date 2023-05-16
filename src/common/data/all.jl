@@ -143,7 +143,6 @@ function GrumpsData(
     @info "creating data objects"
     gd = GrumpsData{T}( mic, mac, plm, varnames, nrm, dims )
     @info "balancing"
-    println( options )
     Balance!( gd, Val( options.balance ) )
     return gd
 end

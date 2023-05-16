@@ -60,7 +60,7 @@ end
 
 function Template( id :: Any, :: VarξHeteroskedastic, dfp :: DataFrame, fap :: Vec{ Vec{Int} } ) 
     @info "will compute ξ variance matrix for next stage assuming heteroskedasticity"
-    J = length( fap )
+    J = sum( length( fap[m] ) for m ∈ eachindex( fap ) )
     return sparse( I, J, J )
 end
 
@@ -69,9 +69,8 @@ function Template( id :: Any, ou :: VarξClustering, dfp :: DataFrame, fap :: Ve
     @info "will compute ξ variance matrix for next stage assuming clustering on $clon"
     MustBeInDF( clon, dfp, "$clon not found in products DataFrame" )
 
-    J = length( fap )
     A = Matrix{Int64}(undef, 0, 2)
-    dumsunsorted, = ExtractDummiesFromDataFrame( Bool, dfp, [clon] )
+    dumsunsorted = ExtractDummiesFromDataFrameNoDrop( Bool, dfp, [clon] )
     dums = similar( dumsunsorted )
     ranges = Ranges( fap )
     for m ∈ eachindex( fap )
@@ -82,6 +81,11 @@ function Template( id :: Any, ou :: VarξClustering, dfp :: DataFrame, fap :: Ve
         for i ∈ v, j ∈ v
             A = vcat( A, [i j ] )
         end
+    end
+
+    J = sum( length( fap[m] ) for m ∈ eachindex( fap ) )
+    if size(A,1)  > J^1.2
+        @warn "you are doing a 💩load of clustering: smaller cluster sizes would be advisable"
     end
     S = sparse( A[:,1], A[:,2], fill(true, size(A,1) ) )
     return S

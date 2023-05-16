@@ -3,11 +3,12 @@
  # once Julia is a formal package
 push!(LOAD_PATH, "../../src")                              
 
-using Grumps, LinearAlgebra
+
+using Grumps
 
 # set the number of BLAS threads
 
-function myprogram( nodes, draws, meth, varopt  )
+function myprogram( nodes, draws, meth  )
     # set which files contain the data to be used
     s = Sources(                                                            
       consumers = "example_consumers.csv",
@@ -42,23 +43,21 @@ function myprogram( nodes, draws, meth, varopt  )
     
     # these are the data storage options; since these are the defaults, 
     # this can be omitted
-    # dop = DataOptions( 1.0 * I, VarξClustering( :market ) )  
-    dop = DataOptions( 1.0 * I, varopt )  
+    # dop = DataOptions( ;micromode = :Hog, macromode = :Ant, balance = :micro )  
 
     # these are the defaults so this line can be omitted, albeit that the default 
     # number of nodes is small
-    ms = DefaultMicroIntegrator(  ) 
+    ms = DefaultMicroIntegrator( nodes ) 
     # these are the defaults so this line can be omitted, albeit that the default 
     # number of draws is small                                   
-    Ms = DefaultMacroIntegrator(  )                                    
-
+    Ms = DefaultMacroIntegrator( draws )
     # creates an estimator object
     e = Estimator( meth )                                                     
 
     # this puts the data into a form Grumps can process
-    d = Data( e, s, v; options = dop, replicable = true ) 
+    # d = Data( e, s, v ) 
     # there are longhand forms if you wish to set additional parameters
-    # d = Data( e, s, v, BothIntegrators( ms, Ms ); threads = 32 )            
+    d = Data( e, s, v, ms, Ms; replicable = false )            
 
     # no need to set this unless you wish to save memory, will not exceed number 
     # of threads Julia is started with
@@ -72,34 +71,26 @@ function myprogram( nodes, draws, meth, varopt  )
 
     # compute estimates using automatic starting values
     sol = grumps!( e, d )           
-    # println( Matrix( Grumps.Vξ( sol) ) )
-    dop2 = DataOptions( Vξ( sol ), varopt )
-    d2 = Data( e, s, v; options = dop2, replicable = true )
-    sol2 = grumps!( e, d2, getθcoef( sol ) )
     # long version to set more options                                          
     # sol = grumps!( e, d, o, nothing, seo  )                                 
-    return sol2
+    return sol
 end
 
 
 for nodes ∈ [ 11 ] # , 17, 25]
-    for draws ∈ [ 10_000 ]  # , 100_000 ]
+    for draws ∈ [ 1_000_000 ]  # , 100_000 ]
         # other descriptive strings are allowed, as are the exact symbols
         for meth ∈ [ "cheap" ]         
             # run the program
-            count = 0
-            for varopt ∈ [ VarξHomoskedastic(), VarξHeteroskedastic(), VarξClustering( :market ) ]
-                count += 1
-                sol = myprogram( nodes, draws, meth, varopt ) 
-                # get the θ coefficients only 
-                println( getθcoef( sol ), "\n" )
-                # get the minimum only
-                println( Grumps.minimum( sol ) )
-                # print the entire solution
-                println( sol, "\n" )
-                # save the results to a CSV file
-                Save( "_results_$(meth)_$(nodes)_$(draws)_$(count).csv", sol )
-            end
+            sol = myprogram( nodes, draws, meth ) 
+            # get the θ coefficients only 
+            println( getθcoef( sol ), "\n" )
+            # get the minimum only
+            println( Grumps.minimum( sol ) )
+            # print the entire solution
+            println( sol, "\n" )
+            # save the results to a CSV file
+            Save( "_results_$(meth)_$(nodes)_$(draws).csv", sol )
         end
     end
 end

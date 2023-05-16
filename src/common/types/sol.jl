@@ -29,9 +29,10 @@ mutable struct GrumpsConvergence{T<:Flt}
     f_trace                 :: Vec{T}
     g_norm_trace            :: Vec{T}
     x_trace                 :: Vec{ Vec{T} }
+    time_run                :: Float64
 
     function GrumpsConvergence( T2 :: Type )
-        new{T2}( typemax( T2 ), 0, false, false, false, false, false, 0, 0, 0, zeros(T2,0), zeros(T2,0), [ zeros(T2,0) ] )
+        new{T2}( typemax( T2 ), 0, false, false, false, false, false, 0, 0, 0, zeros(T2,0), zeros(T2,0), [ zeros(T2,0) ], 0.0 )
     end
 end
 
@@ -43,15 +44,19 @@ mutable struct GrumpsSolution{T<:Flt} <: Solution{T}
     β   :: Vec{ GrumpsEstimate{T} }
     δ   :: Vec{ GrumpsEstimate{T} }
     convergence :: GrumpsConvergence{T}
+    Vξ  :: SparseMatrixCSC{T}
 
     function GrumpsSolution( T2 :: Type, θn :: Vec{String}, βn :: Vec{String}, δn :: Vec{String} )
         θ = [ GrumpsEstimate( θn[i], typemax( T2 ), nothing, nothing ) for i ∈ eachindex( θn ) ]
         β = [ GrumpsEstimate( βn[i], typemax( T2 ), nothing, nothing ) for i ∈ eachindex( βn ) ]
         δ = [ GrumpsEstimate( δn[i], typemax( T2 ), nothing, nothing ) for i ∈ eachindex( δn ) ]
-        new{T2}(  θ, β, δ, GrumpsConvergence( T2 ) )
+        new{T2}(  θ, β, δ, GrumpsConvergence( T2 ), spzeros( T2, 0, 0 ) )
     end 
 end
 
+
+Vξ( sol :: GrumpsSolution ) = sol.Vξ
+export Vξ
 
 for fld ∈ fieldnames( GrumpsConvergence )
     eval(quote
@@ -59,6 +64,8 @@ for fld ∈ fieldnames( GrumpsConvergence )
         $fld( s :: GrumpsSolution ) = $fld( s.convergence )
     end )
 end
+
+
 
 
 function Solution( e :: GrumpsEstimator, d :: GrumpsData{T}, seo :: StandardErrorOptions ) where {T<:Flt}

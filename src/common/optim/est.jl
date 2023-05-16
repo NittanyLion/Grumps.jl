@@ -49,8 +49,6 @@ function grumps!( epassed :: Estimator, d :: Data{T}, o :: OptimizationOptions, 
         )
 
         θtr = Optim.minimizer( result )
-        # @info "$(typeof( Optim.g_norm_trace( result ) ))"
-        # @info "$(Optim.g_norm_trace(result))"
         θ = getθ( θtr, d )
         Unbalance!( θ, d )
 
@@ -60,6 +58,7 @@ function grumps!( epassed :: Estimator, d :: Data{T}, o :: OptimizationOptions, 
     δvec = vcat( δ... )
 
     Computeβ!( solution, δvec, d )
+    ComputeVξ!( solution, δvec, d )
     SetResult!( solution, θ, δvec, nothing )
     SetConvergence!( solution, result )
     Unbalance!( fgh, d )
@@ -70,6 +69,7 @@ end
 
 
 grumps!( e :: Estimator, d :: Data{T} ) where {T<:Flt} = grumps!( e, d, GrumpsOptimizationOptions(), nothing, StandardErrorOptions() )
+grumps!( e :: Estimator, d :: Data{T}, θstart :: Vec{T} ) where {T<:Flt} = grumps!( e, d, GrumpsOptimizationOptions(), θstart, StandardErrorOptions() )
 grumps!( e :: Estimator, d :: Data{T}, o :: OptimizationOptions ) where {T<:Flt} = grumps!( e, d, o, nothing, StandardErrorOptions() )
 
 
@@ -77,3 +77,5 @@ function grumps( x... )
     @warn "grumps() is deprecated; use grumps!() instead"
     return grumps!( x... )
 end
+
+
