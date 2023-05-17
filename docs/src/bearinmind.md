@@ -2,7 +2,7 @@
 
 ## Starting values
 
-The global objective function is nearly convex in $\delta$, so convergence of the inner optimization is generally uneventful.  Although the objective function is not convex in $\theta$, the outer optimization often achieves the (near) optimum from a single starting value.  However, this is not guaranteed.  
+The global objective function is nearly convex in $\delta$, so convergence of the inner optimization is generally uneventful.  Although the objective function is not convex in $\theta$, the outer optimization usually achieves the optimum from a single starting value.  However, this is not guaranteed.  
 
 The most frequent case in which this would go wrong is when one or more of the $\theta^\nu$ coefficients goes to zero and gets stuck.  This is more likely to happen when there are identification problems, e.g. when $\theta^z \approx 0$ and the product level moments do not provide much identifying power.  Just try a few other starting values.
 
