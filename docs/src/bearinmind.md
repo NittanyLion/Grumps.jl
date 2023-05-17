@@ -18,9 +18,9 @@ The estimation procedure in [Grieco, Murry, Pinkse, and Sagl (2022)](http://jori
 
 The estimation procedure in [Grieco, Murry, Pinkse, and Sagl (2022)](http://joris.pinkse.org/paper/grumps/) is efficient if an optimal weight matrix for the product level moments (GMM) portion is used whenever there is overidentification in the product level moments.  This is usually accomplished in a two step procedure.  
 
-The procedure that is currently implemented in Grumps is a single step procedure with weight matrix $(B^T B)^{-1}$.  This produces estimates that are consistent with valid standard errors but that are not necessarily fully efficient.  
+The default procedure in Grumps is a single step procedure with weight matrix $(B^T B)^{-1}$.  This produces estimates that are consistent with valid standard errors but that are not necessarily fully efficient.  
 
-Under the assumption of homoskedasticity of the $\xi$'s in the paper, all that is required is to set $\sigma_\xi^2$ to the estimated variance of $\xi$ from a first stage; see [`DataOptions()`](@ref) on how to enter that choice.  Efficient estimation under heteroskedasticity and/or dependence will be implemented in a future version.
+See [`DataOptions()`](@ref) on how to achieve full efficiency using a two step procedure.  
 
 !!! tip "Starting values of second stage"
     One can use the first stage estimates as starting values of the second stage.  Since the first stage estimates converge at the optimal rate, also, this second stage optimization should converge quickly.
