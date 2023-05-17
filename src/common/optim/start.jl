@@ -33,7 +33,7 @@
 function StartingValues( θstartpassed :: Vec{T}, e :: GrumpsEstimator, d :: GrumpsData{T}, o :: GrumpsOptimizationOptions ) where {T<:Flt}
     dθ, dθz, dθν = dimsθ( d )
 
-    println( "starting vector = $θstart" )
+    println( "starting vector = $θstartpassed" )
     θstart = [ θstartpassed[t] * d.balance[t].σ for t ∈ eachindex( θstartpassed ) ]
 
     for t ∈ dθz+1:dθ
