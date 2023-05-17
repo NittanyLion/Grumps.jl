@@ -67,7 +67,7 @@ end
 function Template( id :: Any, ou :: VarξClustering, dfp :: DataFrame, fap :: Vec{ Vec{Int} } ) 
     clon = clusteron( ou )
     @info "will compute ξ variance matrix for next stage assuming clustering on $clon"
-    MustBeInDF( clon, dfp, "$clon not found in products DataFrame" )
+    MustBeInDF( clon, dfp, "products" )
 
     A = Matrix{Int64}(undef, 0, 2)
     dumsunsorted = ExtractDummiesFromDataFrameNoDrop( Bool, dfp, [clon] )
