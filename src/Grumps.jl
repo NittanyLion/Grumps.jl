@@ -42,7 +42,7 @@ const GrumpsColor = [ :red, :green, :yellow, :blue, :magenta, :cyan ]
 
 function __init__()
     println()
-    color = ( rand() > 0.5 )
+    color = ( rand() > 0.2 )
     blink = ( rand() > 0.5 )
     reverse = ( rand() > 0.8 )
 
