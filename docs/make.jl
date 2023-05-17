@@ -25,7 +25,8 @@ makedocs( sitename = "Grumps.jl",
     "Languages other than Julia" => "aliens.md",
     "Directory structure" => "structure.md",
     "Algorithm flow" => "flow.md",
-    "Miscellanea" => "misc.md"
+    "Miscellanea" => "misc.md",
+    "Acknowledgments" => "acknowledgments.md"
     ]
     )
     
