@@ -17,7 +17,7 @@ and related objects across a number of markets based on the number of threads.  
 
 There are several reasons that would make Grumps slow:
 * Grumps can naturally take a while if the data set is large.  
-* Computation time grows fast in the number of random coefficients.  
+* With quadrature, computation time grows fast in the number of random coefficients.  
 * The full CLER estimator (especially with `memsave` on) is slower than its cheap alternative.  
 * Using global variables is a bad idea in any programming language and especially in Julia (bury everything inside a function). In Julia type stability can also be an issue.
 * Tolerances and iteration counts (not an issue with the defaults).
