@@ -8,7 +8,7 @@ end
 function advisory( message )
     msglines = eachsplit(chomp(convert(String, string(message))::String), '\n')
     msg1, rest = Iterators.peel(msglines)
-    printadvisory( "┌ Advisory: ", msg1 )
+    printadvisory( "┌ Note: ", msg1 )
     for msg in rest
         printadvisory("│ ", msg )
     end

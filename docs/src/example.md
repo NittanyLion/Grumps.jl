@@ -4,21 +4,16 @@ Below is a documented example program.  You can find a closely
 related example program in the [`extras/example`](https://github.com/NittanyLion/Grumps.jl/tree/main/extras/example) folder.
 
 ```
- # set relative path of location of Grumps.jl; won't be needed 
- # once Julia is a formal package
-push!(LOAD_PATH, "src")                                                    
-
-
 using Grumps
 
 
 function myprogram( nodes, draws, meth  )
     # set which files contain the data to be used
     s = Sources(                                                            
-      consumers = "_example_consumers.csv",
-      products = "_example_products.csv",
-      marketsizes = "_example_marketsizes.csv",
-      draws = "_example_draws.csv"  
+      consumers = "example_consumers.csv",
+      products = "example_products.csv",
+      marketsizes = "example_marketsizes.csv",
+      draws = "example_draws.csv"  
     )
     
     # set the specification to be used
@@ -41,6 +36,7 @@ function myprogram( nodes, draws, meth  )
             :income :ibu; 
             :age :ibu
             ],
+
         # this is the label used for the outside good
         outsidegood = "product 11"                                          
     )
@@ -50,10 +46,10 @@ function myprogram( nodes, draws, meth  )
     # dop = DataOptions( ;micromode = :Hog, macromode = :Ant, balance = :micro )  
 
     # these are the defaults so this line can be omitted, albeit that the default 
-    # number of nodes is small
+    # number of nodes may not be optimal
     # ms = DefaultMicroIntegrator( nodes ) 
     # these are the defaults so this line can be omitted, albeit that the default 
-    # number of draws is small                                   
+    # number of draws may not be optimal                                   
     # Ms = DefaultMacroIntegrator( draws )                                    
 
     # creates an estimator object
@@ -64,15 +60,15 @@ function myprogram( nodes, draws, meth  )
     # there are longhand forms if you wish to set additional parameters
     # d = Data( e, s, v, ms, Ms; replicable = true )            
 
-    # no need to set this unless you wish to save memory, will not exceed number 
-    # of threads Julia is started with
+    # no need to set this unless you wish to save memory (see memsave), 
+    # will not exceed number of threads Julia is started with
     # th = Grumps.GrumpsThreads( ; markets = 32 )                             
 
     # redundant unless you wish to save memory
     # o = Grumps.OptimizationOptions(; memsave = true, threads = th )         
 
-    # redundant unless you wish to have standard errors on objects other than β,θ 
-    # seo = StandardErrorOptions(; δ = true )                                 
+    # redundant unless you don't need standard errors on all coefficients
+    # seo = StandardErrorOptions(; δ = false )                                 
 
     # compute estimates using automatic starting values
     sol = grumps!( e, d )           
@@ -85,7 +81,7 @@ end
 for nodes ∈ [ 11 ] # , 17, 25]
     for draws ∈ [ 10_000 ]  # , 100_000 ]
         # other descriptive strings are allowed, as are the exact symbols
-        for meth ∈ [ "grumps", "mle", "grumps share constraints", "mixed logit", "gmm" ]         
+        for meth ∈ [ "cler", "mdle", "grumps share constraints", "mixed logit", "gmm" ]         
             @info "$nodes $draws $meth"
             sol = myprogram( nodes, draws, meth ) 
             println( getθcoef( sol ), "\n" )

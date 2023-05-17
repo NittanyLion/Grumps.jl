@@ -72,7 +72,7 @@ function GrumpsData(
     dθ = dθν + size(v.interactions,1)# + dim( u, :interactions )
 
     # process data needed for the micro likelihood
-    @warnif !usesmicrodata( e ) && isa( s.consumers, DataFrame ) "ignoring the consumer information you specified since it is not used for this estimator type"
+    !usesmicrodata( e ) && isa( s.consumers, DataFrame ) && advisory( "ignoring the consumer information you specified\nsince it is not used for this estimator type" )
     @ensure !usesmicrodata( e ) || isa( s.consumers, DataFrame ) "this estimator type requires consumer information; please pass consumer info in Sources"
 
     @info "creating data objects for micro likelihood"
@@ -96,7 +96,7 @@ function GrumpsData(
 
     # process data needed for the macro likelihood
     @info "creating data objects for macro likelihood"
-    @warnif !usesmacrodata( e ) && isa( s.marketsizes, DataFrame ) "ignoring the market size information you provided since it is not used for this estimator type"
+    !usesmacrodata( e ) && isa( s.marketsizes, DataFrame ) && advisory( "ignoring the market size information you provided\nsince it is not used for this estimator type" )
     @ensure !usesmacrodata( e ) || isa( s.marketsizes, DataFrame ) "this estimator type requires market size information; please pass market size information in Sources"
     if isa( s.marketsizes, DataFrame ) && usesmacrodata( e )
         MustBeInDF( [ v.market, v.marketsize ], s.marketsizes, "market sizes" )
