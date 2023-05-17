@@ -34,16 +34,22 @@ GrumpsThreads(; blas = 0, markets = 0, inner = 0 )
 
 ## Data storage options
 
-The default data storage options are sensible, but some space can be saved by tinkering with the settings.  However, the only parameter that is worth changing is
+The default data storage options are sensible, but some space can be saved by tinkering with the settings.  The only parameter that is worth changing in the first version of `DataOptions` is
 σ2, which is the variance of ξ, the product level error term.  This is of no relevance for two-stage estimators like unpenalized mle.
+
+The second version of `DataOptions` is more flexible.  The first argument allows the user to specify a variance matrix for $ξ$ to be used in the construction of the product level moment component of the objective function.  This choice is irrelevant in an exactly identified system.  In an overidentified system it does not matter for consistency, asymptotic normality, conformance, or the convergence rate of the estimators provided that it is positive definite and fixed.  It can affect efficiency.  The second argument allows the user to specify how standard errors should be computed and also causes Grumps to compute an estimate of $V \xi$ that can be used as an input into a second stage.
 ```@docs
 DataOptions()
+VarξInput{T}
+VarξHomoskedastic
+VarξHeteroskedastic
+VarξClustering
+VarξUser
 ```
 
 ## Standard error options
 
-**stub**
-
+By default, Grumps computes standard errors for all coefficients.  This option allows one to change that.  For instance, standard errors may not be needed for all elements of $\delta$.
 ```@docs
 StandardErrorOptions()
 ```

@@ -231,14 +231,4 @@ Y( d :: MicroData ) = d.Y
 y( d :: MicroData ) = d.y 
 microdata( d )      = d.microdata
 
-import Base.names
-
-# for fld ∈ fieldnames( GrumpsPLMData )
-#     eval(quote
-#         $fld( c :: GrumpsPLMData ) = c.$fld
-#         $fld( s :: GrumpsData ) = $fld( s.plmdata )
-#     end )
-# end
-
-
 

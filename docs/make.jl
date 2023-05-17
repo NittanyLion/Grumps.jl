@@ -21,10 +21,10 @@ makedocs( sitename = "Grumps.jl",
     "Example program" => "example.md",
     "Speed, memory, accuracy" => "speedmemory.md",
     "Things to bear in mind" => "bearinmind.md",
-    "Directory structure" => "structure.md",
-    "Algorithm flow" => "flow.md",
     "Extending Grumps" => "extending.md",
     "Languages other than Julia" => "aliens.md",
+    "Directory structure" => "structure.md",
+    "Algorithm flow" => "flow.md",
     "Miscellanea" => "misc.md"
     ]
     )

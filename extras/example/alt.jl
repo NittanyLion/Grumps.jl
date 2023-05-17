@@ -74,9 +74,11 @@ function myprogram( nodes, draws, meth, varopt  )
     # seo = StandardErrorOptions(; δ = true )                                 
 
     # compute estimates using automatic starting values
-    sol = grumps!( e, d )           
+    sol = grumps!( e, d )       
+    println( sol )    
     # println( Matrix( Grumps.Vξ( sol) ) )
     dop2 = DataOptions( Vξ( sol ), varopt )
+    # dop2 = DataOptions( 1.0 * I )
     d2 = Data( e, s, v; options = dop2, replicable = true )
     sol2 = grumps!( e, d2, getθcoef( sol ) )
     # long version to set more options                                          

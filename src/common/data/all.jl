@@ -51,8 +51,8 @@ function GrumpsData(
 
     # initialize random numbers
     @info "creating random number generators"
-    replicable || @warn "replicability set to false: this is faster, but you will get different results from one run to the next"
-    replicable && @warn "replicability set to true: this is slower, but you will get the same results from one run to the next"
+    replicable || advisory( "replicability is set to false\nthis is faster\nbut you will get different results\nfrom one run to the next" )
+    replicable && advisory( "replicability is set to true\nthis is slower\nbut you will get the same results\nfrom one run to the next" )
 
     rngs = RandomNumberGenerators( nthreads() )
 

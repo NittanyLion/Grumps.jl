@@ -1,12 +1,12 @@
 function CheckSanitySpecific( e::GrumpsPenalized, d :: Data{T}, o :: OptimizationOptions, θstart :: StartingVector{T}, seo :: StandardErrorOptions ) where {T<:Flt}
         
     if dimmom( d ) == dimβ( d )
-        @info "your product level moments are exactly identified, so trying to switch you to MLE"
+        advisory( "your product level moments are exactly identified,\nso trying to switch you to MLE" )
         return CheckSanitySpecific( GrumpsMDLEEstimator(), d, o, θstart, seo )
     end
     @ensure dimmom( d ) > dimβ( d ) "your product level moments are underidentified"
     @ensure ( size( d.plmdata.𝒦, 1 ) > 0 && size( d.plmdata.𝒦, 2 ) > 0 )  "matrix 𝒦  has dimension 0: this means that your product level moments do not provide identification"
-    @warn "This is the full version of Grumps: the cheap version has the same limit distribution, but is less expensive computationally"
+    advisory( "this is the full version of Grumps:\nthe cheap version has the same limit distribution,\nbut is less expensive computationally" )
     return e
 end
     

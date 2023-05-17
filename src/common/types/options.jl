@@ -6,16 +6,35 @@ abstract type DataOptions <: Options end
 abstract type VarξOutput end
 
 
+"""
+    VarξHomoskedastic()
 
+Creates a variable of type VarξHomoskedastic.  This is used to indicate that standard errors should be computed under the assumption of homoskedasticity.  This choice does not affect efficiency.  It also products an estimate of the matrix V(ξ) as part of the solution object, which can be used as an input into a possible second stage.
+"""
 struct VarξHomoskedastic <: VarξOutput
 end
 
+
+"""
+    const VarξDefaultOutput = VarξHomoskedastic()
+"""
 const VarξDefaultOutput = VarξHomoskedastic()
 
 
+"""
+    VarξHeteroskedastic()
+
+Creates a variable of type VarξHeteroskedastic.  This is used to indicate that standard errors should be computed under the assumption of heteroskedasticity.  This choice does not affect efficiency.  It also products an estimate of the matrix V(ξ) as part of the solution object, which can be used as an input into a possible second stage.
+"""
 struct VarξHeteroskedastic <: VarξOutput
 end
 
+
+"""
+    VarξClustering( clusteron :: Symbol )
+
+Creates a variable of type VarξClustering.  This is used to indicate that standard errors should be computed under the assumption of clustering.  This choice does not affect efficiency.  It also products an estimate of the matrix V(ξ) as part of the solution object, which can be used as an input into a possible second stage.  The argument is the variable one should cluster on, e.g. *VarξClustering( :market )* suggests that Grumps should cluster on the variable contained in the column in the products spreadsheet with column heading *market*.
+"""
 struct VarξClustering <: VarξOutput
     clusteron   :: Symbol
 end
@@ -23,14 +42,23 @@ end
 
 clusteron( c :: VarξClustering ) = c.clusteron
 
+"""
+    VarξUser()
+
+Allows the user to specify its own standard error computation procedure.  Look at `Grumps.Template` to see how this is implemented.
+"""
 struct VarξUser <: VarξOutput
 end
 
-export VarξHomoskedastic, VarξHeteroskedastic, VarξClustering, VarξUser, VarξDefaultOutput
-# abstract type VarξType{T<:Flt} end
 
+"""
+    const VarξInput{T} = Union{ UniformScaling{T}, AbstractArray{T} } 
+
+Type used to characterize the assumption under which the weight matrix for the product level moments component of the objective function should be computed.  This is irrelevant for consistency, conformance, or the convergence rate of the estimator but it can affect asymptotic efficiency.
+"""
 const VarξInput{T} = Union{ UniformScaling{T}, AbstractArray{T} } 
      
+export VarξHomoskedastic, VarξHeteroskedastic, VarξClustering, VarξUser, VarξDefaultOutput, VarξInput
 
 
 struct GrumpsDataOptions{T<:Flt} <: DataOptions
@@ -66,7 +94,7 @@ Both this method and the one described below specify how Grumps should store its
 
     DataOptions(
         VarξInput   :: VarξInput{T},
-        VarξOutput  :: VarξOutput,
+        VarξOutput  :: VarξOutput = VarξDefaultOutput,
         micromode   :: Symbol = :Hog,
         macromode   :: Symbol = :Ant,
         balance     :: Symbol = :micro,
@@ -259,23 +287,18 @@ struct StandardErrorOptions
     computeθ        :: Bool
     computeδ        :: Bool
     computeβ        :: Bool
-    type            :: Symbol
 
-    function StandardErrorOptions( θ :: Bool, δ :: Bool, β :: Bool, tp = :hetero )
-        if tp ∉ [ :homo, :hetero ] 
-            @warn "only :homo and :hetero are allowed types right now; assuming :homo"
-            tp = :homo 
-        end
-        new( θ, δ, β, tp )
+    function StandardErrorOptions( θ :: Bool, δ :: Bool, β :: Bool )
+        new( θ, δ, β )
     end
 end
 
 """
-    StandardErrorOptions(; θ = true, δ = true, β = true, setype = :homo )
+    StandardErrorOptions(; θ = true, δ = true, β = true )
 
-Specifies which coefficients to create standard errors for and what type of standard errors to produce.  Current choices are :homo (i.e. assuming homoskedasticity) and :hetero (heteroskedasticity-robust).  Fancier options will be added at a future point in time.
+Specifies which coefficients to create standard errors for.  If you are looking for what type of standard errors to produce, look at [`DataOptions()`](@ref).
 """
-StandardErrorOptions(; θ = true, δ = true, β = true, setype = :homo ) = StandardErrorOptions( θ, δ, β, setype )
+StandardErrorOptions(; θ = true, δ = true, β = true ) = StandardErrorOptions( θ, δ, β )
 
 
 
