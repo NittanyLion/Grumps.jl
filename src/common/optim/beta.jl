@@ -31,7 +31,6 @@ function ComputeVξ!( sol :: GrumpsSolution{T}, δ :: Vec{T}, d :: GrumpsData{T}
         return nothing
     end
     σξ2 = sum( ξ[i] * ξ[i] for i ∈ eachindex(ξ) ) / length( ξ )
-    @info "error variance = $σξ2"
     sol.Vξ = sparse( I * σξ2, length( ξ ), length( ξ ) )
     return nothing
 end
