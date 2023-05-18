@@ -54,7 +54,7 @@ function GrumpsData(
     replicable || advisory( "replicability is set to false\nthis is faster\nbut you will get different results\nfrom one run to the next" )
     replicable && advisory( "replicability is set to true\nthis is slower\nbut you will get the same results\nfrom one run to the next" )
 
-    rngs = RandomNumberGenerators( nthreads() )
+    rngs = RandomNumberGenerators( nthreads(); replicable = replicable )
 
     @ensure isa( s.products, DataFrame )   "was expecting a DataFrame for product data"
     AddConstant!( s.products )

@@ -20,6 +20,7 @@ picked automatically.
 function grumps!( epassed :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstart :: StartingVector{T}, seo :: StandardErrorOptions ) where {T<:Flt}
 
     e = CheckSanity( epassed, d, o, θstart, seo )
+    BLAS.set_num_threads( blasthreads( o ) )
     
     memblock    = MemBlock( d, o )
     GC.@preserve memblock begin
