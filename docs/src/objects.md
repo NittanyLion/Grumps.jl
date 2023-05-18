@@ -110,7 +110,7 @@ Data()
 ```
 
 !!! tip "Ensuring replicability"
-    If you need replicability, set `replicable=true`.  This means that you will get exactly the same results if you run the program multiple times on the same machine with the same Grumps version and the same packages loaded.  The downside of enforcing replicability is that it slows down data object generation since the data objects are then not generated in parallel.  Optimization itself will still be done in parallel however.
+    If you need replicability, set `replicable=true`.  This means that you will get exactly the same results if you run the program multiple times with the same Grumps and Julia versions and the same versions of the included packages loaded.  The downside of enforcing replicability is that it slows down data object generation since the data objects are then not generated in parallel.  Optimization itself will still be done in parallel however.
 
 
 ## Algorithm call
