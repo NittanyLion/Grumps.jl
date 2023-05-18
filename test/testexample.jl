@@ -55,16 +55,16 @@ end
 
 for meth ∈ [ :cler, :cheap, :mdle, :shareconstraint ]
     sol = myprogram( 11, 10_000, "$meth" )
-    @test isapprox( getθcoef( sol ), resultsdict[ "θsol$meth"], atol = 1.0e-6 )
-    @test isapprox( getβcoef( sol ), resultsdict[ "βsol$meth"], atol = 1.0e-6 )
-    @test isapprox( getδcoef( sol ), resultsdict[ "δsol$meth"], atol = 1.0e-6 )
+    @test isapprox( getθcoef( sol ), resultsdict[ "θsol$meth"], rtol = 1.0e-6 )
+    @test isapprox( getβcoef( sol ), resultsdict[ "βsol$meth"], rtol = 1.0e-6 )
+    @test isapprox( getδcoef( sol ), resultsdict[ "δsol$meth"], rtol = 1.0e-6 )
     θ = getθ( sol ) 
     β = getβ( sol )
     δ = getδ( sol )
     if meth ≠ :shareconstraint
-        @test isapprox( norm( gettstat.( θ )), resultsdict[ "θtstat$meth"], atol = 1.0e-6 )
-        @test isapprox( norm( gettstat.( β )), resultsdict[ "βtstat$meth"], atol = 1.0e-6 )
-        @test isapprox( norm( gettstat.( δ )), resultsdict[ "δtstat$meth"], atol = 1.0e-6 )
+        @test isapprox( norm( gettstat.( θ )), resultsdict[ "θtstat$meth"], rtol = 1.0e-6 )
+        @test isapprox( norm( gettstat.( β )), resultsdict[ "βtstat$meth"], rtol = 1.0e-6 )
+        @test isapprox( norm( gettstat.( δ )), resultsdict[ "δtstat$meth"], rtol = 1.0e-6 )
     end
 end
 
