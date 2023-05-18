@@ -21,6 +21,7 @@ StringDistances = "88034a9c-02f8-509d-84a9-84ec65e18404"
 TypeTree = "04da0e3b-1cad-4b2c-a963-fc1602baf1af"
 
 [compat]
+Random123 = "1"
 julia = "1.8"
 
 [extras]
