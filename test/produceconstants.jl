@@ -33,18 +33,25 @@ function myprogram( nodes, draws, meth  )
     return sol
 end
 
-
-sol = myprogram( 11, 10_000, "cheap" )
-println( getθcoef( sol ) )
-println( getδcoef( sol ) )
-println( getβcoef( sol ) )
-θ = getθ( sol )
-β = getβ( sol )
-δ = getδ( sol )
-
-
-println( norm( gettstat.( θ ) ) )
-println( norm( gettstat.( β ) ) )
-println( norm( gettstat.( δ ) ) )
+open( "constants",  "w") do fl
+    write( fl, "resultsdict = Dict()")
+    for meth ∈ [ :cler, :cheap, :mdle, :shareconstraint ]
+        println( "meth = $meth")
+        sol = myprogram( 11, 10_000, "$meth" )
+        println( "computed $meth ", typeof( sol ) )
+        write(fl, "resultsdict[ \"θsol$meth\" ] = $(getθcoef( sol ))\n" )
+        write(fl, "resultsdict[ \"βsol$meth\" ] = $(getβcoef( sol ))\n" )
+        write(fl, "resultsdict[ \"δsol$meth\" ] = $(getδcoef( sol ))\n" )
+        θ = getθ( sol ) 
+        β = getβ( sol )
+        δ = getδ( sol )
+        if meth ≠ :shareconstraint
+            write(fl, "resultsdict[ \"θtstat$meth\" ] = $(norm(gettstat.( θ )))\n\n" )
+            write(fl, "resultsdict[ \"βtstat$meth\" ] = $(norm(gettstat.( β )))\n\n" )
+            write(fl, "resultsdict[ \"δtstat$meth\" ] = $(norm(gettstat.( δ )))\n\n" )
+        end
+        flush( fl )
+    end
+end
 
 

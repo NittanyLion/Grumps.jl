@@ -1,6 +1,7 @@
 using Grumps
 using Test
+using LinearAlgebra
 
 @testset "Grumps.jl" begin
-    # Write your tests here.
+    include( "testexample.jl" )
 end

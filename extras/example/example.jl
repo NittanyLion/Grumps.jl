@@ -1,12 +1,8 @@
 
- # set relative path of location of Grumps.jl; won't be needed 
- # once Julia is a formal package
-push!(LOAD_PATH, "../../src")                              
 
 
 using Grumps
 
-# set the number of BLAS threads
 
 function myprogram( nodes, draws, meth  )
     # set which files contain the data to be used

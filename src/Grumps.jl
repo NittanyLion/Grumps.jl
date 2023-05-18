@@ -47,8 +47,7 @@ function __init__()
         printstyled( "$count: $𝓁\n"; bold = false ) 
     end
     println()
-    printstyled( "This is Grumps version $Grumps_version: "; color= 206, bold = true ); 
-    println( "check for updates regularly\n\n\n" )
+    printstyled( "This is Grumps version $Grumps_version: check for updates regularly\n\n\n"; color= 206, bold = true ); 
 end
 
 end
