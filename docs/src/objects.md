@@ -54,6 +54,9 @@ By default, Grumps computes standard errors for all coefficients.  This option a
 StandardErrorOptions()
 ```
 
+!!! note "Standard error type"
+    If you are looking to change the way standard errors are computed, look at [`DataOptions()`](@ref).
+
 ## Estimator choice
 
 Grumps can compute quite a few estimators and one can specify which estimator to use by passing the return value of a call to `Estimator` to the optimization routine.
@@ -110,7 +113,8 @@ Data()
 ```
 
 !!! tip "Ensuring replicability"
-    If you value replicability, set `replicable=true`.  This means that you will get exactly the same results if you run the program multiple times on the same computer with the same Grumps and Julia versions and the same versions of the included packages loaded and the same settings. What it does is ensure that the same random numbers are fed into the integration routine. Trying to improve replicability beyond that is work in progress.
+    If you value replicability, set `replicable=true`. What it does is ensure that the same random numbers are fed into the integration routine.  
+     This means that you will get exactly the same results if you run the program multiple times on the same computer with the same Grumps and Julia versions and the same versions of the included packages loaded and the same settings.  Achieving replicability beyond that is not realistic.
     
     The downside of enforcing replicability is that it slows down data object generation since the data objects are then not generated in parallel.  Optimization itself will still be done in parallel however.
 
