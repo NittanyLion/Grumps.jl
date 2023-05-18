@@ -2,6 +2,9 @@ push!( LOAD_PATH, "../src" )
 
 using Grumps, LinearAlgebra
 
+Grumps.advisory( "number of BLAS threads used = $(BLAS.get_num_threads())" )
+
+
 function myprogram( nodes, draws, meth  )
     s = Sources(                                                            
       consumers = "testdata/example_consumers.csv",
