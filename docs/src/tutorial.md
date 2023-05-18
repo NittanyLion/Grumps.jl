@@ -5,7 +5,7 @@
 This tutorial explains how to use the package `Grumps.jl` to estimate demand, as described in Grieco, Murry, Pinkse, Sagl (2023). Although we do not have the same exact data and we deviate from
 the empirical specification, the exercise is meant to mimic the data environment in Petrin (2002), who estimates the demand for new cars using aggregate data on national shares and prices, and consumer survey data from the Consumer Expenditure Survey.  You can find the data and code at  [`extras/charliestutorial`](https://github.com/NittanyLion/Grumps.jl/tree/main/extras/charliestutorial)
 
-First, we describe the automobile data used for the tutorial and write a bit of Julia code to process the data so that it can be used by `Grumps`.   
+First, we describe the automobile data used for the tutorial and write a bit of Julia code to process the data so that it can be used by `Grumps`.   Second, we step through using `Grumps`.
 
 
 ## Data
@@ -14,7 +14,7 @@ First, we describe the automobile data used for the tutorial and write a bit of 
 
 The data were originally collected by Grieco, Murry, and Yurukoglu (2023) and are, collectively, a subset of the data used in that paper. 
 We use Wards Automotive product-level data from 1980-2005, which includes prices, quantities, and vehicle attributes. 
-The data file is called `gmy_product.csv`.
+The data file is called `gmy_product.csv`. *Disclosure: The model names are anonymized and the variables have been slightly perturbed. These data should not be used for any commercial purpose.*
 
 We also use survey data from the automobile supplement to the Consumer Expenditures Survey from 1980--2005, where for each respondent we observe which car they purchased and various household characteristics. 
 The data file is called `gmy_cex_consumer.csv`.
@@ -222,7 +222,7 @@ Next can specify the random coefficients. If you want more than one, you can sep
 ```
 
 #### Linear Utility Coefficients
-Next we can specify the product attributes that enter into the linear part of the utility and the instruments we will use as part of the product level exclusion restrictions. Notice how we inlcude price as a regressor but exclude it as an instrument. Here, we are including two instruments, so that the model in over-identified. 
+Next we can specify the product attributes that enter into the linear part of the utility and the instruments we will use as part of the product level exclusion restrictions. Notice how we include price as a regressor but exclude it as an instrument. Here, we are including two instruments, so that the model in over-identified. 
 ```julia
     # these are the x_{jm} terms in the paper                            
     regressors =  [ :constant; :log_mpg; :log_hp; :log_footprint; :log_curbweight; :suv; :van; :truck; :msrp],      
