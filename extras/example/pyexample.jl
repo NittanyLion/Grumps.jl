@@ -1,8 +1,12 @@
-                        
+
+
+ # set relative path of location of Grumps.jl; won't be needed 
+ # once Julia is a formal package
+push!(LOAD_PATH, "../../src")                              
 
 
 
-using GrumpsEstimation, LinearAlgebra, PyCall, RCall
+using Grumps, LinearAlgebra, PyCall#, RCall
 
 
 function compute_stuff( meth  )
@@ -31,16 +35,16 @@ def print_my_stuff_in_python(x):
 
 """
 
-R"""
-print_my_stuff_in_R <- function(x) cat( "R: ", x, "\n" ) 
-"""
+# R"""
+# print_my_stuff_in_R <- function(x) cat( "R: ", x, "\n" ) 
+# """
 
 function myprogram( )
     sol = compute_stuff( :cheap )
     θcoef =  getθcoef( sol )
     println( "Julia: $θcoef \n" )
     py"print_my_stuff_in_python"(θcoef)
-    R"print_my_stuff_in_R"(θcoef)
+    # R"print_my_stuff_in_R"(θcoef)
 end
 
 

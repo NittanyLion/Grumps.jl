@@ -1,6 +1,6 @@
 push!(LOAD_PATH, "../src")
 
-using Documenter, GrumpsEstimation
+using Documenter, Grumps
 
 const MimeTex = MIME{Symbol("text/tex")}
 const MimeCSV = MIME{Symbol("text/csv")}
@@ -9,7 +9,7 @@ const MimeTexCSV = Union{ MimeTex, MimeCSV }
 const MimeText = Union{ MimeTex, MimeCSV, MimeTxt }
 
 
-makedocs( sitename = "GrumpsEstimation.jl",
+makedocs( sitename = "Grumps.jl",
     authors = "Joris Pinkse",
     pages = [
     "Home" => "index.md",
@@ -33,7 +33,7 @@ makedocs( sitename = "GrumpsEstimation.jl",
     
     
     deploydocs(;
-    repo = "github.com/NittanyLion/GrumpsEstimation.jl",
+    repo = "github.com/NittanyLion/Grumps.jl",
     devbranch = "main"
 )
 

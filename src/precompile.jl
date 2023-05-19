@@ -33,7 +33,7 @@ function precomp(  )
     # th = Grumps.GrumpsThreads(; markets = 1, inner = 1 )
     # grumps( e, d )
 
-    println( grumps(e, d, OptimizationOptions(), nothing, GrumpsEstimation.StandardErrorOptions() ) )
+    println( grumps(e, d, OptimizationOptions(), nothing, Grumps.StandardErrorOptions() ) )
 end
 
 

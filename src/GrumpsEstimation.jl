@@ -1,7 +1,7 @@
 
 
 
-module GrumpsEstimation
+module Grumps
 
 # run(`clear`)
 
