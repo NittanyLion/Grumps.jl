@@ -24,7 +24,7 @@ TypeTree = "04da0e3b-1cad-4b2c-a963-fc1602baf1af"
 StringDistances = "0.11"
 Random123 = "1"
 StatsBase = "0.34"
-Optim = "1"
+Optim = "1.7"
 StatsFuns = "1"
 CSV = "0.10"
 PointerArithmetic = "0.2"
@@ -32,7 +32,7 @@ DataFrames = "1"
 Smartphores = "0.1"
 TypeTree = "0.3"
 FastGaussQuadrature = "0.5"
-julia = "1.8"
+julia = "1.8,1.9"
 
 
 [extras]
