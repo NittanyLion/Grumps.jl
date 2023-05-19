@@ -1,7 +1,7 @@
 
 
 
-using Grumps
+using GrumpsEstimation
 
 
 function myprogram( nodes, draws, meth  )
@@ -58,10 +58,10 @@ function myprogram( nodes, draws, meth  )
 
     # no need to set this unless you wish to save memory, will not exceed number 
     # of threads Julia is started with
-    # th = Grumps.GrumpsThreads( ; markets = 32 )                             
+    # th = GrumpsThreads( ; markets = 32 )                             
 
     # redundant unless you wish to save memory
-    # o = Grumps.OptimizationOptions(; memsave = true, threads = th )         
+    # o = OptimizationOptions(; memsave = true, threads = th )         
 
     # redundant unless you wish to have standard errors on objects other than β,θ 
     # seo = StandardErrorOptions(; δ = true )                                 
@@ -83,7 +83,7 @@ for nodes ∈ [ 11 ] # , 17, 25]
             # get the θ coefficients only 
             println( getθcoef( sol ), "\n" )
             # get the minimum only
-            println( Grumps.minimum( sol ) )
+            println( GrumpsEstimation.minimum( sol ) )
             # print the entire solution
             println( sol, "\n" )
             # save the results to a CSV file

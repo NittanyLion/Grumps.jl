@@ -1,6 +1,6 @@
 push!( LOAD_PATH, "../src" )
 
-using Grumps, LinearAlgebra
+using GrumpsEstimation, LinearAlgebra
 
 
 

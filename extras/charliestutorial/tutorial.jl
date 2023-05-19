@@ -1,4 +1,4 @@
-using Grumps
+using GrumpsEstimation
 using Revise, CSV, DataFrames, DelimitedFiles, Random
 using LinearAlgebra
 using DataFramesMeta
@@ -133,7 +133,7 @@ function my_estimation(nodes, draws, meth)
     e = Estimator( meth )                                                     
 
     # redundant unless you wish to save memory
-    o = Grumps.OptimizationOptions(; memsave = true)     
+    o = OptimizationOptions(; memsave = true)     
 
 
     # this puts the data into a form Grumps can process
@@ -160,7 +160,7 @@ begin
     makeDataForEstimation(1981,1995,numMicro)
 
     sol = my_estimation( nodes, draws, meth )     
-    Grumps.Save("myresults_$(meth)_$(numMicro).txt",sol)
+    Save("myresults_$(meth)_$(numMicro).txt",sol)
 
 end
 
