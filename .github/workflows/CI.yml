@@ -49,6 +49,6 @@ jobs:
       - run: |
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
-            using Grumps
-            DocMeta.setdocmeta!(Grumps, :DocTestSetup, :(using Grumps); recursive=true)
-            doctest(Grumps)'
+            using GrumpsEstimation
+            DocMeta.setdocmeta!(GrumpsEstimation, :DocTestSetup, :(using GrumpsEstimation); recursive=true)
+            doctest(GrumpsEstimation)'
