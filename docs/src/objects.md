@@ -123,7 +123,7 @@ Data()
 
 Once all data structures have been put together, one can call the algorithm.  This is straightforward.
 ```@docs
-    grumps!( ::Estimator, ::Data{T}, ::OptimizationOptions, ::GrumpsEstimation.StartingVector{T}, ::StandardErrorOptions ) where {T<:AbstractFloat}
+    grumps!( ::Estimator, ::Data{T}, ::OptimizationOptions, ::Grumps.StartingVector{T}, ::StandardErrorOptions ) where {T<:Grumps.AbstractFloat}
 ```
 
 ## Retrieving results
@@ -132,7 +132,7 @@ As noted above, Grumps will return its results in a variable of type `GrumpsSolu
 related functions on any of these objects.
 
 Finally, you can call any of `minimum`, `iterations`, `iteration_limit_reached`, `converged`, `f_converged`, `g_converged`, `x_converged`, `f_calls`, `g_calls`, `h_calls`,
-`f_trace`, `g_norm_trace`, `x_trace` on a `GrumpsSolution` object in the same way that you would query the return value in the [Optim package](https://github.com/JuliaNLSolvers/Optim.jl/), albeit that they are not in the namespace by default. E.g., if `sol` is a `GrumpsSolution` object,  use `GrumpsEstimation.converged(sol)` instead of `converged(sol)`.
+`f_trace`, `g_norm_trace`, `x_trace` on a `GrumpsSolution` object in the same way that you would query the return value in the [Optim package](https://github.com/JuliaNLSolvers/Optim.jl/), albeit that they are not in the namespace by default. E.g., if `sol` is a `GrumpsSolution` object,  use `Grumps.converged(sol)` instead of `converged(sol)`.
 
 ```@docs
 getθ( sol :: GrumpsSolution )
@@ -149,7 +149,7 @@ Save( fn :: AbstractString, mt :: MimeText, x :: Any; kwargs... )
 Save( fn :: AbstractString, x :: Any; kwargs... )
 show( io :: IO, e :: GrumpsEstimate{T}, s :: String = ""; adorned = true, printstde = true, printtstat = true ) where {T<:AbstractFloat}
 show( io :: IO, est :: Vector{ GrumpsEstimate{T} }, s :: String = ""; adorned = true, header = false, printstde = true, printtstat = trVariables()ue ) where {T<:AbstractFloat}
-show( io :: IO, convergence :: GrumpsEstimation.GrumpsConvergence{T}; header = false, adorned = true ) where {T<:AbstractFloat}
+show( io :: IO, convergence :: Grumps.GrumpsConvergence{T}; header = false, adorned = true ) where {T<:AbstractFloat}
 show( io :: IO, sol :: GrumpsSolution{T}; adorned = true, printθ = true, printβ = true, printδ = false, printconvergence = true ) where {T<:AbstractFloat}
 show( io :: IO, mt :: MimeTex, sol :: GrumpsSolution; kwargs... ) 
 show( io :: IO, mt :: MimeCSV, sol :: GrumpsSolution; kwargs... ) 

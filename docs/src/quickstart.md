@@ -1,9 +1,9 @@
 ### Quick Start Guide
 
-To use **GrumpsEstimation.jl** consider the following program, which computes the penalized maximum likelihood estimator of Grieco, Murry, Pinkse, and Sagl.
+To use **Grumps.jl** consider the following program, which computes the penalized maximum likelihood estimator of Grieco, Murry, Pinkse, and Sagl.
 
 
-    using GrumpsEstimation
+    using Grumps
 
 
 

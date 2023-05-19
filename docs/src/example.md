@@ -1,10 +1,10 @@
 # Example program
 
 Below is a documented example program.  You can find a closely
-related example program in the [`extras/example`](https://github.com/NittanyLion/GrumpsEstimation.jl/tree/main/extras/example) folder.
+related example program in the [`extras/example`](https://github.com/NittanyLion/Grumps.jl/tree/main/extras/example) folder.
 
 ```
-using GrumpsEstimation
+using Grumps
 
 
 function myprogram( nodes, draws, meth  )
@@ -62,10 +62,10 @@ function myprogram( nodes, draws, meth  )
 
     # no need to set this unless you wish to save memory (see memsave), 
     # will not exceed number of threads Julia is started with
-    # th = GrumpsThreads( ; markets = 32 )                             
+    # th = Grumps.GrumpsThreads( ; markets = 32 )                             
 
     # redundant unless you wish to save memory
-    # o = OptimizationOptions(; memsave = true, threads = th )         
+    # o = Grumps.OptimizationOptions(; memsave = true, threads = th )         
 
     # redundant unless you don't need standard errors on all coefficients
     # seo = StandardErrorOptions(; δ = false )                                 

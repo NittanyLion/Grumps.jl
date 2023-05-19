@@ -5,7 +5,7 @@ There is only a version of Grumps for Julia.  However, you can call other langua
 The code below provides an example in which the output is printed in Julia, Python, and R, respectively.
 
 ```
-using GrumpsEstimation, PyCall, RCall
+using Grumps, PyCall, RCall
 
 
 function compute_stuff( meth  )
