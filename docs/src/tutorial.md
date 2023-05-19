@@ -2,7 +2,7 @@
 
 ## Introduction 
 
-This tutorial explains how to use the package `Grumps.jl` to estimate demand, as described in Grieco, Murry, Pinkse, Sagl (2023). Although we do not have the same exact data and we deviate from
+This tutorial explains how to use the package `GrumpsEstimation.jl` to estimate demand, as described in Grieco, Murry, Pinkse, Sagl (2023). Although we do not have the same exact data and we deviate from
 the empirical specification, the exercise is meant to mimic the data environment in Petrin (2002), who estimates the demand for new cars using aggregate data on national shares and prices, and consumer survey data from the Consumer Expenditure Survey.  You can find the data and code at  [`extras/charliestutorial`](https://github.com/NittanyLion/Grumps.jl/tree/main/extras/charliestutorial)
 
 First, we describe the automobile data used for the tutorial and write a bit of Julia code to process the data so that it can be used by `Grumps`.   Second, we step through using `Grumps`.
@@ -32,7 +32,7 @@ This is in the data file called `gmy_market.csv`
 Let's start working with the data in Julia. First let's load all of the packages we will need.
 
 ```julia
-using Grumps
+using GrumpsEstimation
 using Revise, CSV, LinearAlgebra, DelimitedFiles, Random
 using DataFrames, DataFramesMeta
 
@@ -139,13 +139,13 @@ makeDataForEstimation(1985,2000,100)
 ```
 
 
-## `Grumps` Package Installation
+## `GrumpsEstimation` Package Installation
 
-`Grumps.jl` is available from the `Julia` package repository. To add it to your installation
+`GrumpsEstimation.jl` is available from the `Julia` package repository. To add it to your installation
 
 ```julia
 using Pkg
-Pkg.add("Grumps")
+Pkg.add("GrumpsEstimation")
 ```
 
 Julia makes use of parallelization. To invoke `Julia` with 4 threads on your local machine (for example) invoke `Julia` in the following way.
@@ -154,14 +154,14 @@ Julia makes use of parallelization. To invoke `Julia` with 4 threads on your loc
 julia -t 4 "myprog.jl"
 ```
 
-See the [Installation and invocation](https://nittanylion.github.io/Grumps.jl/dev/installation/) page on the docs for more detail. 
+See the [Installation and invocation](https://nittanylion.github.io/GrumpsEstimation.jl/dev/installation/) page on the docs for more detail. 
 
 
 
 
 ## Estimation 
 
-Now we are ready to use `Grumps.jl` to estimate demand for cars. The way to call the estimator is through the following function call
+Now we are ready to use `GrumpsEstimation.jl` to estimate demand for cars. The way to call the estimator is through the following function call
 ```julia
 sol = grumps!(e,d,o)
 ```
@@ -262,7 +262,7 @@ sol = my_estimation(nodes, draws, meth)
 
 We can use the "Save" feature of Grumps to write our solution structure to a text file. 
 ```julia
-Grumps.Save("myresults_$(meth).txt",sol)
+GrumpsEstimation.Save("myresults_$(meth).txt",sol)
 ```
 
 If everything is in a `.jl` file, the we call the file from the command line, specifying the number of threads we would like to use. See the accompanying `tutorial.jl` file to see the finished result. Iterations on my laptop using six threads take about 200 seconds, so you'll have to wait a few minutes before you start seeing iteration output. 

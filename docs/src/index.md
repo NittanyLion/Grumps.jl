@@ -1,11 +1,11 @@
 
 ![header](https://joris.pinkse.org/paper/grumps/featured_hu67731c91d8ac62b9ec64ef8cd1d226d8_3264943_808x455_fill_q75_lanczos_smart1.jpg)
 
-# Grumps.jl
+# GrumpsEstimation.jl
 
 ## Overview
 
-**Grumps.jl** is a package for computing random coefficients demand models using consumer and product level data. The main estimators are introduced in [Grieco, Murry, Pinkse, and Sagl (2022)](http://joris.pinkse.org/paper/grumps/), including:
+**GrumpsEstimation.jl** is a package for computing random coefficients demand models using consumer and product level data. The main estimators are introduced in [Grieco, Murry, Pinkse, and Sagl (2022)](http://joris.pinkse.org/paper/grumps/), including:
 1. the conformant likelihood with exogeneity restrictions (CLER) estimator
 2. an asymptotically equivalent less expensive alternative thereof
 3. the mixed data likelihood estimator (MDLE)
