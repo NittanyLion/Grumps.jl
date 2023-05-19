@@ -23,7 +23,7 @@ TypeTree = "04da0e3b-1cad-4b2c-a963-fc1602baf1af"
 [compat]
 StringDistances = "0.11"
 Random123 = "1"
-StatsBase = "0.34"
+StatsBase = "0.33,0.34"
 Optim = "1.7"
 StatsFuns = "1"
 CSV = "0.10"
