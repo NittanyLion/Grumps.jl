@@ -3,4 +3,4 @@ julia = "1.8"
 
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-Grumps = "3967666a-e078-4e4b-aee9-ca7b8401761d"
+GrumpsEstimation = "3967666a-e078-4e4b-aee9-ca7b8401761d"
