@@ -1,4 +1,4 @@
-# GrumpsEstimation.jl
+# Grumps.jl
 
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://NittanyLion.github.io/Grumps.jl/stable)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://NittanyLion.github.io/Grumps.jl/dev)
@@ -6,7 +6,7 @@
 
 ![header](https://joris.pinkse.org/paper/grumps/featured_hu67731c91d8ac62b9ec64ef8cd1d226d8_3264943_808x455_fill_q75_lanczos_smart1.jpg)
 
-# GrumpsEstimation.jl
+# Grumps.jl
 
 ## Overview
 
