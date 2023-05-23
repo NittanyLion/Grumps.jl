@@ -43,19 +43,24 @@ names in this example, but any string goes.  The same is true for products.  Thi
 good (indeed, leave it out) and shares would thus typically sum to a number less than one.  Which columns are to be used and where is 
 determined by the [`Variables`](@ref) call.  To use dummy variables, just insert a column with the corresponding characteristics (there can be multiple categories, which can be descriptive (e.g. strings)), which Grumps can turn into dummy variables automatically, as described in the [`Variables`](@ref) documentation.
 
+The *market* and *product* columns are required and *share* is required if the macro loglikelihood is to be included in the objective function.
+
+
 ## Consumer characteristics
 
 Below are the first few lines of a CSV file.
 
 ```
-income,  age, purchase, second,   market,     choice
- -1.20, 1.24,        8,     11, market 1,  product 8
- -0.64, 0.36,       11,      8, market 1, product 11
- -0.65, 1.32,        4,      3, market 1,  product 4
- -0.82, 0.77,       11,      4, market 1, product 11
+income,  age, market  ,     choice
+ -1.20, 1.24, market 1,  product 8
+ -0.64, 0.36, market 1, product 11
+ -0.65, 1.32, market 1,  product 4
+ -0.82, 0.77, market 1, product 11
 ```
 
-The columns are again variable names.  Each row corresponds to a consumer in the observed micro sample. Here, we need both market and choice, but the columns do not have to have those (default) headings.  The markets and products could have had more descriptive names (e.g. "Pennsylvania" instead of "market 1"), and the column headings could have been different as long as the above linking conventions are followed.
+The column headings are again variable names.  Each row corresponds to a consumer in the observed micro sample. Here, we need both market and choice, but the columns do not have to have those (default) headings.  The markets and products could have had more descriptive names (e.g. "Pennsylvania" instead of "market 1"), and the column headings could have been different as long as the above linking conventions are followed. 
+
+In the consumer level spreadsheet, a consumer choice column and a market column are required and one should use at least one consumer characteristic to differentiate the micro likelihood from the macro likelihood.
 
 ## Market sizes
 
@@ -70,7 +75,7 @@ N     , market
 100000, market 5
 ```
 
-Each row corresponds to a market.  Again, the column headings can be adjusted and the ones presented here are the default ones.
+Each row corresponds to a market.  Again, the column headings can be adjusted and the ones presented here are the default ones.  Both columns are required.
 
 
 ## Draws
