@@ -67,7 +67,6 @@ function GrumpsData(
     mac = Vec{ GrumpsMacroData{T} }( undef, M )
     fap = [ findall( x->string(x) == markets[m], s.products[:, v.market ] ) for m ∈ 1:M ]
 
-
     dθν = length( v.randomcoefficients )# + dim( u, :randomcoefficients )
     dθ = dθν + size(v.interactions,1)# + dim( u, :interactions )
 
@@ -116,6 +115,7 @@ function GrumpsData(
     else
         for m ∈ 1:M
             mac[m] = GrumpsMacroNoData{T}( markets[m] )
+            @ensure typeof( mic[m] ) ≠ GrumpsMicroNoData{T} "neither micro data nor macro data in market $(s.products[fap[m][1],v.market])"
         end
     end
 
@@ -136,6 +136,7 @@ function GrumpsData(
     
     nrm = Vec{ GrumpsNormalization{T} }(undef, dθ )
     dims = Dimensions( dθ, dθ - dθν, dθν, length( plm.names ), length.( fap ), dimmom( plm ) + (( typeof(e) <: GrumpsGMM) ? size( v.microinstruments, 1 ) : 0 ) )
+
     @info "creating data objects"
     gd = GrumpsData{T}( mic, mac, plm, varnames, nrm, dims )
     @info "balancing"

@@ -13,7 +13,7 @@ include( "exports.jl" )
 include( "includes.jl" )
 @info "loaded all code"
 
-const Grumps_version = v"0.1.0"
+const Grumps_version = v"0.1.1"
 export Grumps_version
 const GrumpsColor = [ :red, :green, :yellow, :blue, :magenta, :cyan ]
 
@@ -48,6 +48,7 @@ function __init__()
     end
     println()
     printstyled( "This is Grumps version $Grumps_version: check for updates regularly\n\n\n"; color= 206, bold = true ); 
+    sleep(3)
 end
 
 end

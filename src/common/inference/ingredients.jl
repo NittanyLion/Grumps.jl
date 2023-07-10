@@ -46,6 +46,8 @@ end
 
 mypinv( X  )  = inv( X'X ) * X'
 
+
+
 function Ingredients( sol :: Solution{T}, ::Val{:defaultseprocedure}, d :: GrumpsData{T}, fgh :: FGH{T}, seo :: StandardErrorOptions  ) where {T<:Flt}
 
     M = dimM( d )
@@ -56,7 +58,6 @@ function Ingredients( sol :: Solution{T}, ::Val{:defaultseprocedure}, d :: Grump
     Ωδδ = [ fgh.market[m].inside.Hδδ for m ∈ markets ]
     Ωδδinv = [ inv( Ωδδ[m] ) for m ∈ markets ] 
     ΩδδinvΩδθ = [ Ωδδinv[m] * Ωδθ[m] for m ∈ markets ]
-
 
 
     K =  [ d.plmdata.𝒦[ ranges[m], : ] for m ∈ markets ] 
