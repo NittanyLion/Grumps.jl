@@ -10,7 +10,7 @@ function MicroCreation!( replicable, markets, s, v, integrators, dθν, rngs, nw
     if fac ≠ nothing
         nw = NodesWeightsOneMarket( microintegrator( integrators ), dθν, rngs[ th ], nwgmic, length( fac )  )
         # check that all products in the consumer data set are also in the products data set
-        mic[m] = GrumpsMicroData( Val( id ), markets[m], view( s.consumers, fac, : ), view( s.products, fap[m], : ), v, nw, rngs[th], options, usesmicromoments( e ), T )
+        mic[m] = GrumpsMicroData( id, markets[m], view( s.consumers, fac, : ), view( s.products, fap[m], : ), v, nw, rngs[th], options, usesmicromoments( e ), T )
     else
         mic[m] = GrumpsMicroNoData( markets[m] )
     end
