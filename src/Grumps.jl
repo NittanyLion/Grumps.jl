@@ -13,7 +13,7 @@ include( "exports.jl" )
 include( "includes.jl" )
 @info "loaded all code"
 
-const Grumps_version = v"0.1.1"
+const Grumps_version = v"0.2.0"
 export Grumps_version
 const GrumpsColor = [ :red, :green, :yellow, :blue, :magenta, :cyan ]
 
