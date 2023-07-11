@@ -4,6 +4,7 @@ FillAθ!( θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMacroNoData{T}, o ::
 FillAθ!( θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMacroNoData{T}, o :: OptimizationOptions, s :: GrumpsMacroNoSpace{T}  ) where {T<:Flt} = nothing
 
 function FillAθ!( id :: Any, θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMacroDataAnt{T}, o :: OptimizationOptions, s :: GrumpsMacroSpace{T}  ) where {T<:Flt}
+    isdefined( Main, :InteractionsCallback ) && return FillAθ!( Val( :GrumpsInteractions ), θ, e, d, o, s ) 
     weights, products, insides, parameters = RJ( d )
     @threads :dynamic for r ∈ weights
         for j ∈ products
@@ -12,6 +13,14 @@ function FillAθ!( id :: Any, θ :: Vector{T}, e :: GrumpsEstimator, d :: Grumps
     end
     return nothing
 end
+
+function FillAθ!( ::Val{ :GrumpsInteractions }, θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMacroDataAnt{T}, o :: OptimizationOptions, s :: GrumpsMacroSpace{T} ) where {T<:Flt}
+    weights, products, insides, parameters = RJ( d )
+    for r ∈ weights, j ∈ products
+        s.Aθ[r,j] = sum( Main.InteractionsCallback( d.𝒟, d.𝒳, r, j, t, T, :optimization  ) * θ[t] for t ∈ parameters )
+    end
+end
+
 
 FillAθ!( θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMacroDataAnt{T}, o :: OptimizationOptions, s :: GrumpsMacroSpace{T}  ) where {T<:Flt} = FillAθ!( Val( id( o ) ), θ, e, d, o, s )
 
