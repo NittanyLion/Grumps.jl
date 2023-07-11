@@ -48,7 +48,6 @@ function __init__()
     end
     println()
     printstyled( "This is Grumps version $Grumps_version: check for updates regularly\n\n\n"; color= 206, bold = true ); 
-    sleep(3)
 end
 
 end
