@@ -17,7 +17,7 @@ end
 function FillAθ!( ::Val{ :GrumpsInteractions }, θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMacroDataAnt{T}, o :: OptimizationOptions, s :: GrumpsMacroSpace{T} ) where {T<:Flt}
     weights, products, insides, parameters = RJ( d )
     for r ∈ weights, j ∈ products
-        s.Aθ[r,j] = sum( Main.InteractionsCallback( d.𝒟, d.𝒳, r, j, t, T, :optimization  ) * θ[t] for t ∈ parameters )
+        s.Aθ[r,j] = sum( Main.InteractionsCallback( d.𝒟, d.𝒳, r, j, t, T, :macro, d.name, String[]  ) * θ[t] for t ∈ parameters )
     end
 end
 

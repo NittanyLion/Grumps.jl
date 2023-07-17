@@ -74,7 +74,7 @@ function CreateInteractions( ::Val{:GrumpsInteractions}, dfc :: AbstractDataFram
     Z = zeros( T, S, J, dθz )
 
     for t ∈ 1:dθz, j ∈ 1:J-1, i ∈ 1:S
-        Z[i,j,t] = try Main.InteractionsCallback( Vc, Vp, i, j, t, T, :creation  )
+        Z[i,j,t] = try Main.InteractionsCallback( Vc, Vp, i, j, t, T, :micro, dfc[ 1, v.market ], dfp[ :, v.product ]  )
         catch
             @ensure false "Having trouble calling your InteractionsCallback function"
         end
