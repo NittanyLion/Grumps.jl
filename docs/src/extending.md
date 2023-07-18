@@ -2,7 +2,7 @@
 
 Grumps can be extended in multiple ways.  Below three possibilities are discussed, namely using an existing estimator for a different data format, introducing a new *estimator*, and introducing a new *integrator*.
 
-## examining output at each iteration
+## Examining output at each iteration
 
 On each iteration of both the inner and outer optimization steps, Grumps calls a callback function.  By default the callback for the inner optimization does nothing and the callback for the outer optimization prints a summary of progress.  Users can add to this by defining their own callback functions named `δcallback` and `θcallback` respectively.  These are called before Grumps continues with its own callback routine.  
 
@@ -90,7 +90,7 @@ Note that in the first callback, the last element is omitted for the simple reas
     end
 
 function InteractionsCallback!( A, z, x, θ, micmac, market, products )   # macro
-    A .= zero( T )
+    A .= zero( eltype( A ) )
     for j ∈ axes( A, 2 )
        Threads.@threads :dynamic for i ∈ axes( A, 1 ), 
         for t ∈ axes( z, 2 )
