@@ -24,7 +24,7 @@ If the `id` variable is set but no user callbacks are defined then Grumps will o
     If one has many markets then the δ callback is called *a lot*. Be prepared for a lot of output.  The θ callback is not called nearly as often.
 
 
-## user-specified interactions
+## User-specified interactions
 
 The format of Grumps is limited to specifications that are linear in parameters.  This cannot be altered.  
 
@@ -34,7 +34,7 @@ The standard way that data are entered moreover presumes that there are only int
     The other versions have advantages but are more hassle.
 
 
-### simplest version
+### Simplest version
 
 In the simplest version, one defines a callback function called *InteractionsCallback* of the form described below.  The matrix $z$ contains the consumer interactions and the matrix $x$ the products; in both cases, the second argument is the regressor indicator. The function *InteractionsCallback* should return the value of the $t$-th interaction term for consumer $i$ and product $j$.  The default value is `z[i,t] * x[j,t]`, i.e. product interactions.  So if one returned `exp( z[i,t] + x[j,t] )` if $t = 1$ then that would replace the default first interaction term.
 
@@ -73,7 +73,7 @@ In the example below, the list of products is stored in the `Dict` in `productli
 ```
 
 
-### bang version
+### Bang version
 
 With the bang version, one creates two callback methods, one for the micro interactions and one for the macro interactions.  The difference with the simple version above is that here the user fills an entire array instead of returning a single value.
 
@@ -105,7 +105,7 @@ end
 The main advantage of the bang version is that each method is only called once for each market (for each iteration), not thousands of times.  This reduces overhead when the product identities are used in the construction of interaction terms.
 
 
-### most flexible version
+### Most flexible version
 
 The most flexible version is also the hardest, so avoid this approach unless the above two approaches are inadequate.
 
@@ -144,9 +144,9 @@ then Grumps will call the newly minted method instead of the default one.  But n
     There is one id for data creation passed in [`DataOptions()`](@ref) and one id for the optimization process passed in [`OptimizationOptions()`](@ref).  These ids *can* be different, but in most instances it is better to set these to the same value.  Note that the id used in `FillAθ!` and `FillZXθ!` is the optimization process id, not the data storage id.
 
 
-## adding a new estimator
+## Adding a new estimator
 
-### estimator definitions
+### Estimator definitions
 
 A new estimator can be added by creating a new folder in the [estimators folder](@ref).  By creating the folder, Grumps will automatically try to load an eponymous Julia file in that folder every time Grumps is run.  For instance, in `src/estimators/cler` you see a file `cler.jl`, which loads all Julia files in the folder *other than* `description.jl`. The file `description.jl` is loaded separately and automatically. 
 
@@ -215,7 +215,7 @@ FGH types contain the objective function and its derivatives.  These can be by m
 Grumps preallocates space for choice probabilities and related objects and reuses their values where possible.  This saves computation time.  In most instances, the space types provided will suffice.
 
 
-## adding an integrator
+## Adding an integrator
 
 The default integrators used by Grumps (see [`DefaultMicroIntegrator( ::Int, ::Type )`](@ref) and [`DefaultMacroIntegrator( ::Int, ::Type )`](@ref)) are limited in their functionality.  It is possible to define a new integrator. 
 
