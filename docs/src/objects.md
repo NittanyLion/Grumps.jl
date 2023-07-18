@@ -72,7 +72,7 @@ Estimators()
 
 ## Choice of integration method (integrators)
 
-Grumps uses separate integration methods for the micro and macro components. This section will discuss the default choices, which are the only integrators implemented as part of the package.  Users may implement their own integration routines, see [adding an integrator](@ref).   
+Grumps uses separate integration methods for the micro and macro components. This section will discuss the default choices, which are the only integrators implemented as part of the package.  Users may implement their own integration routines, see [Adding an integrator](@ref).   
 
 For integrating the micro likelihood (over $\nu$), the default method is Hermitian quadrature which assumes $\nu$ is standard normally distributed. Users may select the number of nodes per dimension. 
 
