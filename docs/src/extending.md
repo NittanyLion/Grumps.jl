@@ -24,11 +24,92 @@ If the `id` variable is set but no user callbacks are defined then Grumps will o
     If one has many markets then the δ callback is called *a lot*. Be prepared for a lot of output.  The θ callback is not called nearly as often.
 
 
-## using a new data format
+## user-specified interactions
 
-The format of Grumps is limited to specifications that are linear in parameters.  This cannot be altered.  The way that data are entered moreover presumes that there are only interactions of demographics and product level variables, interactions of random coefficients and product level variables, product level regressors (where product level regressors can include a constant), a quality variable $\xi$, and an error term $\epsilon$.
+The format of Grumps is limited to specifications that are linear in parameters.  This cannot be altered.  
 
-This can be changed, however.  Pretty much all methods that Grumps uses to create data take an input parameter named `id`.  This corresponds to the `id` set in [`DataOptions()`](@ref), which is `:Grumps` by default.  This id can be set to any other symbol.  For instance, if one set `id` to `:myid` then one could add any of the methods taking an `id` in any of the Julia code files in `src/common/data` with one's own version.  For instance, the following method is defined in `micro.jl`:
+The standard way that data are entered moreover presumes that there are only interactions of demographics and product level variables, interactions of random coefficients and product level variables, product level regressors (where product level regressors can include a constant), a quality variable $\xi$, and an error term $\epsilon$.  This *can be changed*.  There are three ways of accomplishing this, which are described below in increasing order of complexity.
+
+!!! tip "Try the simplest version first"
+    The other versions have advantages but are more hassle.
+
+
+### simplest version
+
+In the simplest version, one defines a callback function called *InteractionsCallback* of the form described below.  The matrix $z$ contains the consumer interactions and the matrix $x$ the products; in both cases, the second argument is the regressor indicator. The function *InteractionsCallback* should return the value of the $t$-th interaction term for consumer $i$ and product $j$.  The default value is `z[i,t] * x[j,t]`, i.e. product interactions.  So if one returned `exp( z[i,t] + x[j,t] )` if $t = 1$ then that would replace the default first interaction term.
+
+
+```
+    function InteractionsCallback( z, x, i, j, t, micmac, market, products ) 
+        if t > 1 
+            return z[ i, t ] * x[ j, t ]
+        end
+        return exp( z[ i, t ] + x[ j, t ] )
+    end
+```
+
+The `micmac` argument indicates whether the callback is called for the interactions in the micro portion (`:micro`) or the macro portion (`:macro`) of the likelihood.  By default, Grumps creates micro interactions only at the very beginning and macro interactions only during optimization.  The `market` argument passes the name of the market and `products` a vector with product names in the order in which they are passed, albeit that the products list is only passed if `micmac = :micro`.  These are mostly useful if one wishes to incorporate some external data.  
+
+In the example below, the list of products is stored in the `Dict` in `productlist[1]` during the `:micro` phase, which can then be used during subsequent calls.  This can be helpful to identify which product is product `j`. A downside of the simplest approach in this case is that it creates overhead, which can be avoided if one uses the bang version, described below.
+
+```
+    const productlist = [ Dict{String,Vector{String}}() ]
+
+    function InteractionsCallback( z, x, i, j, t, micmac, market, products ) 
+        if micmac == :micro 
+            if !haskey( productlist[1], market )
+                productlist[1][ market ] = vcat( products, "outside good" )
+            end
+        end
+        print( "do something with product " )
+        printstyled(  productlist[1][ market ][j] ; color = :yellow )
+        print( " in the market called ")
+        printstyled( market; color = :blue )
+        print(  " using ")
+        printstyled( micmac ; color = micmac == :micro ? :green : :red )
+        println( " data" )
+        return z[i,t] * x[j,t]
+    end
+```
+
+
+### bang version
+
+With the bang version, one creates two callback methods, one for the micro interactions and one for the macro interactions.  The difference with the simple version above is that here the user fills an entire array instead of returning a single value.
+
+Two simple examples that achieve the same thing as if the user-defined interaction callbacks were omitted are shown below.  Remember that the list of product names is only passed in the `:micro` calls, which is the first callback.
+
+Note that in the first callback, the last element is omitted for the simple reason that there are no data on the outside good (always the last element) in `x` during the `:micro` call.
+
+```
+    function InteractionsCallback!( A, z, x, micmac, market, products )  # micro
+        for i ∈ axes( A, 1 ), j ∈ 1:size( A, 2 ) - 1, t ∈ axes( A, 3 )
+            A[i,j,t] = z[i,t] * x[j,t]
+        end
+        return nothing
+    end
+
+function InteractionsCallback!( A, z, x, θ, micmac, market, products )   # macro
+    A .= zero( T )
+    for j ∈ axes( A, 2 )
+       Threads.@threads :dynamic for i ∈ axes( A, 1 ), 
+        for t ∈ axes( z, 2 )
+            A[i,j] += z[i,t] * x[j,t] * θ[t]
+        end
+    end
+
+    return nothing
+end
+```
+
+The main advantage of the bang version is that each method is only called once for each market (for each iteration), not thousands of times.  This reduces overhead when the product identities are used in the construction of interaction terms.
+
+
+### most flexible version
+
+The most flexible version is also the hardest, so avoid this approach unless the above two approaches are inadequate.
+
+ Pretty much all methods that Grumps uses to create data take an input parameter named `id`.  This corresponds to the `id` set in [`DataOptions()`](@ref), which is `:Grumps` by default.  This id can be set to any other symbol.  For instance, if one set `id` to `:myid` then one could add any of the methods taking an `id` in any of the Julia code files in `src/common/data` with one's own version.  For instance, the following method is defined in `micro.jl`:
 ```
     function CreateInteractions( id ::Any, dfc:: AbstractDataFrame, dfp:: AbstractDataFrame, v :: Variables, T = F64 )
         MustBeInDF( v.interactions[:,1], dfc, "consumer data frame" )

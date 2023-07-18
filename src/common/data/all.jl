@@ -44,7 +44,9 @@ function GrumpsData(
 
     # check compatibility of choices made 
     CheckCompatible( e, integrators, options )
-    
+
+    replicable = CheckInteractionsCallBackFunctionality( replicable, options, T )
+
     # read data from file if not already done
     @info "reading data"
     s = readfromfile( ss )

@@ -42,7 +42,9 @@ end
 function CreateInteractions( id ::Any, dfc:: AbstractDataFrame, dfp:: AbstractDataFrame, v :: Variables, T = F64 )
     MustBeInDF( v.interactions[:,1], dfc, "consumer data frame" )
     MustBeInDF( v.interactions[:,2], dfp, "product data frame" )
+    isdefined( Main, :InteractionsCallback! ) && return CreateInteractions( Val( :GrumpsInteractions! ), dfc, dfp, v, T )
     isdefined( Main, :InteractionsCallback ) && return CreateInteractions( Val( :GrumpsInteractions ), dfc, dfp, v, T )
+
 
     S = nrow( dfc )
     J = nrow( dfp ) + 1
@@ -55,14 +57,6 @@ function CreateInteractions( id ::Any, dfc:: AbstractDataFrame, dfp:: AbstractDa
 end
 
 
-# function InteractionsCallback( id, dfc, dfp, zvars, xvars, i, j, t, T )
-#     @ensure false "You should specify your own Grumps.InteractionsCallback function"
-# end
-
-
-# InteractionsCallback() = nothing
-
-export InteractionsCallback
 
 function CreateInteractions( ::Val{:GrumpsInteractions}, dfc :: AbstractDataFrame, dfp :: AbstractDataFrame, v :: Variables, T = F64 )
     MustBeInDF( v.interactions[:,1], dfc, "consumer data frame" )
@@ -74,13 +68,25 @@ function CreateInteractions( ::Val{:GrumpsInteractions}, dfc :: AbstractDataFram
     Z = zeros( T, S, J, dθz )
 
     for t ∈ 1:dθz, j ∈ 1:J-1, i ∈ 1:S
-        Z[i,j,t] = try Main.InteractionsCallback( Vc, Vp, i, j, t, T, :micro, dfc[ 1, v.market ], dfp[ :, v.product ]  )
-        catch
-            @ensure false "Having trouble calling your InteractionsCallback function"
-        end
+        Z[i,j,t] = Main.InteractionsCallback( Vc, Vp, i, j, t, :micro, dfc[ 1, v.market ], dfp[ :, v.product ]  )
     end
     return Z
 end
+
+
+
+function CreateInteractions( ::Val{:GrumpsInteractions!}, dfc :: AbstractDataFrame, dfp :: AbstractDataFrame, v :: Variables, T = F64 )
+    MustBeInDF( v.interactions[:,1], dfc, "consumer data frame" )
+    MustBeInDF( v.interactions[:,2], dfp, "product data frame" )
+    S = nrow( dfc ); J = nrow( dfp) + 1; dθz = size( v.interactions, 1 )
+
+    local Vc = [ dfc[ i, v.interactions[t, 1] ] for i ∈ 1:S, t ∈ 1:dθz ]
+    local Vp = [ dfp[ j, v.interactions[t ,2] ] for j ∈ 1:J-1, t ∈ 1:dθz ]
+    Z = zeros( T, S, J, dθz )
+    Main.InteractionsCallback!( Z, Vc, Vp, :micro, dfc[ 1, v.market ], dfp[ :, v.product ]  )
+    return Z
+end
+
 
 
 

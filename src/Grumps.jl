@@ -20,7 +20,16 @@ const GrumpsColor = [ :red, :green, :yellow, :blue, :magenta, :cyan ]
 const defaultsplashprobs = [ 1.0, 0.0, 0.0, 1.0 ]
 
 
+function zebraprint( s :: String )
+    for i ∈ eachindex( s )
+        printstyled( s[i]; color = GrumpsColor[ i % 6 + 1 ], bold = true )
+    end
+end
+
+
+
 function __init__()
+
 
     sp = ( isdefined( Main, :splashprobs ) && typeof( Main.splashprobs ) == Vector{Float64} ) ?
                             Main.splashprobs : defaultsplashprobs
@@ -47,8 +56,22 @@ function __init__()
         printstyled( "$count: $𝓁\n"; bold = false ) 
     end
     println()
-    printstyled( "This is Grumps version $Grumps_version: check for updates regularly\n\n\n"; color= 206, bold = true ); 
+    printstyled( "This is Grumps version $Grumps_version\n\n\n"; color= 206, bold = true ); 
+
+    lastversiondate = try 
+        readlines( "$(@__DIR__)/versiondate" )[1] |> Date
+    catch
+        Date( "2023-05-01" )
+    end
+    versionage = Day( today() - lastversiondate ) |> Dates.value
+    if  versionage ≥ 60
+        zebraprint( "Your version of Grumps is $versionage days old: please check for updates regularly!\n\n\n")
+    end
+
 end
+
+
+
 
 end
 
