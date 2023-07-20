@@ -66,11 +66,11 @@ function ObjectiveFunctionθ!(
 
     # compute δ
     grumpsδ!( fgh, θ, δ, e, d, o, s )
-    completed = 0
+    completed = Threads.Atomic{Int}( 0 )
     sem = Semaphore( 1 )
     if progressbar( o ) 
         Base.acquire( sem )
-        UpdateProgressBar( completed / dimM( d ) )
+        UpdateProgressBar( completed[] / dimM( d ) )
         Base.release( sem )
     end
 
@@ -96,8 +96,8 @@ function ObjectiveFunctionθ!(
 
         if progressbar( o )
             Base.acquire( sem )
-            completed += 1 
-            UpdateProgressBar( completed / dimM( d ) )
+            Threads.atomic_add!( completed, 1 ) 
+            UpdateProgressBar( completed[] / dimM( d ) )
             Base.release( sem )
         end
     end

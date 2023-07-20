@@ -75,10 +75,10 @@ function ObjectiveFunctionθ!(
     markets = 1:dimM( d )
 
     sem = Semaphore( 1 )
-    completed = 0
+    completed = Threads.Atomic{Int}( 0 )
     if progressbar( o ) 
         Base.acquire( sem )
-        UpdateProgressBar( completed / dimM( d ) )
+        UpdateProgressBar( completed[] / dimM( d ) )
         Base.release( sem )
     end
 
@@ -100,8 +100,8 @@ function ObjectiveFunctionθ!(
         if progressbar( o ) 
             
             Base.acquire( sem )
-            completed += 1
-            UpdateProgressBar( completed / dimM( d ) )
+            Threads.atomic_add!( completed, 1 ) 
+            UpdateProgressBar( completed[] / dimM( d ) )
             Base.release( sem )
         end
     end
