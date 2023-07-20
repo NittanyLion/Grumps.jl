@@ -76,6 +76,12 @@ function ObjectiveFunctionθ!(
 
     sem = Semaphore( 1 )
     completed = 0
+    if progressbar( o ) 
+        Base.acquire( sem )
+        UpdateProgressBar( completed / dimM( d ) )
+        Base.release( sem )
+    end
+
     # compute the likelihood values, gradients, and Hessians wrt θ
     @threads :dynamic for m ∈ markets
         ObjectiveFunctionθ1!( 
