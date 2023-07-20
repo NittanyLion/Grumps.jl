@@ -66,6 +66,8 @@ function ObjectiveFunctionθ!(
 
     # compute δ
     grumpsδ!( fgh, θ, δ, e, d, o, s )
+    completed = 0
+    sem = Semaphore( 1 )
 
     # compute the likelihood values, gradients, and Hessians
     @threads :dynamic for m ∈ markets
@@ -86,6 +88,12 @@ function ObjectiveFunctionθ!(
         
         mustrecompute(s) && freeAθZXθ!( e, s, o, m )
 
+        if progressbar( o )
+            Base.acquire( sem )
+            completed += 1 
+            UpdateProgressBar( completed / dimM( d ) )
+            Base.release( sem )
+        end
     end
 
     copyto!( s.currentθ, θ )        

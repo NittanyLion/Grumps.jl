@@ -28,7 +28,8 @@ makedocs( sitename = "Grumps.jl",
     "Algorithm flow" => "flow.md",
     "Miscellanea" => "misc.md",
     "Acknowledgments" => "acknowledgments.md",
-    "License" => "license.md"
+    "License" => "license.md",
+    "Versions" => "versions.md"
     ]
     )
     

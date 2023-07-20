@@ -242,12 +242,13 @@ struct GrumpsOptimizationOptions <: OptimizationOptions
     maxrepeats      :: Int
     probtype        :: Symbol
     id              :: Symbol
+    progressbar     :: Bool
 end
 
 
-function GrumpsOptimizationOptions(; θopt = OptimOptions( Val( :θ ) ), δopt = OptimOptions( Val( :δ) ), threads = GrumpsThreads(), memsave = false, maxrepeats = 3, probtype = :fast, id = :Grumps )
+function GrumpsOptimizationOptions(; θopt = OptimOptions( Val( :θ ) ), δopt = OptimOptions( Val( :δ) ), threads = GrumpsThreads(), memsave = false, maxrepeats = 3, probtype = :fast, id = :Grumps, progressbar = true )
     @ensure probtype ∈ [ :fast, :robust ] "only fast and robust choice probabilities are allowed"
-    return GrumpsOptimizationOptions( θopt, δopt, threads, memsave, maxrepeats, probtype, id )
+    return GrumpsOptimizationOptions( θopt, δopt, threads, memsave, maxrepeats, probtype, id, progressbar )
 end
 
 
@@ -257,6 +258,7 @@ blasthreads( o :: GrumpsOptimizationOptions )   = blasthreads( o.gth )
 probtype( o :: GrumpsOptimizationOptions )      = o.probtype
 memsave( o :: GrumpsOptimizationOptions )       = o.memsave
 id( o :: GrumpsOptimizationOptions )            = o.id
+progressbar( o :: GrumpsOptimizationOptions )   = o.progressbar
 
 """
     OptimizationOptions(; 
@@ -266,7 +268,8 @@ id( o :: GrumpsOptimizationOptions )            = o.id
     memsave = false, 
     maxrepeats = 4, 
     probtype = :fast,
-    id = :Grumps
+    id = :Grumps,
+    progressbar = true
     )
 
 Sets the options used for numerical optimization.  *θopt* is used for the external optimization routine,
@@ -277,6 +280,8 @@ future.
 
 There are two ways of computing choice probabilities: robust and fast, specified by passing *:robust* or
 *:fast* in *probtype*. Fast choice probabilities are the default for good reason.
+
+The progressbar shows progress within an iteration in the form of colored circles at the top right hand corner of the screen.
 
 Finally, specifying id allows one to add callbacks, e.g. user functions that are called on each inner and 
 outer iteration.  See the [Extending Grumps](@ref) portion of the documentation.
@@ -311,7 +316,8 @@ function show( io :: IO, o :: GrumpsOptimizationOptions; adorned = true )
         [:probtype, "choice probabilities"],
         [:memsave, "memory saving"],
         [:maxrepeats, "maxrepeats"],
-        [:id, "id" ]
+        [:id, "id" ],
+        [:progressbar, "progressbar" ]
             ]
         prstyled( adorned, @sprintf( "%30s: ", vr[2] ); bold = true, color = :green );  println( getfield( o, vr[1] ) )
     end

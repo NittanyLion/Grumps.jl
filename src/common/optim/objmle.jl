@@ -74,6 +74,8 @@ function ObjectiveFunctionθ!(
 
     markets = 1:dimM( d )
 
+    sem = Semaphore( 1 )
+    completed = 0
     # compute the likelihood values, gradients, and Hessians wrt θ
     @threads :dynamic for m ∈ markets
         ObjectiveFunctionθ1!( 
@@ -89,6 +91,13 @@ function ObjectiveFunctionθ!(
             computeH,
             m                              
             ) 
+        if progressbar( o ) 
+            
+            Base.acquire( sem )
+            completed += 1
+            UpdateProgressBar( completed / dimM( d ) )
+            Base.release( sem )
+        end
     end
     copyto!( s.currentθ, θ )                                        
 
