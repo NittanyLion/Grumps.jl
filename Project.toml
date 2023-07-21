@@ -22,8 +22,8 @@ StatsFuns = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
 StringDistances = "88034a9c-02f8-509d-84a9-84ec65e18404"
 TypeTree = "04da0e3b-1cad-4b2c-a963-fc1602baf1af"
 
-
 [compat]
+Ansillary = "0.1"
 CSV = "0.10"
 DataFrames = "1"
 FastGaussQuadrature = "0.5"
