@@ -12,7 +12,7 @@ function  InsideObjective1!(
     m       :: Int = 0
     ) where {T<:Flt}
     
-    F1 = MacroObjectiveδ!( 
+    F1 :: typeof( F ) = MacroObjectiveδ!( 
         F,
         G,
         Hδδ,

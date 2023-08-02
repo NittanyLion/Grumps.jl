@@ -96,9 +96,9 @@ function ObjectiveFunctionθ!(
             computeG,
             computeH,
             m                              
-            ) 
+            )
+
         if progressbar( o ) 
-            
             Base.acquire( sem )
             Threads.atomic_add!( completed, 1 ) 
             UpdateProgressBar( completed[] / dimM( d ) )
