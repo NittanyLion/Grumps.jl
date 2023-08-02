@@ -43,6 +43,11 @@ struct GrumpsMicroSpace{T<:Flt} <: MicroSpace{T}
 
 end
 
+πi( s :: MicroSpace )   = s.πi
+πri( s :: MicroSpace )  = s.πri
+πrij( s :: MicroSpace ) = s.πrij
+ZXθ( s :: MicroSpace )  = s.ZXθ
+
 
 function MicroSpaceArraysNeeded( R :: Int, S :: Int, J :: Int, dθ :: Int )
     return [ 
@@ -148,12 +153,14 @@ function GrumpsMarketSpace( d :: GrumpsMarketData{T}, memblock :: MemBlock{T}, m
     b = memblock.revdiv[m]          # which memory block are we using?
     p = pointer( memblock.mem[b] )
     tups = SpaceArraysNeeded( dimR( d.microdata ), dimR( d.macrodata ), dimS( d ), dimJ( d ), dimθ( d ) )
-    offset = 0
+    # offset = 0
+    offsetbytes = 0
     o = Vector{ Union{ A1{T}, A2{T}, A3{T}, A4{T} }}( undef, length( tups ) )
     for i ∈ eachindex( tups )
         t = tups[i]
-        o[i] = unsafe_wrap( Array{T, length(t)}, p << offset, t  )
-        offset += prod( t )
+        # o[i] = unsafe_wrap( Array{T, length(t)}, p << offset, t  )
+        o[i] = unsafe_wrap( Array{T, length(t)}, p + offsetbytes, t  )
+        offsetbytes += prod( t ) * sizeof( T )
     end
     @assert 6 == length( MicroSpaceArraysNeeded( dimR( d.microdata ), dimS(d), dimJ( d ), dimθ( d ) ) )
     mic = GrumpsMicroSpace( o[1:6]..., true )
@@ -215,4 +222,7 @@ end
 GrumpsSpace( e :: GrumpsEstimator, d :: GrumpsData{T}, o :: OptimizationOptions, memblock :: MemBlockian{T} ) where {T<:Flt} = GrumpsSpace( d, memblock )
 
 
+marketspace( s, m )     = s.marketspace[m]
+currentθ( s )           = s.currentθ
+microspace( s )         = s.microspace 
 

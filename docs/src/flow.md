@@ -1,6 +1,6 @@
 # Algorithm flow
 
-![algorithm flow](./assets/algorithmflow.svg)
+![algorithm flow](./assets/algorithmflow.png)
 
 When Grumps is called using the `grumps!` call, it runs the `grumps!` method in `est.jl` in the `optim` folder.  This sets up various objects and then calls an optimizer with an objective function that is estimator-specific.  In other words, it will call a different method depending on the `e` argument in `ObjectiveFunctionθ!` in `est.jl` in the `optim` folder.
 

@@ -29,11 +29,11 @@ OutsideObjective1!(
     computeF    :: Bool, 
     computeG    :: Bool, 
     computeH    :: Bool 
-    ) where {T<:Flt}   =  OutsideObjective1!( fgh, θ, δ, GrumpsVanillaEstimatorInstance, d, o, s, computeF, computeG, computeH )
+    ) where {T<:Flt}   =  OutsideObjective1!( fgh, θ, δ, GrumpsMDLEEstimatorInstance, d, o, s, computeF, computeG, computeH )
 
 
 # the next few functions contain the contribution to the objective function for the cheap Grumps Estimator
-# relative to the Vanilla estimator
+# relative to the MDLE estimator
 
 function Πof( e :: GrumpsCheapEstimator, 𝒦 :: Mat{T}, δ :: Vec{ Vec{T} } ) where {T<:Flt}
     ranges = Ranges( δ )

@@ -10,5 +10,5 @@ InsideObjective1!(
     o       :: OptimizationOptions, 
     s       :: GrumpsMarketSpace{T}, 
     m       :: Int = 0
-    ) where {T<:Flt} =  InsideObjective1!( F, G, Hδδ, Hδθ, θ, δ, GrumpsVanillaEstimatorInstance, d, o, s, m )
+    ) where {T<:Flt} =  InsideObjective1!( F, G, Hδδ, Hδθ, θ, δ, GrumpsMDLEEstimatorInstance, d, o, s, m )
     

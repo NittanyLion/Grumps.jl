@@ -14,3 +14,13 @@ function Symmetrize!( H :: AA2{T} ) where {T<:Flt}
     end
     return nothing
 end
+
+
+function colspace(A::AbstractVecOrMat; atol::Real = 0.0, rtol::Real = (min(size(A, 1), size(A, 2))*eps(real(float(oneunit(eltype(A))))))*iszero(atol))
+    m, n = size(A, 1), size(A, 2)
+    (m == 0 || n == 0) && return Matrix{eigtype(eltype(A))}(I, n, n)
+    SVD = svd(A; full=false)
+    tol = max(atol, SVD.S[1]*rtol)
+    indend = sum(s -> s .> tol, SVD.S) 
+    return copy((@view SVD.U[:,1:indend]))
+end

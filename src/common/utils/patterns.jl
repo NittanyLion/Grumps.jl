@@ -1,5 +1,5 @@
 function printpatternlevel( s )
-    clr = [ :green, :red, :blue ]
+    clr = [ :green, :red, :cyan ]
 
     for j ∈ eachindex( s )
         @assert( s[j] ∈ ['0','1'] )

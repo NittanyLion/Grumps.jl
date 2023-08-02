@@ -83,16 +83,8 @@ VarEst( e :: GrumpsEstimator, ::Val{:β}, ::Val{:δ}, 𝓂, 𝓂2, ing ) = VarEs
 
 
 
-function VarEst( e :: GrumpsEstimator, m :: Int, m2 :: Int, ing :: GrumpsIngredients{T} )  where {T<:Flt}
+VarEst( e :: GrumpsEstimator, m :: Int, m2 :: Int, ing :: GrumpsIngredients{T} )  where {T<:Flt} =
     VarEst( e, GrumpsVal( m, ing ), GrumpsVal( m2, ing ), m, m2, ing )
-    # M = dimM( ing )
-    # m2 < m && return VarEst( e, m2, m, ing )'
-    # 0 ≤ m ≤ m2 ≤ M && return sum( Bread( e, m, i, ing ) * Meat( e, i, j, ing ) * Bread( e, j, m, ing ) for i ∈ 0:M, j ∈ 0:M ) 
-    # m == m2 == M + 1 && return VarEst( e, Val( :ββ ), ing ) 
-    # 0 == m && m2 == M + 1 && return VarEst( e, Val( :θβ ), ing ) 
-    # 1 ≤ m ≤ M && m2 == M + 1 && return VarEst( e, Val( :δβ ), ing ) 
-    # @ensure false "m and m2 should be between 0 and M+1 inclusive"
-end
 
 
 VarEst( e :: GrumpsEstimator, ::Union{ Val{:θ}, Val{:δ} }, ::Union{ Val{:θ}, Val{:δ} }, 𝓂 :: Int, 𝓂2 :: Int, ing ::GrumpsIngredients{T} ) where {T<:Flt} = sum( Bread( e, 𝓂, i, ing ) * Meat( e, i, j, ing ) * Bread( e, j, 𝓂, ing ) for i ∈ 0:dimM( ing ), j ∈ 0:dimM( ing ) )

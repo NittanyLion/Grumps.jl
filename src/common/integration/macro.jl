@@ -3,7 +3,7 @@
 
 function show( io :: IO, integ :: DefaultMacroIntegrator{T}; adorned = true ) where {T<:Flt}
     prstyled( adorned, "Default Macro Monte Carlo integrator "; color = :blue, bold = true )
-    println( "  $(integ.n) draws,  randomization $(integ.randomize),  replacement $(integ.replacement)  ")
+    println( "  $(integ.n) draws,  randomization $(integ.randomize),  replacement $(integ.replacement), weights  $(integ.weights)  ")
 end
 
 
@@ -61,17 +61,21 @@ whichset( rng :: AbstractRNG, nwant :: Int , nhave :: Int, randomize :: Bool, re
 function NodesWeightsOneMarket( ms :: DefaultMacroIntegrator{T}, dθν :: Int, df :: Union{Nothing, AbstractDataFrame}, v :: Variables, rng :: AbstractRNG, nwgmac :: GrumpsNodesWeights{T} ) where {T<:Flt}
     dθ = dθν + size( v.interactions, 1 ) 
     n = randn( rng, T, ms.n, dθ )
+    w = fill( 1.0, ms.n )
     if df ≠ nothing
         MustBeInDF( v.interactions[:,1], df, "draws" )
+        ms.weights == :uniform || MustBeInDF( ms.weights, df, "draws" )
         nwant = ms.n;  nhave = nrow( df )
         if ms.n > nrow( df ) 
             @warn "Too few demographics draws (want $(nwant), have $(nhave)).  This typically happens if the number of random draws specified for macro integration exceeds the number of demographics draws you have provided in the draws source.  Will improvise."
         end
         ws = whichset( rng, ms.n, nrow( df ), ms.randomize, ms.replacement )
         for j ∈ axes( v.interactions, 1 )
-            n[ ws, j ] = df[ 1:ms.n, v.interactions[j] ]
+            n[ :, j ] = df[ ws, v.interactions[j] ]
+            ms.weights == :uniform || ( w[:] = df[ws, ms.weights] )
         end
     end
-    w = fill( 1.0/ms.n, ms.n )
+    # @ensure minimum( w ) > 0 || "specified weights must be positive"
+    w /= sum( w )
     return GrumpsNodesWeights{T}( n, w )
 end

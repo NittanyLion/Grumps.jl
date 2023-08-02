@@ -3,20 +3,24 @@
 
 \usepackage{fontspec}
 \setmainfont{Times New Roman}
-\usepackage[paperwidth=15in,paperheight=6.25in,margin=0.5in]{geometry}
+\usepackage[paperwidth=15in,paperheight=6.75in,margin=0.5in]{geometry}
 \usepackage[svgnames]{xcolor}
 \usepackage{tikz}
+\usepackage{pagecolor}
+
 \pagestyle{empty}
 % \tikzset{Method/.style={Red, draw=Blue, fill=LightYellow, minimum size=5mm}}
-\tikzset{All/.style={Black, draw=Black, fill=LightGrey, minimum size=5mm}}
+\tikzset{All/.style={Black, draw=Black, fill=Pink, minimum size=5mm}}
 \tikzset{Vanilla/.style={Black, draw=Black, fill=LightYellow, minimum size=5mm}}
 \tikzset{Grumps/.style={Black, draw=Black, fill=LightGreen, minimum size=5mm}}
 \newcommand\mynode[4]{\node[#1] (#2) at (#3) {#4}}
 \newcommand\method[2]{\begin{tabular}{c}\textbf{#1}\\\emph{#2}\end{tabular}}
 \newcommand\makenode[5]{\mynode{#1}{#2}{#3}{\method{#4}{#5}}}
-\newcommand\jorisdraw[2]{\draw[thick,-latex] (#1.east)--(#2.west);}
-\newcommand\grumpsdraw[2]{\draw[Green,thick,-latex] (#1.east)--(#2.west);}
-\newcommand\vanilladraw[2]{\draw[Brown,thick,-latex] (#1.east)--(#2.west);}
+\newcommand\jorisdraw[2]{\draw[Grey,ultra thick,-latex] (#1.east)--(#2.west);}
+\newcommand\grumpsdraw[2]{\draw[Green,ultra thick,-latex] (#1.east)--(#2.west);}
+\newcommand\vanilladraw[2]{\draw[Brown,ultra thick,-latex] (#1.east)--(#2.west);}
+
+\pagecolor{white}
 
 \begin{document}
 
@@ -26,19 +30,19 @@
 \makenode{Grumps}{ObjectiveFunctionθ!Grumps}{7,2}{ObjectiveFunctionθ!}{common/optim/objpml.jl};
 \makenode{Grumps}{ObjectiveFunctionθ1!Grumps}{14,2}{ObjectiveFunctionθ1!}{common/optim/objpml.jl};
 \makenode{Grumps}{grumpsδ!Grumps}{14,4}{grumpsδ!}{common/optim/delta.jl};
-\makenode{Grumps}{InsideObjective!Grumps}{21,4}{InsideObjective!}{estimators/pml/delta.jl};
-\makenode{Grumps}{OutsideObjective1!Grumps}{21,2}{OutsideObjective1!}{estimators/pml/theta.jl};
+\makenode{Grumps}{InsideObjective!Grumps}{21,4}{InsideObjective!}{estimators/cler/delta.jl};
+\makenode{Grumps}{OutsideObjective1!Grumps}{21,2}{OutsideObjective1!}{estimators/cler/theta.jl};
 \makenode{All}{MacroObjectiveδ!}{28,3}{MacroObjectiveδ!}{common/optim/macllf.jl};
 \makenode{All}{MicroObjectiveδ!}{28,1}{MicroObjectiveδ!}{common/optim/micllf.jl};
 \makenode{All}{MacroObjectiveθ!}{28,-1}{MacroObjectiveθ!}{common/optim/macllf.jl};
 \makenode{All}{MicroObjectiveθ!}{28,-3}{MicroObjectiveθ!}{common/optim/micllf.jl};
 
 \makenode{Vanilla}{grumpsδ!Vanilla}{14,-2}{grumpsδ!}{common/optim/delta.jl};
-\makenode{Vanilla}{InsideObjective1!Vanilla}{21,-2}{InsideObjective1!}{estimators/vanilla/delta.jl};
+\makenode{Vanilla}{InsideObjective1!Vanilla}{21,-2}{InsideObjective1!}{estimators/mdle/delta.jl};
 % \makenode{Vanilla}{MacroObjectiveδ!Vanilla}{28,-2}{MacroObjectiveδ!}{common/optim/macllf.jl};
 % \makenode{Vanilla}{MicroObjectiveδ!Vanilla}{28,-4}{MicroObjectiveδ!}{common/optim/micllf.jl};
 \makenode{Vanilla}{ObjectiveFunctionθ1!Vanilla}{14,-4}{ObjectiveFunctionθ1!}{common/optim/objmle.jl};
-\makenode{Vanilla}{OutsideObjective1!Vanilla}{21,-4}{OutsideObjective1!}{estimators/vanilla/theta.jl};
+\makenode{Vanilla}{OutsideObjective1!Vanilla}{21,-4}{OutsideObjective1!}{estimators/mdle/theta.jl};
 % \makenode{Vanilla}{MacroObjectiveθ!Vanilla}{28,-6}{MacroObjectiveθ!}{common/optim/macllf.jl};
 % \makenode{Vanilla}{MicroObjectiveθ!Vanilla}{28,-8}{MicroObjectiveθ!}{common/optim/micllf.jl};
 % \makenode{Grumps}{ObjectiveFunctionθ!Grumps}{7,2}{ObjectiveFunctionθ!}{common/optim/objpml.jl};
@@ -65,8 +69,8 @@
 
 {\LARGE
 \begin{enumerate}
-    \item The above flow is for the CLER estimator (green) and MLE (yellow); the share constraint estimator flow is the same as that for MLE, albeit that in the inner loop, no minimization takes place over the micro contribution.  The cheap version of the CLER estimator also follows the MLE path.
-    \item The main difference between CLER and MLE is that MLE uses the optimization code found in the Optim package, whereas CLER uses a hacked version thereof that can be found in common/optim/pmlalgo.
+    \item The above flow is for the CLER estimator (green) and MDLE (yellow); the share constraint estimator flow is the same as that for MDLE, albeit that in the inner loop, no minimization takes place over the micro contribution.  The cheap version of the CLER estimator also follows the MDLE path.
+    \item The main difference between CLER and MDLE is that MDLE uses the optimization code found in the Optim package, whereas CLER uses a modified version thereof that can be found in common/optim/pmlalgo.
 \end{enumerate}
 }
 \end{document}

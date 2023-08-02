@@ -13,19 +13,36 @@ function MicroObjectiveδ!(
     return F
 end
 
-@todo 1 "move sizes elsewhere"
 
-function sizes( x )
-    x == nothing ? nothing : size(x)
-end
-
-
-function sizes( F, G, H, δ )
-    sizes(F), sizes(G), sizes(H), sizes(δ)
-end
-
-@todo 1 "document micllf"
 @todo 2 "parallelize MicroObjectiveθ!"
+
+
+
+FunctionValue( πi :: Vec{T}, consumers, ::Val{:micδ}, ::Val{ :Grumps } ) where {T<:Flt} = sum( log( πi[i] ) for i ∈ consumers ) 
+
+
+function updateGradient!( G :: Vec{T}, Σππ :: Mat{T}, πi :: Vec{T}, Y :: Mat{Bool}, consumers, insides, ::Val{:micδ}, ::Val{ :Grumps } ) where {T<:Flt}
+    @inbounds for k ∈ insides
+        G[k] -= sum( Y[i,k] - Σππ[i,k] / πi[i] for i ∈ consumers ) 
+    end 
+    nothing
+end
+
+function updateHessian!( H :: Mat{T}, Σππ :: Mat{T}, πi :: Vec{T}, πri :: Mat{T},  πrij :: A3{T}, w :: Vec{T}, weights, consumers, insides, ::Val{:micδ}, ::Val{ :Grumps }  ) where {T<:Flt}
+    @threads :dynamic for t ∈ insides
+        H[t,t] += sum( Σππ[i,t] / πi[i] for i ∈ consumers )
+        for k ∈ 1:t
+            for i ∈ consumers
+                H[k,t] += Σππ[i,k] * Σππ[i,t] / πi[i]^2 - 
+                            2.0 * sum( w[r] * πri[r,i] * πrij[r,i,k] * πrij[r,i,t] for r ∈ weights )  / πi[i] 
+            end
+        end
+    end
+    Symmetrize!( H )
+    nothing
+end
+
+   
 
 function MicroObjectiveδ!( 
     F           :: FType{T}, 
@@ -48,7 +65,7 @@ function MicroObjectiveδ!(
     ChoiceProbabilities!( s, d, o, δ )                                             # fill s with some goodies
 
     if computeF
-        F -= sum( log( s.πi[i] ) for i ∈ consumers )                        # compute objective function
+        F -= FunctionValue( πi( s ), consumers, Val( :micδ), Val( :Grumps )  )
     end
 
     computeG || computeH || return F                                                # return if G,H are not needed
@@ -56,26 +73,11 @@ function MicroObjectiveδ!(
     # now compute the gradient and/or Hessian
     Σππ = ComputeΣππ( s, d, o )
 
-    if computeG 
-        @inbounds for k ∈ insides
-            G[k] -= sum( d.Y[i,k] - Σππ[i,k] / s.πi[i] for i ∈ consumers ) 
-        end           
-    end
-
-    computeH || return F
+    computeG && updateGradient!( G, Σππ, πi( s ), Y( d ),  consumers, insides, Val( :micδ ), Val( :Grumps ) )
 
     # now compute the Hessian
-    @threads :dynamic for t ∈ insides
-        H[t,t] += sum( Σππ[i,t] / s.πi[i] for i ∈ consumers )
-        for k ∈ 1:t
-            for i ∈ consumers
-                H[k,t] += Σππ[i,k] * Σππ[i,t] / s.πi[i]^2 - 
-                            2.0 * sum( d.w[r] * s.πri[r,i] * s.πrij[r,i,k] * s.πrij[r,i,t] for r ∈ weights )  / s.πi[i] 
-            end
-        end
-    end
+    computeH && updateHessian!( H, Σππ, πi( s ), πri( s ), πrij( s ), w( d ), weights, consumers, insides, Val( :micδ), Val( :Grumps )  )
 
-    Symmetrize!( H )
     return F
 end
 

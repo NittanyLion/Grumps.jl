@@ -44,7 +44,7 @@ function GrumpsMacroData( id :: Any, mkt :: AbstractString, N :: Real, dfp :: Ab
     else
         @ensure options.macromode == :Hog "unknown memory mode $(options.mode)"
         𝒜 = [ T( nw.nodes[r,t] * 𝒳[j,t] ) for r ∈ axes( nw.nodes,1), j ∈ axes(𝒳, 1),  t ∈ axes( nw.nodes, 2) ]
-        return GrumpsMacroHog{T}( String( mkt ), 𝒜, s, N, T.( nw.weights) )
+        return GrumpsMacroDataHog{T}( String( mkt ), 𝒜, s, N, T.( nw.weights) )
     end
 end
 

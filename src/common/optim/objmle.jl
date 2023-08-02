@@ -1,6 +1,10 @@
    
 @todo 2 "figure out when to recompute"
-@todo 4 "for all estimators, note that frugal is not compatible with for threads; need spawns"
+inside( fgh )       = fgh.inside
+outside( fgh )      = fgh.outside
+
+
+
 
 # this computes the οutside objective function for a single market (excluding the penalty term)
 function ObjectiveFunctionθ1!( 
@@ -17,22 +21,22 @@ function ObjectiveFunctionθ1!(
     m           :: Int                              
     ) where {T<:Flt}
 
-    recompute =  s.currentθ ≠ θ || mustrecompute( s.marketspace[m] )
+    recompute =  currentθ( s ) ≠ θ || mustrecompute( marketspace(s, m) )
     recompute && AθZXθ!( θ, e, d, o, s, m ) 
 
     δ .= zero( T )
 
     # if recompute
     initializelastδ!( s, m )
-    grumpsδ!( fgh.inside, θ, δ, e, d, o, s.marketspace[m], m )
+    grumpsδ!( inside( fgh ), θ, δ, e, d, o, marketspace( s, m ), m )
     # end
     
 
     # if computeG || computeH || !inisout( e )
-        F = OutsideObjective1!(  fgh.outside, θ, δ, e, d, o, s.marketspace[m], computeF, computeG, computeH )
-        if computeF
-            fgh.outside.F .= F
-        end
+    F = OutsideObjective1!(  outside( fgh ), θ, δ, e, d, o, marketspace( s, m ), computeF, computeG, computeH )
+    if computeF
+        fgh.outside.F .= F
+    end
     # end
 
     freeAθZXθ!( e, s, o, m )
@@ -70,6 +74,14 @@ function ObjectiveFunctionθ!(
 
     markets = 1:dimM( d )
 
+    sem = Semaphore( 1 )
+    completed = Threads.Atomic{Int}( 0 )
+    if progressbar( o ) 
+        Base.acquire( sem )
+        UpdateProgressBar( completed[] / dimM( d ) )
+        Base.release( sem )
+    end
+
     # compute the likelihood values, gradients, and Hessians wrt θ
     @threads :dynamic for m ∈ markets
         ObjectiveFunctionθ1!( 
@@ -84,7 +96,14 @@ function ObjectiveFunctionθ!(
             computeG,
             computeH,
             m                              
-            ) 
+            )
+
+        if progressbar( o ) 
+            Base.acquire( sem )
+            Threads.atomic_add!( completed, 1 ) 
+            UpdateProgressBar( completed[] / dimM( d ) )
+            Base.release( sem )
+        end
     end
     copyto!( s.currentθ, θ )                                        
 

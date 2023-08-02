@@ -1,5 +1,5 @@
 
-name( ::Val{:mixedlogit} ) = "Mixed Logit"
+name( ::Val{:mixedlogit} ) = "Mixed Logit using micro data only"
 
 
 function Description( e :: Symbol, v ::Val{ :mixedlogit } )

@@ -9,12 +9,12 @@ Creates and returns a GrumpsEstimator type.  Grumps is reasonably good at figuri
 *Estimator( "maximum likelihood" )* gives you the unpenalized Grumps maximum likelihood estimator.
 
 The estimators currently programmed include:
-* the full Grumps estimator
-* a cheaper alternative that has the same limit distribution
-* Grumps-style maximum likelihood, i.e Grumps without penalty
-* ditto, but imposing share constraints
-* GMM estimator that uses both micro and macro moments and uses quadrature instead of Monte Carlo draws in the micro moments.  The micro moments are `smart' in that they condition on \$z_{im}\$ instead of integrating it out.
-* a mixed logit estimator
+* the full CLER estimator
+* a cheaper alternative to CLER that has the same limit distribution
+* MDLE, i.e CLER without product level moments
+* mixed logit with share constraints
+* mixed logit estimator using micro data only
+* GMM estimators of the same model (in progress: not recommended)
 """
 function Estimator( s :: String )
     s = lowercase( s )
@@ -40,17 +40,17 @@ the *Estimator( s :: String )* method is usually a better choice.
 
 Possible choices include:
 
-*:pml* the full Grumps maximum likelihood estimator  
+*:cler* the full CLER estimator  
 
-*:cheap* an alternative with the same limit distribution that is faster to compute
+*:cheap* a cheaper alternative to CLER that has the same limit distribution
 
-*:vanilla* the unpenalized Grumps maximum likelihood estimator
+*:mdle* MDLE, i.e CLER without product level moments
 
-*:shareconstraint* the unpenalized Grumps maximum likelihood estimator with share constraints
+*:shareconstraint* mixed logit with share constraints
 
-*:gmm* GMM estimator that uses both micro and macro moments
+*:mixedlogit* mixed logit estimator using micro data only
 
-*:mixedlogit* mixed logit maximum likelihood estimator
+*:gmm*  GMM estimator of the same model (in progress: not recommended)
 """
 Estimator( s :: Symbol ) = Estimator( Val( s ) )
 

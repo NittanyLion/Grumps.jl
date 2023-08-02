@@ -1,13 +1,8 @@
 
- # set relative path of location of Grumps.jl; won't be needed 
- # once Julia is a formal package
-push!(LOAD_PATH, "../../src")                              
 
 
-using Grumps, LinearAlgebra
+using Grumps
 
-# set the number of BLAS threads
-BLAS.set_num_threads(8)                                                    
 
 function myprogram( nodes, draws, meth  )
     # set which files contain the data to be used
@@ -59,7 +54,7 @@ function myprogram( nodes, draws, meth  )
     # this puts the data into a form Grumps can process
     d = Data( e, s, v ) 
     # there are longhand forms if you wish to set additional parameters
-    # d = Data( e, s, v, BothIntegrators( ms, Ms ); threads = 32 )            
+    # d = Data( e, s, v, ms, Ms; replicable = false )            
 
     # no need to set this unless you wish to save memory, will not exceed number 
     # of threads Julia is started with

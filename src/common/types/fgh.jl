@@ -98,17 +98,6 @@ function FGH( e :: GrumpsGMM, d :: GrumpsData{T} ) where {T<:Flt}
 end
 
 
-# function FGH( e :: GrumpsPML, d :: GrumpsData{T} ) where {T<:Flt}
-#     return PMLFGH{T}( 
-#         zeros( T, 1),
-#         zeros( T, dimδ( d ) ),
-#         [ zeros( T, dimδ( d.marketdata[m] ) ) for m ∈ markets ],
-#         zeros( T, dimθ( d ) ),
-#         [ zeros( T, dimδ( d.marketdata[m] ), dimθ( d )  ) for m ∈ markets ],
-#         [ zeros( T, dimθ( d ), dimθ( d ) ) for m ∈ markets ],
-#         [ zeros( T, dimδ( d.marketdata[m] ) ) for m ∈ markets ]
-#           ) 
-# end
 
 function FGH( e :: GrumpsPenalized, d :: GrumpsData{T} ) where {T<:Flt}
     return PMLFGH{T}( 

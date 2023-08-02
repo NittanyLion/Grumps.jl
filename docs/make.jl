@@ -19,14 +19,17 @@ makedocs( sitename = "Grumps.jl",
     "User interface" => "objects.md",
     "Spreadsheet formats" => "spreadsheet.md",
     "Example program" => "example.md",
+    "Charlie's tutorial" => "tutorial.md",
     "Speed, memory, accuracy" => "speedmemory.md",
     "Things to bear in mind" => "bearinmind.md",
-    "Directory structure" => "structure.md",
-    "Algorithm flow" => "flow.md",
-    "Callbacks" => "callbacks.md",
     "Extending Grumps" => "extending.md",
     "Languages other than Julia" => "aliens.md",
-    "Miscellanea" => "misc.md"
+    "Directory structure" => "structure.md",
+    "Algorithm flow" => "flow.md",
+    "Miscellanea" => "misc.md",
+    "Acknowledgments" => "acknowledgments.md",
+    "License" => "license.md",
+    "Versions" => "versions.md"
     ]
     )
     

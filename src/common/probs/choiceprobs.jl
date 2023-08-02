@@ -16,6 +16,24 @@ end
 
 
 
+function ChoiceProbabilities!( πrij :: A3{T}, πri :: A2{T}, πi :: A1{T}, ZXθ :: A3{T}, y :: A1{Int}, w :: A1{T}, δ :: A1{T}, consumers, products, weights, ::Val{ :miccp }, ::Val{ :Grumps } ) where {T<:Flt}
+    softmaxδ = softmax( vcat( δ, zero( T ) ) )
+    πi .= zero( T )
+    @threads :dynamic for i ∈ consumers
+        for r ∈ weights 
+            for j ∈ products
+                πrij[r,i,j] = ZXθ[r,i,j] * softmaxδ[j] 
+            end
+            SumNormalize!( @view πrij[ r, i, : ] )
+            πri[r,i] = πrij[ r,i, y[i] ]
+        end
+        πi[i] = sum( w[r] * πri[r,i] for r ∈ weights )
+    end
+    nothing
+end
+
+
+
 """
     ChoiceProbabilities!( s :: MicroSpace{T}, d :: GrumpsMicroData{T}, o :: OptimizationOptions, δ :: Vec{T} )
 
@@ -28,21 +46,8 @@ function ChoiceProbabilities!(
     δ       :: Vec{T}
     ) where {T<:Flt}
 
-
     weights, consumers, products, insides, = RSJ( d )
-
-    softmaxδ = softmax( vcat( δ, zero( T ) ) )
-    s.πi .= zero( T )
-    @threads :dynamic for i ∈ consumers
-        for r ∈ weights 
-            for j ∈ eachindex( softmaxδ )
-                s.πrij[r,i,j] = s.ZXθ[r,i,j] * softmaxδ[j] 
-            end
-            SumNormalize!( @view s.πrij[ r, i, : ] )
-            s.πri[r,i] = s.πrij[ r,i, d.y[i] ]
-        end
-        s.πi[i] = sum( d.w[r] * s.πri[r,i] for r ∈ weights )
-    end
+    ChoiceProbabilities!( πrij(s), πri(s), πi(s), ZXθ(s), y(d), w(d), δ, consumers, products, weights, Val( :miccp ), Val( :Grumps ) )
     return nothing
 end
 
@@ -50,16 +55,6 @@ end
 
 
 
-# function ChoiceProbabilities!( π::AA2{T}, Aθ::AA2{T}, δ::AA1{T}, nth :: Int, ::Val{:fast} ) where {T<:Flt}
-#     softmaxδ = softmax( vcat( δ, zero( T ) ) )
-#     for r ∈ axes( π, 1)
-#         for j ∈ axes(π,2)  
-#             π[r,j] = Aθ[r,j] * softmaxδ[j] 
-#         end                          
-#         SumNormalize!( @view π[r,:] )
-#     end
-#     return nothing
-# end
 
 
 
