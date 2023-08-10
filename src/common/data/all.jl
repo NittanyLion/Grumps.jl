@@ -37,15 +37,15 @@ function GrumpsData(
     ss                  :: Sources,
     v                   :: Variables,
     integrators         :: GrumpsIntegrators = BothIntegrators(),
-    T                   :: Type = F64;
+    T                   :: Type{ 𝒯 } = F64;
     options             :: DataOptions = GrumpsDataOptions(),
     replicable          :: Bool = false
-    )
+    ) where 𝒯
 
     # check compatibility of choices made 
     CheckCompatible( e, integrators, options )
 
-    replicable = CheckInteractionsCallBackFunctionality( replicable, options, T )
+    replicable :: Bool = CheckInteractionsCallBackFunctionality( replicable, options, T )
 
     # read data from file if not already done
     @info "reading data"
@@ -174,13 +174,13 @@ function GrumpsData(
     ss                  :: Sources,
     v                   :: Variables,
     integrators         :: GrumpsIntegrators,
-    T                   :: Type = F64;
+    T                   :: Type{𝒯} = F64;
     options             :: DataOptions = GrumpsDataOptions(),
     replicable          :: Bool = false
-    )
+    )  where 𝒯
     
     return GrumpsData( Val( id( options ) ), e, ss, v, integrators, T; options = options, replicable = replicable )
-end
+end 
 
 """
     GrumpsData( 
@@ -215,10 +215,10 @@ function GrumpsData(
     v                   :: Variables,
     microintegrator     :: MicroIntegrator = DefaultMicroIntegrator(),
     macrointegrator     :: MacroIntegrator = DefaultMacroIntegrator(),
-    T                   :: Type = F64;
+    T                   :: Type{𝒯} = F64;
     options             :: DataOptions = GrumpsDataOptions(),
     replicable          :: Bool = false
-    )
+    ) where 𝒯
     
     return GrumpsData( e, ss, v, BothIntegrators( microintegrator, macrointegrator ), T; options = options, replicable = replicable )
 end
@@ -230,7 +230,7 @@ end
         ss                  :: Sources,
         v                   :: Variables,
         microintegrator     :: MicroIntegrator = DefaultMicroIntegrator(),
-        microintegrator     :: MacroIntegrator = DefaultMacroIntegrator(),
+        macrointegrator     :: MacroIntegrator = DefaultMacroIntegrator(),
         T                   :: Type = F64,
         options             :: DataOptions = GrumpsDataOptions(),
         replicable          :: Bool = false
@@ -251,4 +251,17 @@ Takes user inputs and converts them into an object that Grumps can understand.  
 * *options*:             data options to be used, see [Data storage options](@ref)
 * *replicable*:          whether results must be replicable (slows down speed of data creation if set to true)
 """
-Data(x...; y...) = GrumpsData(x...; y... )
+function Data( 
+    e                   :: GrumpsEstimator,
+    ss                  :: Sources,
+    v                   :: Variables,
+    microintegrator     :: MicroIntegrator = DefaultMicroIntegrator(),
+    macrointegrator     :: MacroIntegrator = DefaultMacroIntegrator(),
+    T                   :: Type = F64;
+    options             :: DataOptions = GrumpsDataOptions(),
+    replicable          :: Bool = false
+     )
+
+    return GrumpsData( e, ss, v, microintegrator, macrointegrator, T; options = options, replicable = replicable )
+
+end

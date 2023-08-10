@@ -1,5 +1,11 @@
 
 
+using TimerOutputs, Tullio
+
+
+const MaxTimerMarkets = 1000
+const to = [ TimerOutput() for t ∈ 1:MaxTimerMarkets ]
+
 include( "packages/packages.jl" )
 
 import Base.show, Base.Threads.@threads, Base.Threads.nthreads, Base.Threads.threadid, Base.Threads.@spawn, Base.minimum

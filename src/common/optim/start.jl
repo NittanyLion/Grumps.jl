@@ -33,14 +33,14 @@
 function StartingValues( θstartpassed :: Vec{T}, e :: GrumpsEstimator, d :: GrumpsData{T}, o :: GrumpsOptimizationOptions ) where {T<:Flt}
     dθ, dθz, dθν = dimsθ( d )
 
-    println( "starting vector = $θstartpassed" )
+    @info "starting vector = $θstartpassed" 
     θstart = [ θstartpassed[t] * d.balance[t].σ for t ∈ eachindex( θstartpassed ) ]
 
     for t ∈ dθz+1:dθ
         @ensure θstart[t] > zero( T )  "random coefficient starting value must be positive"
         θstart[t] = log( θstart[t] )
     end
-    println( "transformed starting vector = $θstart" )
+    @info "transformed starting vector = $θstart" 
     return θstart
 end
 
@@ -55,6 +55,7 @@ function StartingValues( θstartpassed :: Nothing, e :: GrumpsEstimator, d :: Gr
 
     dθ, dθz, dθν = dimsθ( d )
     θstart = vcat( zeros(T, dθz), fill( T( 0.5 ), dθν ) )
+    # θstart = vcat( fill( T( 0.5 ), dθ ) )
     return StartingValues( θstart, e, d, o )
 end
 

@@ -58,6 +58,28 @@ end
 
 FillZXθ!(  θ :: Vector{T}, e :: GrumpsEstimator, d, o :: OptimizationOptions, s :: GrumpsMicroSpace{T}  ) where {T<:Flt} = FillZXθ!( Val( id( o ) ), θ, e, d, o, s )
 
+
+function SoftmaxZXθ!( ms :: GrumpsMicroSpace{T}, R :: Int, S :: Int ) where {T<:Flt}
+    @threads :dynamic for r ∈ 1:R
+        for i ∈ 1:S 
+            softmax!( @view ms.ZXθ[ r, i, :] )
+        end
+    end
+end
+
+SoftmaxZXθ!( ms :: GrumpsMicroNoSpace{T}, R :: Int, S :: Int ) where {T<:Flt} = nothing
+
+
+
+function SoftmaxAθ!( ms :: GrumpsMacroSpace{T}, R :: Int ) where {T<:Flt}
+    @threads :dynamic for r ∈ 1:R
+        softmax!( @view ms.Aθ[ r, :] )
+    end
+end
+
+SoftmaxAθ!( ms :: GrumpsMacroNoSpace{T}, R :: Int ) where {T<:Flt} = nothing
+
+
 function AθZXθ!( 
     θ :: Vec{T}, 
     e :: GrumpsEstimator, 
@@ -72,7 +94,6 @@ function AθZXθ!(
     acquire( s.semas, sm.memblockindex )
     
 
-
     FillAθ!( θ, e, d.macrodata, o, sm.macrospace )
     FillZXθ!( θ, e, d.microdata, o, sm.microspace )
 
@@ -83,16 +104,9 @@ function AθZXθ!(
     
     @ensure probtype( o ) == :fast "unknown choice probability type $(probtype(o))"
     
-    @threads :dynamic for r ∈ 1:dimR( d.macrodata )
-        softmax!( @view sm.macrospace.Aθ[ r, :] )
-    end    
-    
-    @threads :dynamic for r ∈ 1:dimR( d.microdata )
-        for i ∈ 1:dimS( d.microdata ) 
-            softmax!( @view sm.microspace.ZXθ[ r, i, :] )
-        end
-    end
-    
+    SoftmaxAθ!( sm.macrospace, dimR( d.macrodata ) )
+    SoftmaxZXθ!( sm.microspace, dimR( d.microdata ), dimS( d.microdata ) )
+
     
     return m
 end

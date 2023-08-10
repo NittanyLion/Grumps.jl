@@ -1,8 +1,9 @@
 function ComputeΣππ( 
     s       :: MicroSpace{T}, 
     d       :: GrumpsMicroData{T}, 
-    o       :: OptimizationOptions 
-    ) where {T<:Flt}
+    o       :: OptimizationOptions,
+    loopvectorization :: Val{ false } 
+    ) :: Matrix{T} where {T<:Flt}
 
 
     weights, consumers, products, insides, = RSJ( d )
@@ -10,14 +11,55 @@ function ComputeΣππ(
 end
 
 function ComputeΣππ( 
+    s       :: MicroSpace{T}, 
+    d       :: GrumpsMicroData{T}, 
+    o       :: OptimizationOptions,
+    loopvectorization :: Val{ true }  
+    ) :: Matrix{T} where {T<:Flt}
+        
+    @tullio fastmath=false Σππ[i,k] := d.w[r] * s.πri[r,i] * s.πrij[r,i,k]
+    return Σππ
+end
+
+function ComputeΣππ( 
+    s       :: MicroSpace{T}, 
+    d       :: GrumpsMicroData{T}, 
+    o       :: OptimizationOptions 
+    ) :: Matrix{T} where {T<:Flt} 
+    
+    return ComputeΣππ( s, d, o, Val( o.loopvectorization ) ) 
+end
+
+
+
+function ComputeΣππ( 
     s       :: MacroSpace{T}, 
     d       :: GrumpsMacroData{T}, 
-    o       :: OptimizationOptions 
+    o       :: OptimizationOptions,
+    loopvectorization :: Val{ false } 
     ) where {T<:Flt}
 
-    weights, products, insides,  = RJ( d )
-    return  [ sum( d.w[r] * s.πrj[r,j] * s.πrj[r,k] for r ∈ weights ) for j ∈ products, k ∈ insides  ]
+    return [ sum( d.w[r] * s.πrj[r,j] * s.πrj[r,k] for r ∈ eachindex( d.w ) ) for j ∈ 1:dimJ( d ), k ∈ 1:dimδ( d ) ]
 end
+
+
+function ComputeΣππ( 
+    s       :: MacroSpace{T}, 
+    d       :: GrumpsMacroData{T}, 
+    o       :: OptimizationOptions,
+    loopvectorization :: Val{ true } 
+    ) :: Matrix{T} where {T<:Flt}
+
+    Σππ = zeros( T, dimJ( d ), dimδ( d ) )
+    @tullio fastmath=false Σππ[j,k] = d.w[r] * s.πrj[r,j] * s.πrj[r,k+0]
+    return Σππ
+end
+
+
+function ComputeΣππ( s :: MacroSpace{T}, d :: GrumpsMacroData{T}, o :: OptimizationOptions ) :: Matrix{T} where {T<:Flt} 
+    return ComputeΣππ( s, d, o, Val( o.loopvectorization ) )
+end
+    
 
 
 
@@ -83,6 +125,14 @@ function ComputeΔb!( Δb :: AA2{T}, s :: MicroSpace{T}, d :: MicroData, o :: Op
 end
 
 
+# function ComputeΔa( s :: MacroSpace{T}, d :: GrumpsMacroDataAnt{T}, o :: OptimizationOptions ) where {T<:Flt}
+#     weights, products, insides, parameters = RJ( d )
+
+#     avg = s.πrj * d.𝒳 
+#     @tullio fastmath=false Δa[r,j,k] := d.𝒟[r,k] * ( d.𝒳[j,k] - avg[r,k] )
+#     return Δa
+# end
+
 function ComputeΔa!( Δa :: AA2{T}, s :: MacroSpace{T}, d :: GrumpsMacroDataAnt{T}, o :: OptimizationOptions, r :: Int ) where {T<:Flt}
     weights, products, insides, parameters = RJ( d )
 
@@ -95,3 +145,13 @@ function ComputeΔa!( Δa :: AA2{T}, s :: MacroSpace{T}, d :: GrumpsMacroDataAnt
     end
     return nothing
 end
+
+
+
+# function ComputeΔa!( Δa :: AA2{T}, s :: MacroSpace{T}, d :: GrumpsMacroDataAnt{T}, o :: OptimizationOptions, r :: Int ) where {T<:Flt}
+#     weights, products, insides, parameters = RJ( d )
+
+#     @tullio fastmath=false avg[k] := s.πrj[$r,j] * d.𝒳[j,k]
+#     @tullio fastmath=false Δa[j,k] = d.𝒟[$r,k] * ( d.𝒳[j,k] - avg[k] )
+#     return nothing
+# end

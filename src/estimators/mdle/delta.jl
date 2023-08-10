@@ -10,20 +10,21 @@ function  InsideObjective1!(
     o       :: OptimizationOptions, 
     s       :: GrumpsMarketSpace{T}, 
     m       :: Int = 0
-    ) where {T<:Flt}
+    ) :: FType{T} where {T<:Flt} 
     
-    F1 :: typeof( F ) = MacroObjectiveδ!( 
+    F1 :: typeof( F ) = @timeit to[m] "MacroObjectiveδ!"  MacroObjectiveδ!( 
         F,
         G,
         Hδδ,
         δ,
-        d.macrodata,
-        s.macrospace,
+        macrodata( d ),
+        macrospace( s ),
         o,
+        m,
         true
          ) 
      
-    F2 = MicroObjectiveδ!( 
+    F2 :: typeof( F ) = @timeit to[m] "MicroObjectiveδ!"  MicroObjectiveδ!( 
         F1,
         G,
         Hδδ,

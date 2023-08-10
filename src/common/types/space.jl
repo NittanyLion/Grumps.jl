@@ -20,7 +20,7 @@ struct GrumpsMicroSpace{T<:Flt} <: MicroSpace{T}
     mustrecompute   :: Bool
 
 
-    function GrumpsMicroSpace( R :: Int, S :: Int, J :: Int, dθ :: Int, mustrecompute :: Bool, T2 :: Type = F64 )
+    function GrumpsMicroSpace( R :: Int, S :: Int, J :: Int, dθ :: Int, mustrecompute :: Bool, T2 :: Type{𝒯} = F64 ) where 𝒯
 
         @ensure R > 0  "must have at least one draw"
         # @ensure S > 0  "must have at least one consumer"
@@ -88,7 +88,7 @@ struct GrumpsMacroSpace{T<:Flt} <: MacroSpace{T}
     lastθ           ::  A1{T}
     mustrecompute   ::  Bool
 
-    function GrumpsMacroSpace( R :: Int, J :: Int, dθ :: Int, mustrecompute :: Bool, T2 :: Type = F64 )
+    function GrumpsMacroSpace( R :: Int, J :: Int, dθ :: Int, mustrecompute :: Bool, T2 :: Type{𝒯} = F64 ) where 𝒯
         return new{T2}( 
             zeros( T2, R, J ),     # Aθ
             zeros( T2, R, J ),     # πrj
@@ -140,14 +140,24 @@ GrumpsMacroSpace( d :: GrumpsMacroData{T}, mustrecompute :: Bool = false ) where
 
 const NoMemblockIndex = typemin( Int )
 
-struct GrumpsMarketSpace{T<:Flt} <: MarketSpace{T}
-    microspace     :: MicroSpace{T}
-    macrospace     :: MacroSpace{T}
+struct GrumpsMarketSpace{T<:Flt, Mic<:MicroSpace{T}, Mac<:MacroSpace{T} } <: MarketSpace{T}
+    microspace     :: Mic
+    macrospace     :: Mac
     memblockindex  :: Int
 end
 
-@todo 3 "replace << with just an index to the pointer method"
-@todo 3 "could just redo all of this as views and reshape, but that would require abstract arrays throughout"
+
+# struct GrumpsMarketSpace{ T<:Flt, Mic <: MicroSpace{T}, Mac <: MacroSpace{T} } <: MarketSpace{T}
+#     # microspace     :: MicroSpace{T}
+#     # macrospace     :: MacroSpace{T}
+#     microspace     :: Mic
+#     macrospace     :: Mac
+#     memblockindex  :: Int
+# end
+
+
+
+
 
 function GrumpsMarketSpace( d :: GrumpsMarketData{T}, memblock :: MemBlock{T}, m :: Int ) where {T<:Flt}
     b = memblock.revdiv[m]          # which memory block are we using?
@@ -165,13 +175,18 @@ function GrumpsMarketSpace( d :: GrumpsMarketData{T}, memblock :: MemBlock{T}, m
     @assert 6 == length( MicroSpaceArraysNeeded( dimR( d.microdata ), dimS(d), dimJ( d ), dimθ( d ) ) )
     mic = GrumpsMicroSpace( o[1:6]..., true )
     mac = GrumpsMacroSpace( o[7:end]...,true )
-    return GrumpsMarketSpace{T}( mic, mac, b )
+    return GrumpsMarketSpace{T,typeof(mic),typeof(mac)}( mic, mac, b )
+    # return GrumpsMarketSpace{ T, typeof{mic}, typeof{mac}}( mic, mac, b )
 end
 
 
+GrumpsMarketSpace( mic :: MicroSpace{T}, mac :: MacroSpace{T} ) where {T<:Flt} = GrumpsMarketSpace{T, typeof(mic), typeof( mac ) }( mic, mac, NoMemblockIndex )
 
-function mustrecompute( s :: GrumpsMarketSpace{T} ) where {T<:Flt}
-    return s.memblockindex ≠ NoMemblockIndex
+
+
+# function mustrecompute( s :: GrumpsMarketSpace{ T, <:MicroSpace{T}, <:MacroSpace{T} } ) where {T<:Flt}
+function mustrecompute( s :: GrumpsMarketSpace{ T } ) where {T<:Flt}
+        return s.memblockindex ≠ NoMemblockIndex
 end
 
 
@@ -192,17 +207,29 @@ memsave( s :: GrumpsSpace ) = s.memsave
 marketspace( s :: GrumpsSpace, m :: Int ) = s.marketspace[m]
 
 
+# function GrumpsSpace( d :: GrumpsData{T}, ::Val{ false } ) where {T<:Flt}
+#     return GrumpsSpace{T,GrumpsNoSemaphores}( [ GrumpsMarketSpace{T}( 
+#             GrumpsMicroSpace( d.marketdata[m].microdata, false ), 
+#             GrumpsMacroSpace( d.marketdata[m].macrodata, false ),
+#             NoMemblockIndex
+#             ) for m ∈ 1:dimM( d ) ],
+#             fill( typemax( T ), dimθ( d ) ),
+#             false,
+#             GrumpsNoSemaphores()
+#              )
+# end
+
+
 function GrumpsSpace( d :: GrumpsData{T}, ::Val{ false } ) where {T<:Flt}
-    return GrumpsSpace{T,GrumpsNoSemaphores}( [ GrumpsMarketSpace{T}( 
+    return GrumpsSpace{T,GrumpsNoSemaphores}( [ GrumpsMarketSpace( 
             GrumpsMicroSpace( d.marketdata[m].microdata, false ), 
-            GrumpsMacroSpace( d.marketdata[m].macrodata, false ),
-            NoMemblockIndex
-            ) for m ∈ 1:dimM( d ) ],
+            GrumpsMacroSpace( d.marketdata[m].macrodata, false ) ) for m ∈ 1:dimM( d ) ],
             fill( typemax( T ), dimθ( d ) ),
             false,
             GrumpsNoSemaphores()
              )
 end
+
 
 
 GrumpsSpace( d :: GrumpsData{T}, ::MemNoBlock{T} ) where {T<:Flt} = GrumpsSpace( d, Val( false ) )
@@ -225,4 +252,5 @@ GrumpsSpace( e :: GrumpsEstimator, d :: GrumpsData{T}, o :: OptimizationOptions,
 marketspace( s, m )     = s.marketspace[m]
 currentθ( s )           = s.currentθ
 microspace( s )         = s.microspace 
+macrospace( s )         = s.macrospace 
 

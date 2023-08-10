@@ -8,7 +8,8 @@ OutsideObjective1!(
     e           :: GrumpsCheapEstimator, 
     d           :: GrumpsMarketData{T}, 
     o           :: OptimizationOptions, 
-    s           :: GrumpsMarketSpace{T}, 
+    s           :: GrumpsMarketSpace{T},
+    m           :: Int, 
     computeF    :: Bool, 
     computeG    :: Bool, 
     computeH    :: Bool 
@@ -26,10 +27,11 @@ OutsideObjective1!(
     d           :: GrumpsMarketData{T}, 
     o           :: OptimizationOptions, 
     s           :: GrumpsMarketSpace{T}, 
+    m           :: Int,
     computeF    :: Bool, 
     computeG    :: Bool, 
     computeH    :: Bool 
-    ) where {T<:Flt}   =  OutsideObjective1!( fgh, θ, δ, GrumpsMDLEEstimatorInstance, d, o, s, computeF, computeG, computeH )
+    ) where {T<:Flt}   =  OutsideObjective1!( fgh, θ, δ, GrumpsMDLEEstimatorInstance, d, o, s, m, computeF, computeG, computeH )
 
 
 # the next few functions contain the contribution to the objective function for the cheap Grumps Estimator

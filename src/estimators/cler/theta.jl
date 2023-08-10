@@ -9,6 +9,7 @@ OutsideObjective1!(
     d           :: GrumpsMarketData{T}, 
     o           :: OptimizationOptions, 
     s           :: GrumpsMarketSpace{T}, 
+    m           :: Int,
     computeF    :: Bool, 
     computeG    :: Bool, 
     computeH    :: Bool 
@@ -26,13 +27,14 @@ function  OutsideObjective1!(
     d           :: GrumpsMarketData{T}, 
     o           :: OptimizationOptions, 
     s           :: GrumpsMarketSpace{T}, 
+    m           :: Int,
     computeF    :: Bool, 
     computeG    :: Bool, 
     computeH    :: Bool 
     ) where {T<:Flt}
 
 
-    F1 = MacroObjectiveθ!( 
+    @timeit to[m] "MacroObjectiveθ!" F1 = MacroObjectiveθ!( 
         grif( computeF, fgh.F[1] ),
         grif( computeG, fgh.Gθ ),
         grif( computeH, fgh.Hθθ ),
@@ -45,7 +47,7 @@ function  OutsideObjective1!(
         true
          ) 
 
-    F2 = MicroObjectiveθ!( 
+    @timeit to[m] "MicroObjectiveθ!" F2 = MicroObjectiveθ!( 
         F1,
         grif( computeG, fgh.Gθ ),
         grif( computeH, fgh.Hθθ ),

@@ -16,7 +16,7 @@ end
 
 
 
-function ChoiceProbabilities!( πrij :: A3{T}, πri :: A2{T}, πi :: A1{T}, ZXθ :: A3{T}, y :: A1{Int}, w :: A1{T}, δ :: A1{T}, consumers, products, weights, ::Val{ :miccp }, ::Val{ :Grumps } ) where {T<:Flt}
+function ChoiceProbabilities!( πrij :: A3{T}, πri :: A2{T}, πi :: A1{T}, ZXθ :: A3{T}, y :: A1{Int}, w :: A1{T}, δ :: A1{T}, o :: OptimizationOptions, consumers, products, weights, ::Val{ :miccp }, ::Val{ :Grumps } ) where {T<:Flt}
     softmaxδ = softmax( vcat( δ, zero( T ) ) )
     πi .= zero( T )
     @threads :dynamic for i ∈ consumers
@@ -47,11 +47,9 @@ function ChoiceProbabilities!(
     ) where {T<:Flt}
 
     weights, consumers, products, insides, = RSJ( d )
-    ChoiceProbabilities!( πrij(s), πri(s), πi(s), ZXθ(s), y(d), w(d), δ, consumers, products, weights, Val( :miccp ), Val( :Grumps ) )
+    ChoiceProbabilities!( πrij(s), πri(s), πi(s), ZXθ(s), y(d), w(d), δ, o, consumers, products, weights, Val( :miccp ), Val( :Grumps ) )
     return nothing
 end
-
-
 
 
 
@@ -62,7 +60,36 @@ function ChoiceProbabilities!(
     s       :: MacroSpace{T}, 
     d       :: GrumpsMacroData{T}, 
     o       :: OptimizationOptions, 
-    δ       :: Vec{T}
+    δ       :: Vec{T},
+    loopvectorization :: Val{true}
+    ) where {T<:Flt}
+
+    weights, products, insides, = RJ( d )
+    softmaxδ = softmax( vcat( δ, zero( T ) ) )  
+
+    @tullio fastmath=false s.πrj[r,j] = s.Aθ[r,j] * softmaxδ[j]
+   
+    for r ∈ weights
+        SumNormalize!( @view s.πrj[r,:] )
+    end
+
+
+    @tullio fastmath=false s.πj[j] = d.w[r] * s.πrj[r,j]
+    
+    s.ρ .= d.N * d.s ./ s.πj
+
+
+    @tullio fastmath=false s.ρπ[r] = s.ρ[j] * s.πrj[r,j] 
+    return nothing        
+end
+
+
+function ChoiceProbabilities!( 
+    s       :: MacroSpace{T}, 
+    d       :: GrumpsMacroData{T}, 
+    o       :: OptimizationOptions, 
+    δ       :: Vec{T},
+    loopvectorization :: Val{false}
     ) where {T<:Flt}
 
     # if s.lastδ == δ && !s.mustrecompute
@@ -81,13 +108,35 @@ function ChoiceProbabilities!(
     end
 
     @threads :dynamic for j ∈ products
-        s.πj[j] = sum( d.w[r] * s.πrj[r,j] for r ∈ weights )
+        s.πj[j] = zero( T )
+        for r ∈ weights
+            s.πj[j] += d.w[r] * s.πrj[r,j] 
+        end
+    end
+
+    for j ∈ eachindex( s.ρ )
         s.ρ[j] = d.N * d.s[j] / s.πj[j]
     end
+
+    
     for r ∈ weights
         s.ρπ[r] = sum( s.ρ[j] * s.πrj[r,j] for j ∈ products )
     end
 
+
     return nothing
+end
+
+
+
+function ChoiceProbabilities!( 
+    s       :: MacroSpace{T}, 
+    d       :: GrumpsMacroData{T}, 
+    o       :: OptimizationOptions, 
+    δ       :: Vec{T}
+    ) where {T<:Flt}
+
+
+    return ChoiceProbabilities!( s, d, o, δ, Val( o.loopvectorization ) )
 end
 

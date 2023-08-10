@@ -28,12 +28,12 @@ function ObjectiveFunctionθ1!(
 
     # if recompute
     initializelastδ!( s, m )
-    grumpsδ!( inside( fgh ), θ, δ, e, d, o, marketspace( s, m ), m )
+    @timeit to[m] "grumpsδ!" grumpsδ!( inside( fgh ), θ, δ, e, d, o, marketspace( s, m ), m )
     # end
     
 
     # if computeG || computeH || !inisout( e )
-    F = OutsideObjective1!(  outside( fgh ), θ, δ, e, d, o, marketspace( s, m ), computeF, computeG, computeH )
+    @timeit to[m] "OutsideObjective1!" F = OutsideObjective1!(  outside( fgh ), θ, δ, e, d, o, marketspace( s, m ), m, computeF, computeG, computeH )
     if computeF
         fgh.outside.F .= F
     end
@@ -49,6 +49,9 @@ end
 Πhess!( H :: Mat{T}, e :: GrumpsMLE, 𝒦 :: Mat{T}, δ :: Vec{ Vec{T} }, δθ :: Vec{ Mat{T} } ) where {T<:Flt} = nothing
 
 
+# @warn "take this out"
+# using Profile
+# const profile_count = [ 0 ]
 
 # this computes the outside objective function
 function ObjectiveFunctionθ!( 
@@ -84,7 +87,7 @@ function ObjectiveFunctionθ!(
 
     # compute the likelihood values, gradients, and Hessians wrt θ
     @threads :dynamic for m ∈ markets
-        ObjectiveFunctionθ1!( 
+        @timeit to[m] "ObjectiveFunctionθ1!" ObjectiveFunctionθ1!( 
             fgh.market[m],
             θ,
             δ[m],
@@ -133,7 +136,7 @@ function ObjectiveFunctionθ!(
             @threads :dynamic for m ∈ markets
                 prd[m] = δθ[m]' * fgh.market[m].outside.Hδθ
             end
-            H[ :, : ] = sum( fgh.market[m].outside.Hθθ 
+            H .= sum( fgh.market[m].outside.Hθθ 
                         + prd[m]
                         + prd[m]'
                         + δθ[m]' * fgh.market[m].outside.Hδδ * δθ[m] 
@@ -145,6 +148,8 @@ function ObjectiveFunctionθ!(
 
     end
 
+    # profile_count[1] += 1
+    # Profile.take_heap_snapshot( "snapshot$(profile_count).heapsnapshot" )
     return F
 end
 

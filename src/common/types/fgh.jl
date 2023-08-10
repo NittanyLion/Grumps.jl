@@ -24,11 +24,11 @@ struct GrumpsMarketFGH{T<:Flt} <: MarketFGH{T}
     inside      :: GrumpsSingleFGH{T}
     outside     :: GrumpsSingleFGH{T}
 
-    function GrumpsMarketFGH( T2 :: Type, e :: GrumpsEstimator, dθ :: Int, dδ :: Int, ::Val{false} )
+    function GrumpsMarketFGH( T2 :: Type{𝒯}, e :: GrumpsEstimator, dθ :: Int, dδ :: Int, ::Val{false} ) where 𝒯
         # constructor if inside and outside objective functions are different
         return new{T2}( GrumpsSingleFGH{T2}( dθ, dδ ), GrumpsSingleFGH{T2}( dθ, dδ ) )
     end
-    function GrumpsMarketFGH( T2 :: Type, e :: GrumpsEstimator, dθ :: Int, dδ :: Int, ::Val{true} )
+    function GrumpsMarketFGH( T2 :: Type{𝒯}, e :: GrumpsEstimator, dθ :: Int, dδ :: Int, ::Val{true} ) where 𝒯
         # constructor if inside and outside objective functions are the same
         fgh = GrumpsSingleFGH{T2}( dθ, dδ )
         return new{T2}( fgh, fgh )
@@ -42,7 +42,7 @@ struct GMMMarketFGH{T<:Flt} <: MarketFGH{T}
     momdθ       :: Mat{ T }
     momdδ       :: Mat{ T }
 
-    function GMMMarketFGH( T2 :: Type, e :: GrumpsEstimator, dθ :: Int, dδ :: Int, dmom :: Int )
+    function GMMMarketFGH( T2 :: Type{𝒯}, e :: GrumpsEstimator, dθ :: Int, dδ :: Int, dmom :: Int ) where 𝒯
         return new{T2}( 
             GrumpsSingleFGH{T2}( dθ, dδ),
             zeros( T2, dmom ),
@@ -62,11 +62,11 @@ struct PMLMarketFGH{T<:Flt} <: MarketFGH{T}
     outside :: GrumpsSingleFGH{T}
     δ       :: Vec{T}
 
-    function PMLMarketFGH( T2 :: Type, e :: GrumpsEstimator, dθ :: Int, dδ :: Int, ::Val{false} )
+    function PMLMarketFGH( T2 :: Type{𝒯}, e :: GrumpsEstimator, dθ :: Int, dδ :: Int, ::Val{false} ) where 𝒯
         # constructor if inside and outside objective functions are different
         return new{T2}( GrumpsSingleFGH{T2}( dθ, dδ ), GrumpsSingleFGH{T2}( dθ, dδ ), zeros( T2, dδ ) )
     end
-    function PMLMarketFGH( T2 :: Type, e :: GrumpsEstimator, dθ :: Int, dδ :: Int, ::Val{true} )
+    function PMLMarketFGH( T2 :: Type{𝒯}, e :: GrumpsEstimator, dθ :: Int, dδ :: Int, ::Val{true} ) where 𝒯
         # constructor if inside and outside objective functions are the same
         fgh = GrumpsSingleFGH{T2}( dθ, dδ )
         return new{T2}( fgh, fgh, zeros( T2, dδ ) )

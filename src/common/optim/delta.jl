@@ -12,7 +12,7 @@ function grumpsδ!(
     ) where {T<:Flt}
 
     result = Optim.optimize(
-        Optim.only_fgh!( (F,G,H,δc)-> InsideObjective1!( F, G, H, nothing, θ, δc, e, d, o, s ) ), 
+        Optim.only_fgh!( (F,G,H,δc)-> InsideObjective1!( F, G, H, nothing, θ, δc, e, d, o, s, m ) ), 
             zeros( T, length( δ ) ), 
             NewtonTrustRegion(), 
             Optim.Options(
@@ -28,7 +28,7 @@ function grumpsδ!(
 
     copyto!( δ, result.minimizer )
     typeof(s.microspace) <: GrumpsMicroNoSpace || copyto!( s.microspace.lastδ, δ )
-    fgh.F .= InsideObjective1!( zero(T), fgh.Gδ, fgh.Hδδ, fgh.Hδθ, θ, δ, e, d, o, s )
+    fgh.F .= InsideObjective1!( zero(T), fgh.Gδ, fgh.Hδδ, fgh.Hδθ, θ, δ, e, d, o, s, m )
 
     return nothing    
 end

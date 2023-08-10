@@ -40,7 +40,7 @@ end
 
 Extracts the columns in cols from the DataFrame stored in dfp and returns a Matrix with elements of type T
 """
-function ExtractMatrixFromDataFrame( T :: Type, dfp :: AbstractDataFrame, cols :: Vec{Symbol} )
+function ExtractMatrixFromDataFrame( T :: Type{ 𝒯 }, dfp :: AbstractDataFrame, cols :: Vec{Symbol} ) where 𝒯
     MustBeInDF( cols, dfp, "" )
     return Mat{T}( dfp[ :, cols ] )
 end
@@ -50,7 +50,7 @@ end
 
 Extracts the column in col from the DataFrame stored in dfp and returns a Vector with elements of type T
 """
-function ExtractVectorFromDataFrame( T :: Type, dfp :: AbstractDataFrame, col :: Symbol )
+function ExtractVectorFromDataFrame( T :: Type{ 𝒯 }, dfp :: AbstractDataFrame, col :: Symbol ) where 𝒯
     MustBeInDF( col,  dfp, "" )
     return Vec{T}( dfp[ :, col ] )
 end
@@ -60,7 +60,7 @@ function ExtractVectorFromDataFrame( dfp :: AbstractDataFrame, col :: Symbol )
     return Vec( dfp[ :, col ] )
 end
 
-function ExtractDummiesFromDataFrame( T :: Type, dfp :: AbstractDataFrame, cols :: Vec{Symbol} )
+function ExtractDummiesFromDataFrame( T :: Type{𝒯}, dfp :: AbstractDataFrame, cols :: Vec{Symbol} ) where 𝒯
     if length( cols ) == 0
         return zeros( T, nrow(dfp), 0 ), Vec{String}( undef, 0 )
     end
@@ -86,7 +86,7 @@ function ExtractDummiesFromDataFrame( T :: Type, dfp :: AbstractDataFrame, cols 
 end
 
 
-function ExtractDummiesFromDataFrameNoDrop( T :: Type, dfp :: AbstractDataFrame, cols :: Vec{Symbol} )
+function ExtractDummiesFromDataFrameNoDrop( T :: Type{ 𝒯 }, dfp :: AbstractDataFrame, cols :: Vec{Symbol} ) where 𝒯
     E, = ExtractDummiesFromDataFrame( T, dfp, cols )
     X = [ T( 1 - sum( E[i,1:end] ) ) for i ∈ axes( E, 1 ) ]
     return hcat( E, X )

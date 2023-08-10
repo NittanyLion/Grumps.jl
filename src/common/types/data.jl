@@ -91,7 +91,7 @@ end
 struct GrumpsMicroNoData{T<:Flt} <: GrumpsMicroData{T}
     name    :: String
 
-    function GrumpsMicroNoData( s :: String, T2 :: Type = Float64 )
+    function GrumpsMicroNoData( s :: String, T2 :: Type{𝒯} = Float64 ) where 𝒯
         new{T2}( s )
     end
 end
@@ -188,10 +188,19 @@ struct Dimensions
     end
 end
 
-struct GrumpsMarketData{T<:Flt} <: MarketData{T}
-    microdata       :: GrumpsMicroData{T}
-    macrodata       :: GrumpsMacroData{T} 
+# struct GrumpsMarketData{T<:Flt} <: MarketData{T}
+#     microdata       :: GrumpsMicroData{T}
+#     macrodata       :: GrumpsMacroData{T} 
+# end
+
+
+
+struct GrumpsMarketData{T<:Flt, Mic<:GrumpsMicroData{T}, Mac<:GrumpsMacroData{T}} <: MarketData{T}
+    microdata       :: Mic
+    macrodata       :: Mac
 end
+
+
 
 struct GrumpsData{T<:Flt} <: AllData{T}
     marketdata      :: Vec{ GrumpsMarketData{T} }
@@ -216,7 +225,7 @@ struct GrumpsData{T<:Flt} <: AllData{T}
             end
         end
         @ensure dimβ( plm ) == dims.β "dimension β does not match"
-        marketdata = [ GrumpsMarketData{T2}( md[m], Md[m] ) for m ∈ eachindex( md ) ]
+        marketdata = [ GrumpsMarketData{T2, typeof(md[m]), typeof(Md[m])}( md[m], Md[m] ) for m ∈ eachindex( md ) ]
         new{T2}( marketdata, plm, varnames, bal, dims )
     end
 end
@@ -229,6 +238,7 @@ isempty( ::GrumpsMacroNoData ) = true
 w( d :: MicroData ) = d.w
 Y( d :: MicroData ) = d.Y
 y( d :: MicroData ) = d.y 
-microdata( d )      = d.microdata
+microdata( d :: GrumpsMarketData{T} ) where{T<:Flt}     = d.microdata
+macrodata( d )      = d.macrodata
 
 

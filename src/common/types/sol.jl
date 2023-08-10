@@ -31,7 +31,7 @@ mutable struct GrumpsConvergence{T<:Flt}
     x_trace                 :: Vec{ Vec{T} }
     time_run                :: Float64
 
-    function GrumpsConvergence( T2 :: Type )
+    function GrumpsConvergence( T2 :: Type{𝒯} ) where 𝒯
         new{T2}( typemax( T2 ), 0, false, false, false, false, false, 0, 0, 0, zeros(T2,0), zeros(T2,0), [ zeros(T2,0) ], 0.0 )
     end
 end
@@ -46,7 +46,7 @@ mutable struct GrumpsSolution{T<:Flt} <: Solution{T}
     convergence :: GrumpsConvergence{T}
     Vξ  :: SparseMatrixCSC{T}
 
-    function GrumpsSolution( T2 :: Type, θn :: Vec{String}, βn :: Vec{String}, δn :: Vec{String} )
+    function GrumpsSolution( T2 :: Type{𝒯}, θn :: Vec{String}, βn :: Vec{String}, δn :: Vec{String} ) where 𝒯
         θ = [ GrumpsEstimate( θn[i], typemax( T2 ), nothing, nothing ) for i ∈ eachindex( θn ) ]
         β = [ GrumpsEstimate( βn[i], typemax( T2 ), nothing, nothing ) for i ∈ eachindex( βn ) ]
         δ = [ GrumpsEstimate( δn[i], typemax( T2 ), nothing, nothing ) for i ∈ eachindex( δn ) ]

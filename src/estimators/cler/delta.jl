@@ -21,7 +21,8 @@ function InsideObjective!(
     e       :: GrumpsPenalized, 
     d       :: GrumpsData{T}, 
     o       :: OptimizationOptions, 
-    s       :: GrumpsSpace{T} 
+    s       :: GrumpsSpace{T},
+    m       :: Int
     ) where {T<:Flt}
    
 
