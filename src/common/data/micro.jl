@@ -28,6 +28,16 @@ function CreateChoices( ::Any, dfc :: AbstractDataFrame, v :: Variables, product
 end
 
 
+
+
+function Interactions!( Zt :: AbstractMatrix{T}, v1, v2 ) where {T<:Flt}
+    for j ∈ eachindex( v2 ), i ∈ eachindex( v1 )
+        Zt[ i,j ] = v1[i] * v2[j]
+    end
+    return nothing
+end
+
+
 """
     CreateInteractions( 
         id          :: Any,
@@ -39,7 +49,7 @@ end
         
     CreateInteractions reads data from consumer and product dataframes and returns an array of interactions.
 """
-function CreateInteractions( id ::Any, dfc:: AbstractDataFrame, dfp:: AbstractDataFrame, v :: Variables, T = F64 )
+function CreateInteractions( id ::Any, dfc:: AbstractDataFrame, dfp:: AbstractDataFrame, v :: Variables, T :: Type{ 𝒯 }= F64 ) where 𝒯 <: Flt
     MustBeInDF( v.interactions[:,1], dfc, "consumer data frame" )
     MustBeInDF( v.interactions[:,2], dfp, "product data frame" )
     isdefined( Main, :InteractionsCallback! ) && return CreateInteractions( Val( :GrumpsInteractions! ), dfc, dfp, v, T )
@@ -50,8 +60,8 @@ function CreateInteractions( id ::Any, dfc:: AbstractDataFrame, dfp:: AbstractDa
     J = nrow( dfp ) + 1
     dθz = size( v.interactions, 1 )
     Z = zeros( T, S, J, dθz )
-    for t ∈ 1:dθz, j ∈ 1:J-1, i ∈ 1:S
-        Z[i,j,t] = dfc[i, v.interactions[t,1] ] * dfp[j, v.interactions[t,2] ]
+    @views for t ∈ 1:dθz
+        Interactions!( Z[:,:,t], dfc[:, v.interactions[t,1] ], dfp[:, v.interactions[t,2] ]  )
     end
     return Z
 end
@@ -75,7 +85,7 @@ end
 
 
 
-function CreateInteractions( ::Val{:GrumpsInteractions!}, dfc :: AbstractDataFrame, dfp :: AbstractDataFrame, v :: Variables, T = F64 )
+function CreateInteractions( ::Val{:GrumpsInteractions!}, dfc :: AbstractDataFrame, dfp :: AbstractDataFrame, v :: Variables, T :: Type{ 𝒯 }= F64 ) where 𝒯
     MustBeInDF( v.interactions[:,1], dfc, "consumer data frame" )
     MustBeInDF( v.interactions[:,2], dfp, "product data frame" )
     S = nrow( dfc ); J = nrow( dfp) + 1; dθz = size( v.interactions, 1 )
@@ -204,6 +214,10 @@ function GrumpsMicroDataMode( ::Any, dfp, mkt, nw :: NodesWeights, T, v, y, Y, Z
     @ensure false "memory mode you chose is not programmed in GrumpsMicroDataMode"
 end
 
+function CreateProducts( s, outsidegood  )
+    vcat( String.( string.( s) ), String( string( outsidegood  ) ) )
+end
+
 
 function GrumpsMicroData( 
     id :: Any,
@@ -215,27 +229,29 @@ function GrumpsMicroData(
     rng :: AbstractRNG, 
     o :: DataOptions,
     usesmicmom :: Bool,
-    T = F64
-    )
+    m  :: Int,
+    T :: Type{ 𝒯 } = F64
+    ) where 𝒯
 
-    MustBeInDF( v.choice, dfc, "consumer" ) 
-    MustBeInDF( v.product, dfp,  "product" ) 
-    products = String.( string.( vcat( dfp[ :, v.product ] , v.outsidegood ) ) ) 
+    @timeit to[m] "mustbein" MustBeInDF( v.choice, dfc, "consumer" ) 
+    @timeit to[m] "mustbein2" MustBeInDF( v.product, dfp,  "product" ) 
+    @timeit to[m] "create products" products :: Vector{ String } =  CreateProducts( dfp[ :, v.product ], v.outsidegood )
     @ensure NoDuplicates( products ) "unexpected duplicates in $products"
-    y, Y = CreateChoices( id, dfc, v, products )
+    @timeit to[m] "create choices" y, Y = CreateChoices( id, dfc, v, products )
 
-    Z = CreateInteractions( id, dfc, dfp, v, T )
+    @timeit to[m] "create interactions" Z = CreateInteractions( id, dfc, dfp, v, T )
     # if size(Z2,3) > 0
     #     @ensure size(Z,1) == size(Z2,1) "user-created interactions matrix has the wrong first dimension"
     #     @ensure size(Z,2) == size(Z2,2) "user-created interactions matrix has the wrong first dimension"
     #     Z = cat( Z, Z2; dims = 3 )
     # end
 
-    ℳ = CreateMicroInstruments(  id, dfc, dfp, v, usesmicmom, T )
+    @timeit to[m] "create micro instruments" ℳ = CreateMicroInstruments(  id, dfc, dfp, v, usesmicmom, T )
 
-    return GrumpsMicroDataMode(  id, dfp, mkt, nw, T, v, y, Y, Z, ℳ, Val( micromode(o) ) )
+    return @timeit to[m] "GrumpsMicroDataMode" GrumpsMicroDataMode(  id, dfp, mkt, nw, T, v, y, Y, Z, ℳ, Val( micromode(o) ) )
 end
 
+# MicroData( id, mkt, dfc,dfp, v, nw,rng, o, usesmicmom, T ) = MicroData( id, mkt, dfc,dfp, v, nw,rng, o, usesmicmom, T )
 MicroData(x...; y...) = GrumpsMicroData(x...; y...)
 MicroDataMode(x...; y...) = GrumpsMicroDataMode(x...; y...)
 export MicroData, MicroDataMode

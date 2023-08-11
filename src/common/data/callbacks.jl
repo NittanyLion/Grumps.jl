@@ -1,6 +1,6 @@
 
 
-function CheckInteractionsCallBackFunctionality( ::Val{ :regular }, replicable :: Bool, options :: DataOptions, T ) 
+function CheckInteractionsCallBackFunctionality( ::Val{ :regular }, replicable :: Bool, options :: DataOptions, T ) :: Bool
     if !replicable
         replicable = true
         advisory( "setting replicability to true due to user-defined callback" )
@@ -20,7 +20,7 @@ function CheckInteractionsCallBackFunctionality( ::Val{ :regular }, replicable :
 end
 
 
-function CheckInteractionsCallBackFunctionality( ::Val{ :bang }, replicable :: Bool, options :: DataOptions, T ) 
+function CheckInteractionsCallBackFunctionality( ::Val{ :bang }, replicable :: Bool, options :: DataOptions, T ) :: Bool
     if !replicable
         replicable = true
         advisory( "setting replicability to true due to user-defined callback" )
@@ -51,7 +51,7 @@ end
 
 
 
-function CheckInteractionsCallBackFunctionality( replicable :: Bool, options :: DataOptions, T ) 
+function CheckInteractionsCallBackFunctionality( replicable :: Bool, options :: DataOptions, T ) :: Bool
 
     isdefined( Main, :InteractionsCallback ) || isdefined( Main, :InteractionsCallback! ) || return replicable
     @ensure micromode( options ) == :Hog "Grumps requires micro data mode :Hog for user-defined interactions callbacks"
