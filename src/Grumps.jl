@@ -6,7 +6,6 @@ module Grumps
 using OhMyREPL
 
 include( "debug.jl" )
-include( "prompt.jl" )
 include( "exports.jl" )
 include( "includes.jl" )
 
