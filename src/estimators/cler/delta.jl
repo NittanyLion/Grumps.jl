@@ -21,8 +21,7 @@ function InsideObjective!(
     e       :: GrumpsPenalized, 
     d       :: GrumpsData{T}, 
     o       :: OptimizationOptions, 
-    s       :: GrumpsSpace{T},
-    m       :: Int
+    s       :: GrumpsSpace{T}
     ) where {T<:Flt}
    
 
@@ -40,6 +39,7 @@ function InsideObjective!(
             d.marketdata[m].macrodata, 
             s.marketspace[m].macrospace, 
             o,
+            m,
             true 
             )  
         fval += MicroObjectiveδ!( T(0.0), 
@@ -49,6 +49,7 @@ function InsideObjective!(
             d.marketdata[m].microdata, 
             s.marketspace[m].microspace, 
             o, 
+            m,
             false 
             )  
 

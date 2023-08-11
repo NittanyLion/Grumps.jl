@@ -114,12 +114,11 @@ function GrumpsData(
     mac = Vec{ GrumpsMacroData{T} }( undef, M )
     fap = [ findall( x->string(x) == markets[m], dfproducts[:, v.market ] :: Vector{ Int }) for m ∈ 1:M ] :: Vector{ Vector{ Int } }
 
-    dθν = length( v.randomcoefficients )# + dim( u, :randomcoefficients )
-    dθ = dθν + size(v.interactions,1)# + dim( u, :interactions )
+    dθν = length( v.randomcoefficients )
+    dθ = dθν + size(v.interactions,1)
 
     # process data needed for the micro likelihood
-    dfconsumers, mic, nwgmic = MicroCreation( replicable, e, s.consumers, dfproducts, v, markets, M, integrators, dθν, rngs, id, fap, options, T ) #:: 
-        # Tuple{ Union{DataFrame,Nothing}, , Union{ MicroIntegrator{T}, Nothing } }
+    dfconsumers, mic, nwgmic = MicroCreation( replicable, e, s.consumers, dfproducts, v, markets, M, integrators, dθν, rngs, id, fap, options, T )  
 
     # process data needed for the macro likelihood
     @info "creating data objects for macro likelihood"

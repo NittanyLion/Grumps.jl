@@ -35,7 +35,7 @@ end
 
 
 
-function grumpsδ!( fgh :: PMLFGH{T}, θ::Vec{T}, δ :: Vec{ Vec{T} }, e :: GrumpsPenalized, d :: GrumpsData{T}, o :: OptimizationOptions, s :: GrumpsSpace{T} ) where {T<:Flt}
+function grumpsδ!( fgh :: PMLFGH{T}, θ::Vec{T}, δ :: Vec{ Vec{T} }, e :: GrumpsPenalized, d :: GrumpsData{T}, o :: OptimizationOptions, s :: GrumpsSpace{T}  ) where {T<:Flt}
 
     markets = 1:dimM( d )
 

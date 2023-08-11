@@ -70,6 +70,7 @@ function MicroObjectiveδ!(
     d           :: MicroData{T}, 
     s           :: MicroSpace{T},
     o           :: OptimizationOptions, 
+    m           :: Int,
     setzero     :: Bool = true 
     ) :: Union{T,Nothing} where {T<:Flt}
 

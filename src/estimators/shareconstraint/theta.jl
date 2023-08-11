@@ -9,6 +9,7 @@ OutsideObjective1!(
     d           :: GrumpsMarketData{T}, 
     o           :: OptimizationOptions, 
     s           :: GrumpsMarketSpace{T}, 
+    m           :: Int,
     computeF    :: Bool, 
     computeG    :: Bool, 
     computeH    :: Bool 
@@ -26,6 +27,7 @@ function  OutsideObjective1!(
     d           :: GrumpsMarketData{T}, 
     o           :: OptimizationOptions, 
     s           :: GrumpsMarketSpace{T}, 
+    m           :: Int,
     computeF    :: Bool, 
     computeG    :: Bool, 
     computeH    :: Bool 
@@ -43,6 +45,7 @@ function  OutsideObjective1!(
         d.microdata,
         s.microspace,
         o,
+        m,
         true
         ) 
     
@@ -54,6 +57,7 @@ function  OutsideObjective1!(
             d.microdata,
             s.microspace,
             o,
+            m,
             true
             ) 
 

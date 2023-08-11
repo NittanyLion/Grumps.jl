@@ -88,7 +88,7 @@ function Balance!( gd :: GrumpsData{T}, scheme :: Val{ :micro } ) where {T<:Flt}
    
     dθ = length( gd.balance )
     activemarkets = findall( x->!( typeof(x.microdata) <: GrumpsMicroNoData ), gd.marketdata )
-    dθz = size( gd.marketdata[activemarkets[1]].microdata.Z, 3 )
+    dθz = size( gd.marketdata[activemarkets[1]].microdata.Z, 3 ) :: Int
     # normalize interactions
     @threads for t ∈ 1:dθz
         μ = σ = zero( T )

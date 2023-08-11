@@ -44,6 +44,7 @@ function  OutsideObjective1!(
         d.macrodata,
         s.macrospace,
         o,
+        m,
         true
          ) 
 
@@ -57,6 +58,7 @@ function  OutsideObjective1!(
         d.microdata,
         s.microspace,
         o,
+        m,
         false
         ) 
     

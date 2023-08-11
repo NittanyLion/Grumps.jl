@@ -5,3 +5,5 @@ const minimumversion = v"1.8.0"
 
 
 using DataFrames, CSV, Printf, Random123, Random, FastGaussQuadrature, StatsBase, Optim, StatsFuns, LinearAlgebra, StringDistances, TypeTree, Smartphores, SparseArrays, Dates, Ansillary, LoopVectorization
+
+using Profile, ProfileView

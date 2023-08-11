@@ -43,39 +43,32 @@ function GrumpsData(
     replicable          :: Bool = false
     ) where 𝒯
 
-    @warn "am I coming here?"
-    reset_timer!.( to )
 
     # check compatibility of choices made 
-    @info "checking compatibility"
-    @time CheckCompatible( e, integrators, options )
+    CheckCompatible( e, integrators, options )
 
     replicable :: Bool = CheckInteractionsCallBackFunctionality( replicable, options, T )
 
     # read data from file if not already done
     @info "reading data"
-    @time s = readfromfile( ss )
+    s = readfromfile( ss )
 
     # initialize random numbers
-    @info "creating random number generators"
     replicable || advisory( "replicability is set to false\nthis is faster\nbut you will get different results\nfrom one run to the next" )
     replicable && advisory( "replicability is set to true\nthis is slower\nbut you will get the same results\nfrom one run to the next" )
 
-    @info "creating random number generators"
-    @time  rngs = RandomNumberGenerators( nthreads(); replicable = replicable )
+    rngs = RandomNumberGenerators( nthreads(); replicable = replicable )
 
     @ensure isa( s.products, DataFrame )   "was expecting a DataFrame for product data"
-    @info "adding constant"
-    @time  AddConstant!( s.products )
+    AddConstant!( s.products )
     MustBeInDF( [ v.market; v.product ], s.products, "products" )
     
-    @time "creating markets" markets = sort( unique( string.( s.products[:,v.market] ) ) )
+    markets = sort( unique( string.( s.products[:,v.market] ) ) )
     M = length( markets )
 
     mic = Vec{ GrumpsMicroData{T} }( undef, M )
     mac = Vec{ GrumpsMacroData{T} }( undef, M )
-    @info "finding all products"
-    @time fap = [ findall( x->string(x) == markets[m], s.products[:, v.market ] ) for m ∈ 1:M ]
+    fap = [ findall( x->string(x) == markets[m], s.products[:, v.market ] ) for m ∈ 1:M ]
 
     dθν = length( v.randomcoefficients )# + dim( u, :randomcoefficients )
     dθ = dθν + size(v.interactions,1)# + dim( u, :interactions )
@@ -84,12 +77,9 @@ function GrumpsData(
     !usesmicrodata( e ) && isa( s.consumers, DataFrame ) && advisory( "ignoring the consumer information you specified\nsince it is not used for this estimator type" )
     @ensure !usesmicrodata( e ) || isa( s.consumers, DataFrame ) "this estimator type requires consumer information; please pass consumer info in Sources"
 
-    @info "creating data objects for micro likelihood"
-    @time if isa( s.consumers, DataFrame ) && usesmicrodata( e )
-        @info "checking whether in DF"
-        @time MustBeInDF( [ v.market, v.choice ], s.consumers, "consumers" )
-        @info "global micro weights"
-        @time nwgmic = NodesWeightsGlobal( microintegrator( integrators ), dθν, rngs[1]  )
+    if isa( s.consumers, DataFrame ) && usesmicrodata( e )
+        MustBeInDF( [ v.market, v.choice ], s.consumers, "consumers" )
+        nwgmic = NodesWeightsGlobal( microintegrator( integrators ), dθν, rngs[1]  )
         if replicable 
             for m ∈ 1:M
                 MicroCreation!( replicable, markets, s, v, integrators, dθν, rngs, nwgmic, mic, id, fap, options, e, T, m )
@@ -106,7 +96,6 @@ function GrumpsData(
     end
 
     # process data needed for the macro likelihood
-    @info "creating data objects for macro likelihood"
     !usesmacrodata( e ) && isa( s.marketsizes, DataFrame ) && advisory( "ignoring the market size information you provided\nsince it is not used for this estimator type" )
     @ensure !usesmacrodata( e ) || isa( s.marketsizes, DataFrame ) "this estimator type requires market size information; please pass market size information in Sources"
     @time if isa( s.marketsizes, DataFrame ) && usesmacrodata( e )
@@ -131,19 +120,14 @@ function GrumpsData(
         end
     end
 
-    @info "creating objects for use in product level moments term"
     # create product level data
-    @info "creating template"
-    @time template = Template( Val( id ), options, s.products, fap )
-    @info "creating PLM data"
-    @time plm = GrumpsPLMData( Val( id ), e, s, v, fap, usespenalty( e ), VarianceMatrixξ( options ), template )
+    template = Template( Val( id ), options, s.products, fap )
+    plm = GrumpsPLMData( Val( id ), e, s, v, fap, usespenalty( e ), VarianceMatrixξ( options ), template )
 
     # now create variable labels
-    @info "creating market product strings"
-    @time marketproductstrings = vcat( [ [ ( c == 1 ) ? markets[m] : string( s.products[ fap[m][r], v.product ] ) for r ∈ 1:length( fap[m] ), c ∈ 1:2 ] for m ∈ 1:M ] ... )
+    marketproductstrings = vcat( [ [ ( c == 1 ) ? markets[m] : string( s.products[ fap[m][r], v.product ] ) for r ∈ 1:length( fap[m] ), c ∈ 1:2 ] for m ∈ 1:M ] ... )
         
-    @info "creating variable names"
-    @time varnames = VariableNames( 
+    varnames = VariableNames( 
         v.interactions,                 # names of interaction variables
         v.randomcoefficients,           # names of random coefficients
         plm.names,                      # names of all regressor variables
@@ -151,14 +135,10 @@ function GrumpsData(
     )
     
     nrm = Vec{ GrumpsNormalization{T} }(undef, dθ )
-    @info "Creating dimensions"
-    @time dims = Dimensions( dθ, dθ - dθν, dθν, length( plm.names ), length.( fap ), dimmom( plm ) + (( typeof(e) <: GrumpsGMM) ? size( v.microinstruments, 1 ) : 0 ) )
+    dims = Dimensions( dθ, dθ - dθν, dθν, length( plm.names ), length.( fap ), dimmom( plm ) + (( typeof(e) <: GrumpsGMM) ? size( v.microinstruments, 1 ) : 0 ) )
 
-    @info "creating data objects"
-    @time gd = GrumpsData{T}( mic, mac, plm, varnames, nrm, dims )
-    @info "balancing"
-    @time Balance!( gd, Val( options.balance ) )
-    println( TimerOutputs.merge( to... ) )
+    gd = GrumpsData{T}( mic, mac, plm, varnames, nrm, dims )
+    Balance!( gd, Val( options.balance ) )
     return gd
 end
 

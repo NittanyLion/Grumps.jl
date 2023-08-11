@@ -32,6 +32,7 @@ function  InsideObjective1!(
         microdata( d ),
         microspace( s ),
         o,
+        m,
         false               # this is to indicate that things shouldn't be set to zero
          ) 
 

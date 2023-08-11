@@ -9,6 +9,7 @@ OutsideObjective1!(
     d           :: GrumpsMarketData{T}, 
     o           :: OptimizationOptions, 
     s           :: GrumpsMarketSpace{T}, 
+    m           :: Int,
     computeF    :: Bool, 
     computeG    :: Bool, 
     computeH    :: Bool 

@@ -20,6 +20,7 @@ function  InsideObjective1!(
         d.macrodata,
         s.macrospace,
         o,
+        m,
         true
          ) 
 
@@ -35,6 +36,7 @@ function  InsideObjective1!(
             d.macrodata, 
             s.macrospace,
             o,
+            m,
             true 
         )
     end

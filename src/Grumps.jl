@@ -3,15 +3,14 @@
 
 module Grumps
 
-# run(`clear`)
-
+using OhMyREPL
 
 include( "debug.jl" )
-
-
+include( "prompt.jl" )
 include( "exports.jl" )
 include( "includes.jl" )
-@info "loaded all code"
+
+@info "included all code"
 
 const Grumps_version = v"0.2.0"
 export Grumps_version
@@ -30,6 +29,9 @@ end
 
 function __init__()
 
+    @info "should be resetting prompt here"
+    OhMyREPL.input_prompt!( "GruMPS> ", :green) 
+    OhMyREPL.output_prompt!( "GruMPS> ", :blue) 
 
     sp = ( isdefined( Main, :splashprobs ) && typeof( Main.splashprobs ) == Vector{Float64} ) ?
                             Main.splashprobs : defaultsplashprobs
@@ -56,13 +58,13 @@ function __init__()
         printstyled( "$count: $𝓁\n"; bold = false ) 
     end
     println()
-    printstyled( "This is Grumps version $Grumps_version\n\n\n"; color= 206, bold = true ); 
 
     lastversiondate = try 
         readlines( "$(@__DIR__)/versiondate" )[1] |> Date
     catch
         Date( "2023-05-01" )
     end
+    printstyled( "This is Grumps version $Grumps_version ($lastversiondate)\n\n\n"; color= 206, bold = true ); 
     versionage = Day( today() - lastversiondate ) |> Dates.value
     if  versionage ≥ 60
         zebraprint( "Your version of Grumps is $versionage days old: please check for updates regularly!\n\n\n")

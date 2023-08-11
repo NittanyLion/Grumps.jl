@@ -4,7 +4,6 @@
 
 
 function GrumpsPLMData( id :: Any, e :: Estimator, s :: Sources, v :: Variables, fap :: Vec{ Vec{Int} }, usepenaltyterm :: Bool, V :: VarξInput{T}, template :: VarξTemplate )  where {T<:Flt}
-    @ensure T <: AbstractFloat "was expecting floating point type"
     @ensure isa( s.products, DataFrame )   "was expecting a DataFrame for product data"
         
     ( dumsunsorted, dumbnames ) = ExtractDummiesFromDataFrame( T, s.products, v.dummies )

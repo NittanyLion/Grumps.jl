@@ -233,22 +233,16 @@ function GrumpsMicroData(
     T :: Type{ 𝒯 } = F64
     ) where 𝒯
 
-    @timeit to[m] "mustbein" MustBeInDF( v.choice, dfc, "consumer" ) 
-    @timeit to[m] "mustbein2" MustBeInDF( v.product, dfp,  "product" ) 
-    @timeit to[m] "create products" products :: Vector{ String } =  CreateProducts( dfp[ :, v.product ], v.outsidegood )
+    MustBeInDF( v.choice, dfc, "consumer" ) 
+    MustBeInDF( v.product, dfp,  "product" ) 
+    products :: Vector{ String } =  CreateProducts( dfp[ :, v.product ], v.outsidegood )
     @ensure NoDuplicates( products ) "unexpected duplicates in $products"
-    @timeit to[m] "create choices" y, Y = CreateChoices( id, dfc, v, products )
+    y, Y = CreateChoices( id, dfc, v, products )
 
-    @timeit to[m] "create interactions" Z = CreateInteractions( id, dfc, dfp, v, T )
-    # if size(Z2,3) > 0
-    #     @ensure size(Z,1) == size(Z2,1) "user-created interactions matrix has the wrong first dimension"
-    #     @ensure size(Z,2) == size(Z2,2) "user-created interactions matrix has the wrong first dimension"
-    #     Z = cat( Z, Z2; dims = 3 )
-    # end
+    Z = CreateInteractions( id, dfc, dfp, v, T )
+    ℳ = CreateMicroInstruments(  id, dfc, dfp, v, usesmicmom, T )
 
-    @timeit to[m] "create micro instruments" ℳ = CreateMicroInstruments(  id, dfc, dfp, v, usesmicmom, T )
-
-    return @timeit to[m] "GrumpsMicroDataMode" GrumpsMicroDataMode(  id, dfp, mkt, nw, T, v, y, Y, Z, ℳ, Val( micromode(o) ) )
+    return GrumpsMicroDataMode(  id, dfp, mkt, nw, T, v, y, Y, Z, ℳ, Val( micromode(o) ) )
 end
 
 # MicroData( id, mkt, dfc,dfp, v, nw,rng, o, usesmicmom, T ) = MicroData( id, mkt, dfc,dfp, v, nw,rng, o, usesmicmom, T )

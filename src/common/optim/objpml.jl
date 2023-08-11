@@ -18,11 +18,11 @@ function ObjectiveFunctionθ1!(
     computeF    :: Bool,
     computeG    :: Bool,
     computeH    :: Bool,
-    m           :: Int                              
+    m           :: Int                      
     ) where {T<:Flt}
 
 
-    F = OutsideObjective1!(  fgh.outside, θ, δ, e, d, o, ms, computeF, computeG, computeH )
+    F = OutsideObjective1!(  fgh.outside, θ, δ, e, d, o, ms, m, computeF, computeG, computeH )
     if computeF
         fgh.outside.F .= F
     end
