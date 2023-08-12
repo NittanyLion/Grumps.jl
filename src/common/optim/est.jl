@@ -23,9 +23,7 @@ function grumps!( epassed :: Estimator, d :: Data{T}, o :: OptimizationOptions, 
     BLAS.set_num_threads( blasthreads( o ) )
     
     memblock    = MemBlock( d, o )
-    for m ∈ 1:MaxTimerMarkets 
-        reset_timer!( to[m] )
-    end
+
 
     GC.@preserve memblock begin
         θstart      = StartingValues( θstart, e, d, o )

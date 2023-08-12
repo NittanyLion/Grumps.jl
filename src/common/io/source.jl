@@ -27,15 +27,5 @@ function readfromfile( s :: GrumpsSources )
     valprod = GrabField( s.products )
     valmksz = GrabField( s.marketsizes )
     valdraw = GrabField( s.draws )
-    println( typeof( valprod ) )
     return Sources( valcons, valprod, valmksz, valdraw )
 end
-# function readfromfile( s :: GrumpsSources ) 
-#     fields = [ :consumers, :products, :marketsizes, :draws ]
-#     values = Vec{T}(undef, length(fields) )
-#     for i ∈ eachindex( fields )
-#         f = getfield( s, fields[i] )
-#         values[i] = isa( f, SourceFileType ) ? readfromfile( f ) : f
-#     end
-#     return Sources( values... )
-# end

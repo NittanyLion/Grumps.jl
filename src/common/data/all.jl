@@ -97,7 +97,7 @@ function GrumpsData(
     # process data needed for the macro likelihood
     !usesmacrodata( e ) && isa( s.marketsizes, DataFrame ) && advisory( "ignoring the market size information you provided\nsince it is not used for this estimator type" )
     @ensure !usesmacrodata( e ) || isa( s.marketsizes, DataFrame ) "this estimator type requires market size information; please pass market size information in Sources"
-    @time if isa( s.marketsizes, DataFrame ) && usesmacrodata( e )
+    if isa( s.marketsizes, DataFrame ) && usesmacrodata( e )
         MustBeInDF( [ v.market, v.marketsize ], s.marketsizes, "market sizes" )
         nwgmac = NodesWeightsGlobal( macrointegrator( integrators ), dθ, s.draws, v, rngs[1] )
         subdfs = groupby( s.draws, v.market )
@@ -257,6 +257,6 @@ function Data(
     replicable          :: Bool = false
      )
 
-    @profview return GrumpsData( e, ss, v, microintegrator, macrointegrator, T; options = options, replicable = replicable )
+    return GrumpsData( e, ss, v, microintegrator, macrointegrator, T; options = options, replicable = replicable )
 
 end

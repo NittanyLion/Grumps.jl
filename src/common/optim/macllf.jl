@@ -258,7 +258,6 @@ function UpdateGradientHessian!(
 end
 
 
-using UUIDs
 
 function UpdateGradientHessian!( 
     G           :: GType{T},
@@ -270,7 +269,6 @@ function UpdateGradientHessian!(
 
 
     return UpdateGradientHessian!( G, Hθθ, Hδθ, d, s, o, Val( o.loopvectorization ) )
-    # return UpdateGradientHessian!( G, Hθθ, Hδθ, d, s, o, Val( false ) )
 end
 
 
