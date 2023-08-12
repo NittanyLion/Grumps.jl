@@ -16,7 +16,7 @@
 function CreateChoices( ::Any, dfc :: AbstractDataFrame, v :: Variables, products :: Vec{<:AbstractString} )
     MustBeInDF( v.choice, dfc, "consumer data frame" ) 
 
-    S = nrow( dfc )
+    S = nrow( dfc ) :: Int
     y = zeros( Int, S ) 
     J = length( products )
     Y = fill( false, S, J )
@@ -30,12 +30,12 @@ end
 
 
 
-function Interactions!( Zt :: AbstractMatrix{T}, v1, v2 ) where {T<:Flt}
-    for j ∈ eachindex( v2 ), i ∈ eachindex( v1 )
-        Zt[ i,j ] = v1[i] * v2[j]
-    end
-    return nothing
-end
+# function Interactions!( Zt :: AbstractMatrix{T}, v1, v2 ) where {T<:Flt}
+#     for j ∈ eachindex( v2 ), i ∈ eachindex( v1 )
+#         Zt[ i,j ] = v1[i] * v2[j]
+#     end
+#     return nothing
+# end
 
 
 """
@@ -56,12 +56,14 @@ function CreateInteractions( id ::Any, dfc:: AbstractDataFrame, dfp:: AbstractDa
     isdefined( Main, :InteractionsCallback ) && return CreateInteractions( Val( :GrumpsInteractions ), dfc, dfp, v, T )
 
 
-    S = nrow( dfc )
+    S = nrow( dfc ) 
     J = nrow( dfp ) + 1
-    dθz = size( v.interactions, 1 )
+    dθz = size( v.interactions, 1 ) :: Int
     Z = zeros( T, S, J, dθz )
-    @views for t ∈ 1:dθz
-        Interactions!( Z[:,:,t], dfc[:, v.interactions[t,1] ], dfp[:, v.interactions[t,2] ]  )
+    # @views for t ∈ 1:dθz :: Int
+        # Interactions!( Z[:,:,t], dfc[:, v.interactions[t,1] ], dfp[:, v.interactions[t,2] ]  )
+    for t ∈ 1:dθz, j ∈ 1:J-1, i ∈ 1: S
+        Z[i,j,t] = T( dfc[i, v.interactions[t,1] ] * dfp[j, v.interactions[t,2] ] ) :: T
     end
     return Z
 end
@@ -214,9 +216,9 @@ function GrumpsMicroDataMode( ::Any, dfp, mkt, nw :: NodesWeights, T, v, y, Y, Z
     @ensure false "memory mode you chose is not programmed in GrumpsMicroDataMode"
 end
 
-function CreateProducts( s, outsidegood  )
-    vcat( String.( string.( s) ), String( string( outsidegood  ) ) )
-end
+# function CreateProducts( s, outsidegood  )
+#     vcat( String.( string.( s) ), String( string( outsidegood  ) ) )
+# end
 
 
 function GrumpsMicroData( 
@@ -235,7 +237,8 @@ function GrumpsMicroData(
 
     MustBeInDF( v.choice, dfc, "consumer" ) 
     MustBeInDF( v.product, dfp,  "product" ) 
-    products :: Vector{ String } =  CreateProducts( dfp[ :, v.product ], v.outsidegood )
+    products = vcat( String.( string.(  dfp[ :, v.product ] ) ), String( string( v.outsidegood  ) ) ) :: Vector{ String }
+    #  CreateProducts( dfp[ :, v.product ], v.outsidegood ) :: Vector{ String }
     @ensure NoDuplicates( products ) "unexpected duplicates in $products"
     y, Y = CreateChoices( id, dfc, v, products )
 

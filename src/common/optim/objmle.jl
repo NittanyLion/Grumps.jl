@@ -28,12 +28,12 @@ function ObjectiveFunctionθ1!(
 
     # if recompute
     initializelastδ!( s, m )
-    @timeit to[m] "grumpsδ!" grumpsδ!( inside( fgh ), θ, δ, e, d, o, marketspace( s, m ), m )
+    grumpsδ!( inside( fgh ), θ, δ, e, d, o, marketspace( s, m ), m )
     # end
     
 
     # if computeG || computeH || !inisout( e )
-    @timeit to[m] "OutsideObjective1!" F = OutsideObjective1!(  outside( fgh ), θ, δ, e, d, o, marketspace( s, m ), m, computeF, computeG, computeH )
+    F = OutsideObjective1!(  outside( fgh ), θ, δ, e, d, o, marketspace( s, m ), m, computeF, computeG, computeH )
     if computeF
         fgh.outside.F .= F
     end
@@ -87,7 +87,8 @@ function ObjectiveFunctionθ!(
 
     # compute the likelihood values, gradients, and Hessians wrt θ
     @threads :dynamic for m ∈ markets
-        @timeit to[m] "ObjectiveFunctionθ1!" ObjectiveFunctionθ1!( 
+        # println( to[m] )
+        ObjectiveFunctionθ1!( 
             fgh.market[m],
             θ,
             δ[m],

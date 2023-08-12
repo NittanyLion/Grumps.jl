@@ -56,26 +56,26 @@ function MacroObjectiveδ!(
 
     F = SetZero!( setzero, F, G, H, nothing )                                       # set F,G,H to zero if so desired
 
-    @timeit to[m] "ChoiceProbabilities!" ChoiceProbabilities!( s, d, o, δ )                                             # fill s with some goodies
+    ChoiceProbabilities!( s, d, o, δ )                                             # fill s with some goodies
 
     if computeF
-        @timeit to[m] "F"  F -= d.N * sum( iszero( d.s[j] ) ? d.s[j] : d.s[j] * log( s.πj[j] / d.s[j] ) for j ∈ products )                        # compute objective function
+        F -= d.N * sum( iszero( d.s[j] ) ? d.s[j] : d.s[j] * log( s.πj[j] / d.s[j] ) for j ∈ products )                        # compute objective function
     end
 
 
     computeG || computeH || return F                                                # return if G,H are not needed
     # now compute the gradient and/or Hessian
-    @timeit to[m] "Σππ" Σππ = ComputeΣππ( s, d, o )
+    Σππ = ComputeΣππ( s, d, o )
 
 
     if computeG 
-        @timeit to[m] "G"  @inbounds for k ∈ insides
+        @inbounds for k ∈ insides
             G[k] -=  ( d.N * d.s[k] - sum( s.ρ[j] * Σππ[j,k] for j ∈ products ) )
         end           
     end
 
     if computeH
-        @timeit to[m] "H" MacHessianδ!( H, d, s, Σππ, o )
+        MacHessianδ!( H, d, s, Σππ, o )
     end
 
     return F
@@ -321,7 +321,7 @@ function MacroObjectiveθ!(
     
     computeG || computeHθθ || computeHδθ || return F
 
-    @timeit to[m] "updating hessian and gradient" UpdateGradientHessian!( G, Hθθ, Hδθ, d, s, o )
+    UpdateGradientHessian!( G, Hθθ, Hδθ, d, s, o )
 
 
 

@@ -6,12 +6,13 @@ FillAθ!( θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMacroNoData{T}, o ::
 function FillAθ!( id :: Any, θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMacroDataAnt{T}, o :: OptimizationOptions, s :: GrumpsMacroSpace{T}  ) where {T<:Flt}
     isdefined( Main, :InteractionsCallback! ) && return FillAθ!( Val( :GrumpsInteractions! ), θ, e, d, o, s ) 
     isdefined( Main, :InteractionsCallback ) && return FillAθ!( Val( :GrumpsInteractions ), θ, e, d, o, s ) 
-    weights, products, insides, parameters = RJ( d )
-    @threads :dynamic for r ∈ weights
-        for j ∈ products
-            s.Aθ[r,j] = sum( d.𝒟[r,t] * d.𝒳[j,t] * θ[t] for t ∈ parameters )
-        end
-    end
+    # weights, products, insides, parameters = RJ( d )
+    # @threads :dynamic for r ∈ weights
+    #     for j ∈ products
+    #         s.Aθ[r,j] = sum( d.𝒟[r,t] * d.𝒳[j,t] * θ[t] for t ∈ parameters )
+    #     end
+    # end
+    @tullio fastmath=false s.Aθ[r,j] = d.𝒟[r,t] * d.𝒳[j,t] * θ[t]
     return nothing
 end
 
@@ -39,11 +40,16 @@ FillZXθ!(  θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMicroNoData{T}, o 
 
 
 function FillZXθ!(  :: Any, θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMicroDataHog{T}, o :: OptimizationOptions, s :: GrumpsMicroSpace{T}  ) where {T<:Flt}
-    @threads :dynamic for i ∈ 1:dimS( d )
-        for r ∈ 1:dimR( d ), j ∈ 1:dimJ( d )
-            s.ZXθ[r,i,j] = sum( d.Z[i,j,t] * θ[t] for t ∈ 1:dimθz( d ) ) + sum( d.X[r,j,t] * θ[ t+ dimθz( d ) ] for t ∈ 1:dimθν( d ) )
-        end
+    # @threads :dynamic for i ∈ 1:dimS( d )
+    #     for r ∈ 1:dimR( d ), j ∈ 1:dimJ( d )
+    #         s.ZXθ[r,i,j] = sum( d.Z[i,j,t] * θ[t] for t ∈ 1:dimθz( d ) ) + sum( d.X[r,j,t] * θ[ t+ dimθz( d ) ] for t ∈ 1:dimθν( d ) )
+    #     end
+    # end
+    for r ∈ 1:dimR( d )
+        @tullio fastmath=false s.ZXθ[$r,i,j] = d.Z[i,j,t] * θ[t+0]  
     end
+    dθz = dimθz( d ) :: Int
+    @tullio fastmath=false s.ZXθ[r,i,j] += d.X[r,j,t] * θ[ t+ $dθz ] 
     return nothing
 end
 

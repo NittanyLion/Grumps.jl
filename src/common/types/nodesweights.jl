@@ -146,11 +146,22 @@ function DefaultMacroIntegrator( T::Type = F64; options :: Union{Vec{Symbol}, No
     DefaultMacroIntegrator( 10_000, T; options = options )
 end
 
-abstract type GrumpsIntegrators{T<:Flt} end
+# abstract type GrumpsIntegrators{T<:Flt} end
+abstract type GrumpsIntegrators{Mic,Mac} end
 
-struct BothIntegrators{T} <: GrumpsIntegrators{T} 
-    microintegrator :: MicroIntegrator{T}
-    macrointegrator :: MacroIntegrator{T}
+# struct BothIntegrators{T} <: GrumpsIntegrators{T} 
+#     microintegrator :: MicroIntegrator{T}
+#     macrointegrator :: MacroIntegrator{T}
+# end
+
+
+struct BothIntegrators{ Mic, Mac } <: GrumpsIntegrators{ Mic, Mac} 
+    microintegrator :: Mic
+    macrointegrator :: Mac
+
+    function BothIntegrators( mic :: MicroIntegrator{T}, mac :: MacroIntegrator{T} ) where {T<:Flt}
+        return new{ typeof(mic), typeof(mac) }( mic, mac )
+    end
 end
 
 microintegrator( i :: BothIntegrators ) = i.microintegrator
@@ -164,9 +175,9 @@ Creates the type BothIntegrators containing both the indicated microIntegrator a
 Either argument can be omitted.  If both arguments are omitted then one can pass the floating point
 type T instead.  If no floating point type is passed then a Float64 is assumed.
 """
-function BothIntegrators( microIntegrator :: MicroIntegrator{T}, macroIntegrator :: MacroIntegrator{T} ) where {T<:Flt}
-    return BothIntegrators{T}( microIntegrator, macroIntegrator )
-end
+# function BothIntegrators( microIntegrator :: MicroIntegrator{T}, macroIntegrator :: MacroIntegrator{T} ) where {T<:Flt}
+#     return BothIntegrators{typeof{microIntegrator},typeof(macroIntegrator)}( microIntegrator, macroIntegrator )
+# end
 
 function BothIntegrators( microIntegrator :: MicroIntegrator{T} ) where {T<:Flt}
     return BothIntegrators( microIntegrator, DefaultMacroIntegrator( T ) )

@@ -70,10 +70,10 @@ function grumps!( epassed :: Estimator, d :: Data{T}, o :: OptimizationOptions, 
 
     ses!( solution, e, d, fgh, seo )
     
-    println( TimerOutputs.merge( to... ) )
-    open( "timer$(now()).txt", "w" ) do fl
-        write( fl, "$(TimerOutputs.merge( to... ) )" )
-    end
+    # println( TimerOutputs.merge( to... ) )
+    # open( "timer$(now()).txt", "w" ) do fl
+    #     write( fl, "$(TimerOutputs.merge( to... ) )" )
+    # end
     return solution
 end
 

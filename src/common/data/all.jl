@@ -4,28 +4,28 @@
 
 
 
-function MicroCreation!( replicable, markets, s, v, integrators, dθν, rngs, nwgmic, mic, id, fap, options, e, T, m )
-    th = replicable ? 1 : threadid()
-    fac = findall( x->string(x) == markets[m], s.consumers[:, v.market] )
+function MicroCreation!( replicable, markets, s, v, integrators, dθν, rngs, nwgmic, mic, id, fap, options, e, T :: Type{ 𝒯 }, m ) where 𝒯
+    th = replicable ? 1 : ( m % nthreads() + 1 )
+    fac = findall( x->string(x) == markets[m], s.consumers[:, v.market] ) :: Vector{ Int }
     if fac ≠ nothing
-        @timeit to[m] "NodesWeightsOneMarket" nw = NodesWeightsOneMarket( microintegrator( integrators ), dθν, rngs[ th ], nwgmic, length( fac )  )
+        nw = NodesWeightsOneMarket( microintegrator( integrators ), dθν, rngs[ th ], nwgmic, length( fac )  )
         # check that all products in the consumer data set are also in the products data set
         # @timeit to[m] "Creating micro data" mic[m] = GrumpsMicroData( id, markets[m], view( s.consumers, fac, : ), view( s.products, fap[m], : ), v, nw, rngs[th], options, usesmicromoments( e ), m, T )
-        @timeit to[m] "Creating micro data" mic[m] = GrumpsMicroData( id, markets[m], view( s.consumers, fac, : ), view( s.products, fap[m], : ), v, nw, rngs[th], options, usesmicromoments( e ), m, T )
+        mic[m] = GrumpsMicroData( id, markets[m], view( s.consumers, fac, : ), view( s.products, fap[m], : ), v, nw, rngs[th], options, usesmicromoments( e ), m, T )
     else
         mic[m] = GrumpsMicroNoData( markets[m] )
     end
 end
 
-function MacroCreation!( replicable, markets, s, v, marketsdrawn, integrators, dθν, subdfs, rngs, nwgmac, id, fap, mic, mac, T, options, m )
-    th = replicable ? 1 : threadid()
-    fama = findall( x->string(x) == markets[m], s.marketsizes[:, v.market] )
+function MacroCreation!( replicable, markets, s, v, marketsdrawn, integrators, dθν, subdfs, rngs, nwgmac, id, fap, mic, mac, T :: Type{ 𝒯 }, options, m ) where 𝒯
+    th = replicable ? 1 : ( m % nthreads() + 1 )
+    fama = findall( x->string(x) == markets[m], s.marketsizes[:, v.market] ) :: Vector{ Int }
     if fama ≠ nothing
         @warnif length( fama ) > 1 "multiple lines in the market sizes data with the same market name; using the first one"
         fam = fama[1]
         𝒾 = findfirst( x->string( x ) == markets[m], marketsdrawn )
-        @timeit to[m] "macro Nodes" nw = NodesWeightsOneMarket( macrointegrator( integrators ), dθν, 𝒾 == nothing ? nothing : subdfs[𝒾], v, rngs[ th ], nwgmac  )
-        @timeit to[m] "Creating macro data" mac[m] = GrumpsMacroData( Val( id ), markets[m], s.marketsizes[fam[1], v.marketsize], view( s.products, fap[m], : ), v, nw, isassigned( mic, m ) ? mic[m] : nothing, options, T )
+        nw = NodesWeightsOneMarket( macrointegrator( integrators ), dθν, 𝒾 == nothing ? nothing : subdfs[𝒾], v, rngs[ th ], nwgmac  )
+        mac[m] = GrumpsMacroData( Val( id ), markets[m], T( s.marketsizes[fam[1], v.marketsize] ) :: T, view( s.products, fap[m], : ), v, nw, isassigned( mic, m ) ? mic[m] : nothing, options, T )
     else
         mac[m] = GrumpsMacroNoData{T}( markets[m] )
     end
@@ -63,12 +63,12 @@ function GrumpsData(
     AddConstant!( s.products )
     MustBeInDF( [ v.market; v.product ], s.products, "products" )
     
-    markets = sort( unique( string.( s.products[:,v.market] ) ) )
+    markets = sort(  unique( String.( string.( s.products[:,v.market] ) ) :: Vector{String} ) ) :: Vector{String}
     M = length( markets )
 
     mic = Vec{ GrumpsMicroData{T} }( undef, M )
     mac = Vec{ GrumpsMacroData{T} }( undef, M )
-    fap = [ findall( x->string(x) == markets[m], s.products[:, v.market ] ) for m ∈ 1:M ]
+    fap = [ findall( x->string(x) == markets[m], s.products[:, v.market ] ) :: Vector{Int} for m ∈ 1:M ]
 
     dθν = length( v.randomcoefficients )# + dim( u, :randomcoefficients )
     dθ = dθν + size(v.interactions,1)# + dim( u, :interactions )
@@ -258,6 +258,6 @@ function Data(
     replicable          :: Bool = false
      )
 
-    return GrumpsData( e, ss, v, microintegrator, macrointegrator, T; options = options, replicable = replicable )
+    @profview return GrumpsData( e, ss, v, microintegrator, macrointegrator, T; options = options, replicable = replicable )
 
 end
