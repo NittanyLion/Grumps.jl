@@ -10,7 +10,6 @@ function MicroCreation!( replicable, markets, s, v, integrators, dθν, rngs, nw
     if fac ≠ nothing
         nw = NodesWeightsOneMarket( microintegrator( integrators ), dθν, rngs[ th ], nwgmic, length( fac )  )
         # check that all products in the consumer data set are also in the products data set
-        # @timeit to[m] "Creating micro data" mic[m] = GrumpsMicroData( id, markets[m], view( s.consumers, fac, : ), view( s.products, fap[m], : ), v, nw, rngs[th], options, usesmicromoments( e ), m, T )
         mic[m] = GrumpsMicroData( id, markets[m], view( s.consumers, fac, : ), view( s.products, fap[m], : ), v, nw, rngs[th], options, usesmicromoments( e ), m, T )
     else
         mic[m] = GrumpsMicroNoData( markets[m] )
@@ -70,8 +69,8 @@ function GrumpsData(
     mac = Vec{ GrumpsMacroData{T} }( undef, M )
     fap = [ findall( x->string(x) == markets[m], s.products[:, v.market ] ) :: Vector{Int} for m ∈ 1:M ]
 
-    dθν = length( v.randomcoefficients )# + dim( u, :randomcoefficients )
-    dθ = dθν + size(v.interactions,1)# + dim( u, :interactions )
+    dθν = length( v.randomcoefficients )
+    dθ = dθν + size(v.interactions,1)
 
     # process data needed for the micro likelihood
     !usesmicrodata( e ) && isa( s.consumers, DataFrame ) && advisory( "ignoring the consumer information you specified\nsince it is not used for this estimator type" )

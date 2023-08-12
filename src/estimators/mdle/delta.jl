@@ -12,7 +12,7 @@ function  InsideObjective1!(
     m       :: Int = 0
     ) :: FType{T} where {T<:Flt} 
     
-    F1 :: typeof( F ) = @timeit to[m] "MacroObjectiveδ!"  MacroObjectiveδ!( 
+    F1 :: typeof( F ) = MacroObjectiveδ!( 
         F,
         G,
         Hδδ,
@@ -24,7 +24,7 @@ function  InsideObjective1!(
         true
          ) 
      
-    F2 :: typeof( F ) = @timeit to[m] "MicroObjectiveδ!"  MicroObjectiveδ!( 
+    F2 :: typeof( F ) =  MicroObjectiveδ!( 
         F1,
         G,
         Hδδ,

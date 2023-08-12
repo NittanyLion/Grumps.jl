@@ -3,7 +3,6 @@
 
 module Grumps
 
-using OhMyREPL
 
 include( "debug.jl" )
 include( "exports.jl" )

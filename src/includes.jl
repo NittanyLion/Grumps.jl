@@ -1,10 +1,7 @@
 
 
-using TimerOutputs, Tullio
 
 
-const MaxTimerMarkets = 1000
-const to = [ TimerOutput() for t ∈ 1:MaxTimerMarkets ]
 
 include( "packages/packages.jl" )
 
@@ -19,7 +16,6 @@ const estdir     = "estimators"
 const intdir     = "integrators"
 const rootfolder = String( @__DIR__ )
 
-# @info "$rootfolder"
     
 
 

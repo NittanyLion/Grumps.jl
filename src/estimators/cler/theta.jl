@@ -34,7 +34,7 @@ function  OutsideObjective1!(
     ) where {T<:Flt}
 
 
-    @timeit to[m] "MacroObjectiveθ!" F1 = MacroObjectiveθ!( 
+    F1 = MacroObjectiveθ!( 
         grif( computeF, fgh.F[1] ),
         grif( computeG, fgh.Gθ ),
         grif( computeH, fgh.Hθθ ),
@@ -48,7 +48,7 @@ function  OutsideObjective1!(
         true
          ) 
 
-    @timeit to[m] "MicroObjectiveθ!" F2 = MicroObjectiveθ!( 
+    F2 = MicroObjectiveθ!( 
         F1,
         grif( computeG, fgh.Gθ ),
         grif( computeH, fgh.Hθθ ),
