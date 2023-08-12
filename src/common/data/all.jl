@@ -246,17 +246,18 @@ Takes user inputs and converts them into an object that Grumps can understand.  
 * *options*:             data options to be used, see [Data storage options](@ref)
 * *replicable*:          whether results must be replicable (slows down speed of data creation if set to true)
 """
-function Data( 
-    e                   :: GrumpsEstimator,
-    ss                  :: Sources,
-    v                   :: Variables,
-    microintegrator     :: MicroIntegrator = DefaultMicroIntegrator(),
-    macrointegrator     :: MacroIntegrator = DefaultMacroIntegrator(),
-    T                   :: Type = F64;
-    options             :: DataOptions = GrumpsDataOptions(),
-    replicable          :: Bool = false
-     )
+Data( x...; y... ) = GrumpsData( x...; y... )
+# function Data( 
+#     e                   :: GrumpsEstimator,
+#     ss                  :: Sources,
+#     v                   :: Variables,
+#     microintegrator     :: MicroIntegrator = DefaultMicroIntegrator(),
+#     macrointegrator     :: MacroIntegrator = DefaultMacroIntegrator(),
+#     T                   :: Type = F64;
+#     options             :: DataOptions = GrumpsDataOptions(),
+#     replicable          :: Bool = false
+#      )
 
-    return GrumpsData( e, ss, v, microintegrator, macrointegrator, T; options = options, replicable = replicable )
+#     return GrumpsData( e, ss, v, microintegrator, macrointegrator, T; options = options, replicable = replicable )
 
-end
+# end
