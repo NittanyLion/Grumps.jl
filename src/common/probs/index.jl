@@ -49,7 +49,9 @@ function FillZXθ!(  :: Any, θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsM
         @tullio fastmath=false s.ZXθ[$r,i,j] = d.Z[i,j,t] * θ[t+0]  
     end
     dθz = dimθz( d ) :: Int
-    @tullio fastmath=false s.ZXθ[r,i,j] += d.X[r,j,t] * θ[ t+ $dθz ] 
+    for i ∈ axes( s.ZXθ, 2 )
+        @tullio fastmath=false s.ZXθ[r,$i,j] += d.X[r,j,t] * θ[ t+ $dθz ] 
+    end
     return nothing
 end
 
