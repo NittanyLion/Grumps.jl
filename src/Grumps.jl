@@ -27,7 +27,6 @@ end
 
 function __init__()
 
-    @info "should be resetting prompt here"
     OhMyREPL.input_prompt!( "GruMPS> ", :green) 
     OhMyREPL.output_prompt!( "GruMPS> ", :blue) 
 
