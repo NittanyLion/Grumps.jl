@@ -247,6 +247,7 @@ Takes user inputs and converts them into an object that Grumps can understand.  
 * *replicable*:          whether results must be replicable (slows down speed of data creation if set to true)
 """
 Data( x...; y... ) = GrumpsData( x...; y... )
+
 # function Data( 
 #     e                   :: GrumpsEstimator,
 #     ss                  :: Sources,
@@ -261,3 +262,4 @@ Data( x...; y... ) = GrumpsData( x...; y... )
 #     return GrumpsData( e, ss, v, microintegrator, macrointegrator, T; options = options, replicable = replicable )
 
 # end
+
