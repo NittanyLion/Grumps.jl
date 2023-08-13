@@ -5,7 +5,7 @@
 
 ![header](https://joris.pinkse.org/paper/grumps/featured_hu67731c91d8ac62b9ec64ef8cd1d226d8_3264943_808x455_fill_q75_lanczos_smart1.jpg)
 
-# Grumps.jl
+# Grumps.jl v0.2.0
 
 ## Overview
 
@@ -45,6 +45,16 @@ This is still a preliminary version of Grumps, so please advise [Joris Pinkse](m
 7. standard errors for some of the estimators
 8. detailed sanity checks
 
+
+## Versions
+
+### 0.2.0
+
+There are many improvements, including:
+1. User-specified interactions, which makes it possible to e.g. have distance between consumer and branch as an interactions regressor
+2. Significant improvement in speed
+3. A progress bar, indicating what fraction of markets have been completed in an iteration
+4. Several other code improvements
 
 ## License
 
