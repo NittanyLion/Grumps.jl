@@ -40,11 +40,15 @@ FillZXθ!(  θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMicroNoData{T}, o 
 
 
 function FillZXθ!(  :: Any, θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMicroDataHog{T}, o :: OptimizationOptions, s :: GrumpsMicroSpace{T}  ) where {T<:Flt}
-    x = @view(s.ZXθ[begin,:,:])
-    @tullio fastmath=false x[i,j] = d.Z[i,j,t] * θ[t+0]
-    @tullio fastmath=false s.ZXθ[r,i,j] = x[i,j]
+    # x = @view(s.ZXθ[begin,:,:])
+    # @tullio fastmath=false x[i,j] = d.Z[i,j,t] * θ[t+0]
+    for r ∈ axes( s.ZXθ,1)
+        @tullio fastmath=false s.ZXθ[$r,i,j] = d.Z[i,j,t] * θ[t+0]
+    end
     dθz = dimθz( d ) :: Int
-    @tullio fastmath=false s.ZXθ[r,i,j] = s.ZXθ[r,i,j] + d.X[r,j,t] * θ[ t+ $dθz ] 
+    for i ∈ axes( s.ZXθ,2 )
+        @tullio fastmath=false s.ZXθ[r,$i,j] += d.X[r,j,t] * θ[ t+ $dθz ] 
+    end
     return nothing
 end
 
