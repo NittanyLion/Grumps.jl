@@ -40,18 +40,11 @@ FillZXθ!(  θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMicroNoData{T}, o 
 
 
 function FillZXθ!(  :: Any, θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMicroDataHog{T}, o :: OptimizationOptions, s :: GrumpsMicroSpace{T}  ) where {T<:Flt}
-    # @threads :dynamic for i ∈ 1:dimS( d )
-    #     for r ∈ 1:dimR( d ), j ∈ 1:dimJ( d )
-    #         s.ZXθ[r,i,j] = sum( d.Z[i,j,t] * θ[t] for t ∈ 1:dimθz( d ) ) + sum( d.X[r,j,t] * θ[ t+ dimθz( d ) ] for t ∈ 1:dimθν( d ) )
-    #     end
-    # end
-    for r ∈ 1:dimR( d )
-        @tullio fastmath=false s.ZXθ[$r,i,j] = d.Z[i,j,t] * θ[t+0]  
-    end
+    x = @view(s.ZXθ[begin,:,:])
+    @tullio fastmath=false x[i,j] = d.Z[i,j,t] * θ[t+0]
+    @tullio fastmath=false s.ZXθ[r,i,j] = x[i,j]
     dθz = dimθz( d ) :: Int
-    for i ∈ axes( s.ZXθ, 2 )
-        @tullio fastmath=false s.ZXθ[r,$i,j] += d.X[r,j,t] * θ[ t+ $dθz ] 
-    end
+    @tullio fastmath=false s.ZXθ[r,i,j] = s.ZXθ[r,i,j] + d.X[r,j,t] * θ[ t+ $dθz ] 
     return nothing
 end
 
