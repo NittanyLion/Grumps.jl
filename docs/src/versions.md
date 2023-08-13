@@ -9,3 +9,5 @@ Adds:
 * loop vectorization, which increases speed by an order of magnitude
 * intra-iteration progress bar; see [`OptimizationOptions()`](@ref)
 * greater type stability, which cuts down on compilation time
+* precomputed quadrature nodes
+  
