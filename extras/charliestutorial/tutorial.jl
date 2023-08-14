@@ -137,7 +137,7 @@ function my_estimation(nodes, draws, meth)
 
 
     # this puts the data into a form Grumps can process
-    d = Data( e, s, v ) 
+    d = Data( e, s, v; replicable = true ) 
     # there are longhand forms if you wish to set additional parameters
     # d = Data( e, s, v, ms, Ms; replicable = true ) 
 
