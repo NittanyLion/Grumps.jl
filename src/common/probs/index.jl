@@ -6,13 +6,10 @@ FillAθ!( θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMacroNoData{T}, o ::
 function FillAθ!( id :: Any, θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMacroDataAnt{T}, o :: OptimizationOptions, s :: GrumpsMacroSpace{T}  ) where {T<:Flt}
     isdefined( Main, :InteractionsCallback! ) && return FillAθ!( Val( :GrumpsInteractions! ), θ, e, d, o, s ) 
     isdefined( Main, :InteractionsCallback ) && return FillAθ!( Val( :GrumpsInteractions ), θ, e, d, o, s ) 
-    # weights, products, insides, parameters = RJ( d )
-    # @threads :dynamic for r ∈ weights
-    #     for j ∈ products
-    #         s.Aθ[r,j] = sum( d.𝒟[r,t] * d.𝒳[j,t] * θ[t] for t ∈ parameters )
-    #     end
-    # end
+    weights, products, insides, parameters = RJ( d )
+
     @tullio fastmath=false s.Aθ[r,j] = d.𝒟[r,t] * d.𝒳[j,t] * θ[t]
+
     return nothing
 end
 
@@ -40,14 +37,13 @@ FillZXθ!(  θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMicroNoData{T}, o 
 
 
 function FillZXθ!(  :: Any, θ :: Vector{T}, e :: GrumpsEstimator, d :: GrumpsMicroDataHog{T}, o :: OptimizationOptions, s :: GrumpsMicroSpace{T}  ) where {T<:Flt}
-    # x = @view(s.ZXθ[begin,:,:])
-    # @tullio fastmath=false x[i,j] = d.Z[i,j,t] * θ[t+0]
-    for r ∈ axes( s.ZXθ,1)
-        @tullio fastmath=false s.ZXθ[$r,i,j] = d.Z[i,j,t] * θ[t+0]
+    s.ZXθ .= zero( T )
+    @tturbo for t ∈ axes( d.Z, 3 ), j ∈ axes( d.Z, 2 ), i ∈ axes( d.Z, 1 ), r ∈ axes( d.X, 1)
+        s.ZXθ[r,i,j] += d.Z[i,j,t] * θ[t]
     end
     dθz = dimθz( d ) :: Int
-    for i ∈ axes( s.ZXθ,2 )
-        @tullio fastmath=false s.ZXθ[r,$i,j] += d.X[r,j,t] * θ[ t+ $dθz ] 
+    @tturbo for t ∈ axes( d.X, 3 ),  j ∈ axes( d.Z, 2 ), i ∈ axes( d.Z, 1 ), r ∈ axes( d.X, 1)
+        s.ZXθ[r,i,j] += d.X[r,j,t] * θ[t+dθz]
     end
     return nothing
 end

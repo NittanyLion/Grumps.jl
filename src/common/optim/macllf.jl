@@ -154,7 +154,7 @@ function UpdateGradientHessian!(
 
     ΣπA = zeros( T, J, dθ )
     Δa  = zeros( T, J, dθ )
-
+     
     for r ∈ weights
         ComputeΔa!( Δa, s, d, o, r )
         @tullio fastmath=false ΣπA[j,k] += d.w[$r] * s.πrj[$r,j] * Δa[j,k]
@@ -168,7 +168,7 @@ function UpdateGradientHessian!(
             @tullio fastmath=false Hδθ[k,t] += d.w[$r] * s.πrj[$r,j] * ( s.ρπ[$r] - s.ρ[j] ) * Δ[j,k+0] * Δa[j,t]
             @tullio fastmath=false ΣπΔ[j,k] += d.w[$r] * s.πrj[$r,j] * Δ[j+0,k+0]
         end
-    end        
+    end      
 
     if computeG
         @tullio fastmath=false G[k] += - s.ρ[j] * ΣπA[j,k+0]
@@ -183,7 +183,6 @@ function UpdateGradientHessian!(
         @tullio fastmath=false Hδθ[k,t] += ΣπΔ[j,k+0] *  s.ρ[j]  * ΣπA[j,t+0] / s.πj[j] 
     end
 
-    # GC.gc( true )
 
     return nothing 
 end

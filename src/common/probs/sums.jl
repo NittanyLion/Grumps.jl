@@ -52,6 +52,7 @@ function ComputeΣππ(
 
     Σππ = zeros( T, dimJ( d ), dimδ( d ) )
     @tullio fastmath=false Σππ[j,k] = d.w[r] * s.πrj[r,j] * s.πrj[r,k+0]
+
     return Σππ
 end
 
