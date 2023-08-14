@@ -152,10 +152,10 @@ end
 
 begin
     meth = :cler
-    nodes = 11
+    nodes = 13
     draws = 10_000
     
-    numMicro = 1_000
+    numMicro = 2_000
 
     makeDataForEstimation(1981,1995,numMicro)
 

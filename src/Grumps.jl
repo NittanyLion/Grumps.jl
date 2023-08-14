@@ -59,7 +59,7 @@ function __init__()
     lastversiondate = try 
         readlines( "$(@__DIR__)/versiondate" )[1] |> Date
     catch
-        Date( "2023-05-01" )
+        Date( "2023-08-15" )
     end
     printstyled( "This is Grumps version $Grumps_version ($lastversiondate)\n\n\n"; color= 206, bold = true ); 
     versionage = Day( today() - lastversiondate ) |> Dates.value
