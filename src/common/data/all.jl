@@ -5,7 +5,7 @@
 
 
 function MicroCreation!( replicable, markets, s, v, integrators, dθν, rngs, nwgmic, mic, id, fap, options, e, T :: Type{ 𝒯 }, m ) where 𝒯
-    th = replicable ? 1 : ( m % nthreads() + 1 )
+    th = replicable ? 1 : m
     fac = findall( x->string(x) == markets[m], s.consumers[:, v.market] ) :: Vector{ Int }
     if fac ≠ nothing
         nw = NodesWeightsOneMarket( microintegrator( integrators ), dθν, rngs[ th ], nwgmic, length( fac )  )
@@ -17,7 +17,7 @@ function MicroCreation!( replicable, markets, s, v, integrators, dθν, rngs, nw
 end
 
 function MacroCreation!( replicable, markets, s, v, marketsdrawn, integrators, dθν, subdfs, rngs, nwgmac, id, fap, mic, mac, T :: Type{ 𝒯 }, options, m ) where 𝒯
-    th = replicable ? 1 : ( m % nthreads() + 1 )
+    th = replicable ? 1 : m
     fama = findall( x->string(x) == markets[m], s.marketsizes[:, v.market] ) :: Vector{ Int }
     if fama ≠ nothing
         @warnif length( fama ) > 1 "multiple lines in the market sizes data with the same market name; using the first one"
@@ -52,11 +52,7 @@ function GrumpsData(
     @info "reading data"
     s = readfromfile( ss )
 
-    # initialize random numbers
-    replicable || advisory( "replicability is set to false\nthis is faster\nbut you will get different results\nfrom one run to the next" )
-    replicable && advisory( "replicability is set to true\nthis is slower\nbut you will get the same results\nfrom one run to the next" )
 
-    rngs = RandomNumberGenerators( nthreads(); replicable = replicable )
 
     @ensure isa( s.products, DataFrame )   "was expecting a DataFrame for product data"
     AddConstant!( s.products )
@@ -64,6 +60,10 @@ function GrumpsData(
     
     markets = sort(  unique( String.( string.( s.products[:,v.market] ) ) :: Vector{String} ) ) :: Vector{String}
     M = length( markets )
+
+    replicable || advisory( "replicability is set to false\nthis is faster\nbut you will get different results\nfrom one run to the next" )
+    replicable && advisory( "replicability is set to true\nthis is slower\nbut you will get the same results\nfrom one run to the next" )
+    rngs = RandomNumberGenerators( M; replicable = replicable )
 
     mic = Vec{ GrumpsMicroData{T} }( undef, M )
     mac = Vec{ GrumpsMacroData{T} }( undef, M )
