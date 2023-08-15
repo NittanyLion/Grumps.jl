@@ -112,7 +112,7 @@ function my_estimation(nodes, draws, meth)
         :log_inc :constant;
         ],
         # these are the x_{jm} * ν terms in the paper
-        randomcoefficients =  [:log_mpg],     
+        randomcoefficients =  [:log_mpg, :suv],     
         # these are the x_{jm} terms in the paper                            
         regressors =  [ :constant; :log_mpg; :log_hp; :log_footprint; :log_curbweight; :suv; :van; :truck; :msrp],      
         # these are the b_{jm} terms in the paper                      
@@ -152,10 +152,10 @@ end
 
 begin
     meth = :cler
-    nodes = 13
+    nodes = 11
     draws = 10_000
     
-    numMicro = 2_000
+    numMicro = 1_000
 
     makeDataForEstimation(1981,1995,numMicro)
 
