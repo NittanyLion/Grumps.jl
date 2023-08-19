@@ -8,7 +8,6 @@ abstract type MacroSpace{T<:Flt} end
 struct GrumpsMicroNoSpace{T<:Flt} <: MicroSpace{T}
 end
 
-@todo 1 "remember: only stick stuff in space structs that gets reused"
 
 struct GrumpsMicroSpace{T<:Flt} <: MicroSpace{T}
     πrij            ::  A3{T}
@@ -23,7 +22,6 @@ struct GrumpsMicroSpace{T<:Flt} <: MicroSpace{T}
     function GrumpsMicroSpace( R :: Int, S :: Int, J :: Int, dθ :: Int, mustrecompute :: Bool, T2 :: Type{𝒯} = F64 ) where 𝒯
 
         @ensure R > 0  "must have at least one draw"
-        # @ensure S > 0  "must have at least one consumer"
         @ensure J > 1 "must have at least one inside product"
         @ensure dθ > 0 "must have at least one theta coefficient"
         new{T2}( 

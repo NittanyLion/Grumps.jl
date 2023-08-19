@@ -17,35 +17,31 @@ function VariableNames(
     interactions            :: Mat, 
     randomcoefficients      :: Vec,
     regressors              :: Vec,
-    marketproductstrings    :: Mat{<:AbstractString},
-    uinteractionnames       :: Vec{<:AbstractString} = Vec{ String }(undef, 0),
-    urcnames                :: Vec{<:AbstractString}= Vec{ String }( undef, 0 )
+    instruments             :: Vec,
+    marketproductstrings    :: Mat{<:AbstractString}
 )
 
     # first determine the names of the θ variables
-    dθz = size( interactions, 1 ) + length( uinteractionnames )
-    dθν = length( randomcoefficients ) + length( urcnames )
+    dθz = size( interactions, 1 ) 
+    dθν = length( randomcoefficients ) 
     dθ =  dθz + dθν
     θnames = Vec{String}( undef, dθ )
     for r ∈ axes( interactions, 1 )
         θnames[ r ] = ( interactions[r,2] == :constant ) ? "$(interactions[r,1])" : "$(interactions[r,1]) * $(interactions[r,2])"
     end
-    for r ∈ eachindex( uinteractionnames )
-        θnames[ size( interactions,1 ) + r  ] = uinteractionnanmes[r]
-    end
     for r ∈ eachindex( randomcoefficients )
         θnames[ dθz + r ] = "rc on $(randomcoefficients[r])"
-    end
-    for r ∈ eachindex( urcnames )
-        θnames[ dθz + length( randomcoefficients ) + r ] = uinteractionnames[r]
     end
     
     # now get the names of the β variables
     βnames = string.( regressors )
 
+    # now get the names of the instruments
+    bnames = string.( instruments )
+
     # now get the names of the δ variables
     δnames = [ "$(marketproductstrings[r,2]) in $(marketproductstrings[r,1] )" for r ∈ axes( marketproductstrings, 1 ) ]
 
-    return VariableNames( θnames, βnames, δnames )
+    return VariableNames( θnames, βnames, bnames, δnames )
 end
 

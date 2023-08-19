@@ -170,6 +170,7 @@ end
 struct VariableNames
     θnames  ::  Vec{ String }
     βnames  ::  Vec{ String }
+    bnames  ::  Vec{ String }
     δnames  ::  Vec{ String }
 end
 
@@ -188,10 +189,6 @@ struct Dimensions
     end
 end
 
-# struct GrumpsMarketData{T<:Flt} <: MarketData{T}
-#     microdata       :: GrumpsMicroData{T}
-#     macrodata       :: GrumpsMacroData{T} 
-# end
 
 
 
@@ -229,6 +226,9 @@ struct GrumpsData{T<:Flt} <: AllData{T}
         new{T2}( marketdata, plm, varnames, bal, dims )
     end
 end
+
+
+names( d :: GrumpsData ) = d.variablenames
 
 isempty( ::Data ) = false
 isempty( ::GrumpsMicroNoData ) = true

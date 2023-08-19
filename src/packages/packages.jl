@@ -7,4 +7,6 @@ if VERSION < desirableversion
     @warn "Grumps works with Julia $minimumversion and higher, but $desirableversion or higher is preferred"
 end
 
-using DataFrames, CSV, Printf, Random123, Random, FastGaussQuadrature, StatsBase, Optim, StatsFuns, LinearAlgebra, StringDistances, TypeTree, Smartphores, SparseArrays, Dates, Ansillary, LoopVectorization, Tullio, OhMyREPL
+using DataFrames, CSV, Crayons, Printf, Random123, Random, FastGaussQuadrature, StatsBase, Optim, StatsFuns, LinearAlgebra, StringDistances, TypeTree, Smartphores, SparseArrays, Dates, Ansillary, LoopVectorization, Tullio, OhMyREPL
+
+import Base.names

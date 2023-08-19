@@ -22,6 +22,8 @@ function grumps!( epassed :: Estimator, d :: Data{T}, o :: OptimizationOptions, 
     e = CheckSanity( epassed, d, o, θstart, seo )
     BLAS.set_num_threads( blasthreads( o ) )
     
+
+
     memblock    = MemBlock( d, o )
 
 
@@ -31,6 +33,8 @@ function grumps!( epassed :: Estimator, d :: Data{T}, o :: OptimizationOptions, 
         s           = Space( e, d, o, memblock )
         solution    = Solution( e, d, seo )
         
+        PrintStructure( e, d, o, θstart, seo )
+
         δ           = [ zeros( T, dimm ) for dimm ∈ dimδm( d )  ]
         oldx = zeros( T, dimθ( d ) )
         repeatx = zeros( Int, 1 )

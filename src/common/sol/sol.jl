@@ -85,7 +85,7 @@ function show( io :: IO, e :: GrumpsEstimate{T}, s :: String = ""; adorned = tru
         end
         wtp = "(unavailable ) "
         if e.stde ≠ nothing
-            wtp = @sprintf( "(%+12.6f) ", e.stde)
+            wtp = isnan( e.stde ) ? "  unavailable  " : @sprintf( "(%+12.6f) ", e.stde)
         end
         prstyled( io, adorned, wtp; color = signif )
     end
@@ -95,7 +95,7 @@ function show( io :: IO, e :: GrumpsEstimate{T}, s :: String = ""; adorned = tru
             if abs( e.coef ) ≥ tcritval * e.stde
                 signif = :red
             end
-            prstyled( io, adorned, e.tstat ≠ nothing ? @sprintf( "%+12.6f ", e.tstat) : "unavailable  "; color = signif )
+            prstyled( io, adorned, e.tstat ≠ nothing && !isnan( e.tstat ) ? @sprintf( "%+12.6f ", e.tstat) : "unavailable  "; color = signif )
         end
     end
     println( io, e.name  )

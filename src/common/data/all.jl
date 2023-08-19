@@ -130,6 +130,7 @@ function GrumpsData(
         v.interactions,                 # names of interaction variables
         v.randomcoefficients,           # names of random coefficients
         plm.names,                      # names of all regressor variables
+        v.instruments,                  # names of all instruments
         marketproductstrings            # names of all market, product combinations
     )
     
@@ -138,6 +139,8 @@ function GrumpsData(
 
     gd = GrumpsData{T}( mic, mac, plm, varnames, nrm, dims )
     Balance!( gd, Val( options.balance ) )
+
+
     return gd
 end
 

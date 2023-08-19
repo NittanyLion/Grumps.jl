@@ -1,10 +1,5 @@
 read the manual at https://nittanylion.github.io/Grumps.jl completely
 read the paper at http://joris.pinkse.org/paper/grumps/
-still need to put in designed quadrature
-does not do CUDA
-uses multithreading, but no distributed computing
-the two step version has not been thoroughly tested yet
-the gmm version should not be used: stick with cler (or the cheap version thereof), mdle, and shareconstraint: gmm is inferior to begin with and the gmm code is not ready for prime time
 if you see unexpected behavior, please send me code and data so that I can replicate
 all of the user-level commands are documented; e.g. use ?Save
 please check the memory conservation documentation if memory becomes an issue

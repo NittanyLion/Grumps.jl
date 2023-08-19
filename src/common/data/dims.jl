@@ -40,18 +40,21 @@ dimθ( d :: GrumpsMacroNoData )     = 0
 dimδ( d :: GrumpsMacroNoData )     = 0
 dimδm( d :: GrumpsMacroNoData )    = 0
 dimR( d :: GrumpsMacroNoData )     = 0
+dimN( d :: GrumpsMacroNoData )     = 0
 
 
 dimθ( d :: GrumpsMacroDataAnt )     = size( d.𝒳, 2 )
 dimδ( d :: GrumpsMacroDataAnt )     = size( d.𝒳, 1 ) - 1
 dimδm( d :: GrumpsMacroDataAnt )    = dimδ( d )
 dimR( d :: GrumpsMacroDataAnt )     = size( d.𝒟, 1 )
+dimN( d :: GrumpsMacroDataAnt )     = d.N
 
 
 dimθ( d :: GrumpsMacroDataHog )     = size( d.A, 3 )
 dimδ( d :: GrumpsMacroDataHog )     = size( d.A, 2 ) - 1
 dimδm( d :: GrumpsMacroDataHog )    = dimδ( d )
 dimR( d :: GrumpsMacroDataHog )     = size( d.A, 1 )
+dimN( d :: GrumpsMacroDataHog )     = d.N
 
 
 dimθz( d :: GrumpsMarketData )      = dimθz( d.microdata )
@@ -60,6 +63,7 @@ dimθ( d :: GrumpsMarketData )       = isempty( d.microdata ) ? dimθ( d.macroda
 dimδ( d :: GrumpsMarketData )       = isempty( d.microdata ) ? dimδ( d.macrodata ) : dimδ( d.microdata )
 dimδm( d :: GrumpsMarketData )      = dimδ( d )
 dimS( d :: GrumpsMarketData )       = dimS( d.microdata )
+dimN( d :: GrumpsMarketData )       = dimN( d.macrodata )
 dimmom( d :: GrumpsMarketData )     = dimmom( d.microdata )
 
 dimβ( d :: GrumpsPLMData )   = size( d.𝒳, 2 )
@@ -87,6 +91,9 @@ dimδm( d :: GrumpsData )    = dimδm( d.dims )
 dimβ( d :: GrumpsData )     = dimβ( d.dims )
 dimM( d :: GrumpsData )     = dimM( d.dims )
 dimmom( d :: GrumpsData )   = dimmom( d.dims )
+dimS( d :: GrumpsData )     = dimS.( d.marketdata )
+dimJ( d :: GrumpsData )     = dimJ.( d.marketdata )
+dimN( d :: GrumpsData )     = dimN.( d.marketdata )
 
 function dimsθ( d :: GrumpsData ) 
     return dimθ( d ), dimθz( d ), dimθν( d )

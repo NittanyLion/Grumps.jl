@@ -7,3 +7,6 @@ function Description( e :: Symbol, v ::Val{ :cler } )
       [ "grumps", "pmle", "grumps penalized mle", "penalized likelihood", "grumps penalized maximum likelihood", "pml", "penmaxlik", "grumps pml", "cler", "full cler" ]
       )
 end
+
+
+
