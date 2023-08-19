@@ -214,15 +214,12 @@ function GrumpsThreads(; blas = 0, markets = 0, inner = 0 )
     nth = nthreads()
     if blas ≤ 0 || blas >nth
         blas = min( 32, nth)
-        @info "number of blas threads automatically set to $blas"
     end
     if markets ≤ 0 || markets > nth
         markets = nth
-        @info "number of markets threads automatically set to $markets"
     end
     if inner ≤ 0
         inner = nth
-        @info "number of inner threads automatically set to $inner"    
     end
     return GrumpsThreads( blas, markets, inner )
 end

@@ -12,6 +12,8 @@ const HeadColor = Crayon( reset = true, bold = true )
 const EstColor = Crayon( reset=true, foreground = :magenta, bold = true )
 const EmColor = Crayon( reset=true, foreground = :yellow,  bold = true )
 const MathColor = Crayon( reset=true, foreground = 123, bold = true )
+const AlertColor = Crayon( reset=true, foreground = :red, blink = true, bold = true )
+const IgnoreColor = Crayon( reset=true, foreground = 247, bold = false)
 const Reset = Crayon( reset = true )
 
 
@@ -134,7 +136,53 @@ end
 
 TailPrint( s ) = HeadPrint( s, '∧' )
 
-function PrintStructure( e :: Estimator, d :: GrumpsData,  o :: OptimizationOptions, θstart :: Vec{T}, seo :: StandardErrorOptions ) where {T<:Flt}
+
+function PrettyScientific( x )
+    x ≈ 0.0 && return @sprintf( "%10d ", 0 )
+    y = log10( x )
+    isapprox( y, round( y ) ) && return @sprintf( "%10s ", "1e$(Int(y))" )
+    return @sprintf( "%10f ", x )
+end
+
+ToleranceOneLiner( vr, o, maxrepeats = -1 ) = println( @sprintf( "%10s ", vr ), PrettyScientific.( [ o.f_tol; o.g_tol; o.x_tol ] )..., i10( o.iterations ), maxrepeats ≥ 0 ? i10( maxrepeats ) : " "  )
+
+s10( s :: AbstractString ) =  @sprintf("%10s ", s )
+i10( i :: Int ) = @sprintf( "%10d ", i  )
+
+function ToleranceDescription( o :: OptimizationOptions )
+    println( EmColor, "tolerances ", HeadColor, s10.( ["f_tol"; "g_tol"; "x_tol"; "iterations"; "maxrepeats" ] )..., Reset )
+    ToleranceOneLiner( "δ", o.δ )
+    ToleranceOneLiner( "θ", o.θ, o.maxrepeats )
+end
+
+
+
+
+function emphornot( cond, val )
+    io = IOBuffer()
+    print( io, cond ? AlertColor : Reset, val, Reset )
+    return String( take!( io ) ) 
+end
+
+function deemphornot( cond, val )
+    io = IOBuffer()
+    print( io, cond ? IgnoreColor : Reset, val, Reset )
+    return String( take!( io ) ) 
+end
+
+
+
+
+function PrintThreads( th :: GrumpsThreads, memsave )
+    println( EmColor, "threads     ", HeadColor, s10.( [ "machcpus"; "machthr"; "specthr"; "blasthr"; "mktthr"; "inthr" ] )..., Reset )
+    println( "            ",  i10.( [ cpucores(); cputhreads() ] )..., 
+        emphornot( nthreads() < cpucores(), i10( nthreads() ) ),
+        emphornot( BLAS.get_num_threads() < cpucores(), i10( BLAS.get_num_threads() ) ), 
+        deemphornot( !memsave, i10( mktthreads( th ) ) ),
+        deemphornot( true, i10( inthreads(th) ) ) ) 
+end
+
+function PrintStructure( e :: Estimator, d :: GrumpsData,  o :: OptimizationOptions, θstart, seo :: StandardErrorOptions ) 
     println()
     HeadPrint( "Summary", '∨' )
     HeadPrint( "Specification")
@@ -144,6 +192,14 @@ function PrintStructure( e :: Estimator, d :: GrumpsData,  o :: OptimizationOpti
     println(  Sizes( d ) )
     HeadPrint( "Detailed Estimator Description" )
     println( DetailedDescription( e ) )
+    HeadPrint( "Optimization Options" )
+    ToleranceDescription( o ) 
+    PrintThreads( o.gth, o.memsave )
+    println( EmColor, "loop vectorization ", Reset,  emphornot( !o.loopvectorization, o.loopvectorization ) )
+    HeadPrint( "Memory Conservation" )
+    println( EmColor, "memsave ", Reset, o.memsave )
+    # HeadPrint( "Replicability" )
+    # println( EmColor, "Replicable", Reset, " = ", ")
     TailPrint( "End of Summary" )
     println()
     return nothing

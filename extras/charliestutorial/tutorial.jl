@@ -1,6 +1,3 @@
-using Pkg
-Pkg.develop( url = "/home/joris/Grumps.jl" )
-
 using Grumps
 using Revise, CSV, DataFrames, DelimitedFiles, Random
 using LinearAlgebra
@@ -154,7 +151,7 @@ function my_estimation(nodes, draws, meth)
 end
 
 begin
-    meth = :mdle
+    meth = :cler
     nodes = 11
     draws = 10_000
     

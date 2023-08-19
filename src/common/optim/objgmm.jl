@@ -45,7 +45,6 @@ function ObjectiveFunctionθ!(
     ) where {T<:Flt}
 
     θ = getθ( θtr, d )
-    println( "current θ = $θ" )
 
     computeF, computeG, computeH = computewhich( F, Garg, H )
 

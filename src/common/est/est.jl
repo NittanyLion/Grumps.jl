@@ -25,7 +25,7 @@ function Estimator( s :: String )
     end
     @ensure !all( val .== typemax( F64 ) ) "cannot find desired estimator"
     winner = argmin( val )
-    @info "identified $(estdesc[winner].name) as the estimator intended"
+    # @info "identified $(estdesc[winner].name) as the estimator intended"
     return Estimator( Val( estdesc[winner].symbol ) )
 end
 

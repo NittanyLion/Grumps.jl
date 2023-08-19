@@ -11,29 +11,27 @@
         d       :: Data{T},
         o       :: OptimizationOptions = OptimizationOptions(),
         θstart  :: StartingVector{T} = nothing,
-        seo     :: StandardErrorOptions = StandardErrorOptions()
+        seo     :: StandardErrorOptions = StandardErrorOptions();
+        printstructure = true
     )
 
 Conducts the optimization.  You typically just want to set θstart to nothing, i.e. have a starting vector 
 picked automatically.  
 """
-function grumps!( epassed :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstart :: StartingVector{T}, seo :: StandardErrorOptions ) where {T<:Flt}
+function grumps!( epassed :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstart :: StartingVector{T}, seo :: StandardErrorOptions; printstructure = true ) where {T<:Flt}
 
     e = CheckSanity( epassed, d, o, θstart, seo )
     BLAS.set_num_threads( blasthreads( o ) )
     
-
-
+    printstructure && PrintStructure( e, d, o, θstart, seo )
+  
     memblock    = MemBlock( d, o )
-
-
     GC.@preserve memblock begin
         θstart      = StartingValues( θstart, e, d, o )
         fgh         = FGH( e, d )
         s           = Space( e, d, o, memblock )
         solution    = Solution( e, d, seo )
         
-        PrintStructure( e, d, o, θstart, seo )
 
         δ           = [ zeros( T, dimm ) for dimm ∈ dimδm( d )  ]
         oldx = zeros( T, dimθ( d ) )
@@ -76,14 +74,14 @@ function grumps!( epassed :: Estimator, d :: Data{T}, o :: OptimizationOptions, 
 end
 
 
-grumps!( e :: Estimator, d :: Data{T} ) where {T<:Flt} = grumps!( e, d, GrumpsOptimizationOptions(), nothing, StandardErrorOptions() )
-grumps!( e :: Estimator, d :: Data{T}, θstart :: Vec{T} ) where {T<:Flt} = grumps!( e, d, GrumpsOptimizationOptions(), θstart, StandardErrorOptions() )
-grumps!( e :: Estimator, d :: Data{T}, o :: OptimizationOptions ) where {T<:Flt} = grumps!( e, d, o, nothing, StandardErrorOptions() )
+grumps!( e :: Estimator, d :: Data{T}; printstructure = true ) where {T<:Flt} = grumps!( e, d, GrumpsOptimizationOptions(), nothing, StandardErrorOptions(); printstructure = printstructure  )
+grumps!( e :: Estimator, d :: Data{T}, θstart :: Vec{T}; printstructure = true ) where {T<:Flt} = grumps!( e, d, GrumpsOptimizationOptions(), θstart, StandardErrorOptions(); printstructure = printstructure )
+grumps!( e :: Estimator, d :: Data{T}, o :: OptimizationOptions; printstructure = true ) where {T<:Flt} = grumps!( e, d, o, nothing, StandardErrorOptions(); printstructure = printstructure )
 
 
-function grumps( x... )
+function grumps( x...; y... )
     @warn "grumps() is deprecated; use grumps!() instead"
-    return grumps!( x... )
+    return grumps!( x...; y... )
 end
 
 

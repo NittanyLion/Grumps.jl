@@ -39,7 +39,7 @@ function GrumpsData(
     integrators         :: GrumpsIntegrators = BothIntegrators(),
     T                   :: Type{ 𝒯 } = F64;
     options             :: DataOptions = GrumpsDataOptions(),
-    replicable          :: Bool = false
+    replicable          :: Bool = true
     ) where 𝒯
 
 
@@ -49,7 +49,6 @@ function GrumpsData(
     replicable :: Bool = CheckInteractionsCallBackFunctionality( replicable, options, T )
 
     # read data from file if not already done
-    @info "reading data"
     s = readfromfile( ss )
 
 
@@ -61,8 +60,8 @@ function GrumpsData(
     markets = sort(  unique( String.( string.( s.products[:,v.market] ) ) :: Vector{String} ) ) :: Vector{String}
     M = length( markets )
 
-    replicable || advisory( "replicability is set to false\nthis is faster\nbut you will get different results\nfrom one run to the next" )
-    replicable && advisory( "replicability is set to true\nthis is slower\nbut you will get the same results\nfrom one run to the next" )
+    # replicable || advisory( "replicability is set to false\nthis is faster\nbut you will get different results\nfrom one run to the next" )
+    # replicable && advisory( "replicability is set to true\nthis is slower\nbut you will get the same results\nfrom one run to the next" )
     rngs = RandomNumberGenerators( M; replicable = replicable )
 
     mic = Vec{ GrumpsMicroData{T} }( undef, M )
@@ -152,7 +151,7 @@ end
         integrators         :: GrumpsIntegrators = BothIntegrators(),
         T                   :: Type = F64,
         options             :: DataOptions = GrumpsDataOptions(),
-        replicable          :: Bool = false
+        replicable          :: Bool = true
         )
 
 Takes user inputs and converts them into an object that Grumps can understand.  This is synonymous with Data(...).
@@ -174,7 +173,7 @@ function GrumpsData(
     integrators         :: GrumpsIntegrators,
     T                   :: Type{𝒯} = F64;
     options             :: DataOptions = GrumpsDataOptions(),
-    replicable          :: Bool = false
+    replicable          :: Bool = true
     )  where 𝒯
     
     return GrumpsData( Val( id( options ) ), e, ss, v, integrators, T; options = options, replicable = replicable )
@@ -189,7 +188,7 @@ end
         microintegrator     :: MacroIntegrator = DefaultMacroIntegrator(),
         T                   :: Type = F64,
         options             :: DataOptions = GrumpsDataOptions(),
-        replicable          :: Bool = false
+        replicable          :: Bool = true
         )
 
 Takes user inputs and converts them into an object that Grumps can understand.  This is synonymous with GrumpsData(...).
@@ -215,7 +214,7 @@ function GrumpsData(
     macrointegrator     :: MacroIntegrator = DefaultMacroIntegrator(),
     T                   :: Type{𝒯} = F64;
     options             :: DataOptions = GrumpsDataOptions(),
-    replicable          :: Bool = false
+    replicable          :: Bool = true
     ) where 𝒯
     
     return GrumpsData( e, ss, v, BothIntegrators( microintegrator, macrointegrator ), T; options = options, replicable = replicable )
@@ -231,7 +230,7 @@ end
         macrointegrator     :: MacroIntegrator = DefaultMacroIntegrator(),
         T                   :: Type = F64,
         options             :: DataOptions = GrumpsDataOptions(),
-        replicable          :: Bool = false
+        replicable          :: Bool = true
         )
 
 Takes user inputs and converts them into an object that Grumps can understand.  This is synonymous with GrumpsData(...).
