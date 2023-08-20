@@ -128,6 +128,18 @@ function Sizes( d :: GrumpsData )
     return String( take!( io ) ) 
 end
 
+function IntegrationSizes( d :: GrumpsData )
+    Rmic = sum( dimRmic( d ) )
+    Rmac = sum( dimRmac( d ) )
+    io = IOBuffer( )
+    for pr ∈ [ (Rmic, " micro nodes/draws; "), ( Rmac, " macro nodes/draws ") ]
+        print( io, NumColor, PrettyInt( pr[1] ), Reset, pr[2] )
+    end    
+    return String( take!( io ) ) 
+end
+
+
+
 function HeadPrint( s, marker =  '―')
     left = div( 78 - textwidth( s ), 2 )
     right = 78 - left - textwidth( s ) 
@@ -192,6 +204,8 @@ function PrintStructure( e :: Estimator, d :: GrumpsData,  o :: OptimizationOpti
     println(  Sizes( d ) )
     HeadPrint( "Detailed Estimator Description" )
     println( DetailedDescription( e ) )
+    HeadPrint( "Nodes and Draws" )
+    println( IntegrationSizes( d ) )
     HeadPrint( "Optimization Options" )
     ToleranceDescription( o ) 
     PrintThreads( o.gth, o.memsave )

@@ -133,7 +133,7 @@ function my_estimation(nodes, draws, meth)
     e = Estimator( meth )                                                     
 
     # redundant unless you wish to save memory
-    o = Grumps.OptimizationOptions(; memsave = true)     
+    o = Grumps.OptimizationOptions(; memsave = false)     
 
 
     # this puts the data into a form Grumps can process

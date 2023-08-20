@@ -94,6 +94,8 @@ dimmom( d :: GrumpsData )   = dimmom( d.dims )
 dimS( d :: GrumpsData )     = dimS.( d.marketdata )
 dimJ( d :: GrumpsData )     = dimJ.( d.marketdata )
 dimN( d :: GrumpsData )     = dimN.( d.marketdata )
+dimRmic( d :: GrumpsData )     = dimR.( [ d.marketdata[m].microdata for m ∈ eachindex( d.marketdata ) ] )
+dimRmac( d :: GrumpsData )     = dimR.( [ d.marketdata[m].macrodata for m ∈ eachindex( d.marketdata ) ] )
 
 function dimsθ( d :: GrumpsData ) 
     return dimθ( d ), dimθz( d ), dimθν( d )
