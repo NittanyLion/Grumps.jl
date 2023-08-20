@@ -30,6 +30,7 @@ TypeTree = "04da0e3b-1cad-4b2c-a963-fc1602baf1af"
 [compat]
 Ansillary = "0.1"
 CSV = "0.10"
+CpuId = "0.3"
 DataFrames = "1"
 FastGaussQuadrature = "0.5"
 LoopVectorization = "0.12"
