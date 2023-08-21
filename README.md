@@ -5,7 +5,7 @@
 
 ![header](https://joris.pinkse.org/paper/grumps/featured_hu67731c91d8ac62b9ec64ef8cd1d226d8_3264943_808x455_fill_q75_lanczos_smart1.jpg)
 
-# Grumps.jl v0.2.0
+# Grumps.jl v0.2.1
 
 ## Overview
 
@@ -47,6 +47,12 @@ This is still a preliminary version of Grumps, so please advise [Joris Pinkse](m
 
 
 ## Versions
+
+
+### 0.2.1 
+
+One minor bug fix:
+1. Mac terminals did not support the progress bar in version 0.2.0.  This issue has been addressed and the progress bar is moreover turned off by default.
 
 ### 0.2.0
 
