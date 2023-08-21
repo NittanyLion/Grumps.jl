@@ -244,7 +244,7 @@ struct GrumpsOptimizationOptions <: OptimizationOptions
 end
 
 
-function GrumpsOptimizationOptions(; θopt = OptimOptions( Val( :θ ) ), δopt = OptimOptions( Val( :δ) ), threads = GrumpsThreads(), memsave = false, maxrepeats = 3, probtype = :fast, id = :Grumps, progressbar = true, loopvectorization = true )
+function GrumpsOptimizationOptions(; θopt = OptimOptions( Val( :θ ) ), δopt = OptimOptions( Val( :δ) ), threads = GrumpsThreads(), memsave = false, maxrepeats = 3, probtype = :fast, id = :Grumps, progressbar = false, loopvectorization = true )
     @ensure probtype ∈ [ :fast, :robust ] "only fast and robust choice probabilities are allowed"
     return GrumpsOptimizationOptions( θopt, δopt, threads, memsave, maxrepeats, probtype, id, progressbar, loopvectorization )
 end
@@ -267,7 +267,7 @@ progressbar( o :: GrumpsOptimizationOptions )   = o.progressbar
     maxrepeats = 4, 
     probtype = :fast,
     id = :Grumps,
-    progressbar = true,
+    progressbar = false,
     loopvectorization = true
     )
 
@@ -280,7 +280,8 @@ future.
 There are two ways of computing choice probabilities: robust and fast, specified by passing *:robust* or
 *:fast* in *probtype*. Fast choice probabilities are the default for good reason.
 
-The progressbar shows progress within an iteration in the form of colored circles at the top right hand corner of the screen.
+The progress bar shows progress within an iteration in the form of colored circles at the top right hand corner of the screen.
+The progress bar is turned off by default and should be off if Grumps is run without a terminal (e.g. in a batch script run on PBS or Slurm).
 Loop vectorization is a new addition to Grumps and speeds up computation in most cases.
 
 Finally, specifying id allows one to add callbacks, e.g. user functions that are called on each inner and 

@@ -11,3 +11,10 @@ Adds:
 * greater type stability, which cuts down on compilation time
 * precomputed quadrature nodes
   
+
+## 0.2.1
+
+* addressed Mac progress bar infelicity
+* turned off progress bar by default
+
+
