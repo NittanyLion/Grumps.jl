@@ -14,10 +14,9 @@ function UpdateProgressBar( ρ )
     ρ2 = 5ρ - ℓ + 1.0
     s = done( ρ2 )
     c =  done( 5ρ2 - s + 1.0 )
+    y,x = displaysize( stdout )
     Ansillary.Cursor.save() do 
         # y, x = Ansillary.Screen.displaysize()
-        ss = Ansillary.Screen.size()
-        y,x = ss.rows, ss.columns
         Ansillary.Cursor.move!( Ansillary.Cursor.Coordinate(1,x-5) )
         printstyled( progressshape[1]^(5-ℓ); color = progresscolor[1] )
         printstyled( progressshape[s]; color = progresscolor[c] )
