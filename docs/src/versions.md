@@ -18,3 +18,9 @@ Adds:
 * turned off progress bar by default
 
 
+## 0.2.2
+
+* Added compatibility checks
+* Precautionary change to improve robustness across operating systems
+
+
