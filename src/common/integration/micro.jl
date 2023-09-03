@@ -8,11 +8,14 @@ end
 
 function NodesWeightsOneDim64( ms :: DefaultMicroIntegrator{T}, nodes1 :: Int, precomputed ::Val{ true } ) :: Tuple{ Vector{T}, Vector{T} } where {T<:Flt}
     n1 = zeros( T, nodes1 ); w1 = similar( n1 )
-    open( "$(@__DIR__)/data/gausshermite$(nodes1).bin" ) do io
-         read!( io, n1 )
-         read!( io, w1 )
-    end
-    return n1, w1
+    # open( "$(@__DIR__)/data/gausshermite$(nodes1).bin" ) do io
+    #      read!( io, n1 )
+    #      read!( io, w1 )
+    # end
+    @info "getting here"
+    T == Float64 || @warn "Builtin Gauss Hermite weights are Float64; you specified $T"
+    t = Arrow.Table( "$(@__DIR__)/data/gausshermite$(nodes1).arrow" )
+    return T.( t.x ), T.( t.w )
 end
 
 function NodesWeightsOneDim64( ms :: DefaultMicroIntegrator{T}, nodes1 :: Int, ::Val{ :false } )  :: Tuple{ Vector{T}, Vector{T} } where {T<:Flt}
@@ -38,7 +41,7 @@ end
 
 function NodesWeightsGlobal( ms :: DefaultMicroIntegrator{T}, d :: Int,  rng :: AbstractRNG ) where {T<:Flt}
    nodes1 = ms.n
-   n1, w1 = NodesWeightsOneDim64( ms, nodes1, Val( 1 ≤ nodes1 ≤ 127 ) )                                                      # compute Gauss Hermite nodes and weights in a single dimension
+   n1, w1 = NodesWeightsOneDim64( ms, nodes1, Val(  1 ≤ nodes1 ≤ 127 ) )                                                 # compute Gauss Hermite nodes and weights in a single dimension
    nodes = nodes1 ^ d                                                                                                      # total number of nodes
    w = ones( T, nodes )
    n = zeros( T, nodes, d )
