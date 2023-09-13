@@ -5,7 +5,7 @@
 
 ![header](https://joris.pinkse.org/paper/grumps/featured_hu67731c91d8ac62b9ec64ef8cd1d226d8_3264943_808x455_fill_q75_lanczos_smart1.jpg)
 
-# Grumps.jl v0.2.2
+# Grumps.jl v0.2.3
 
 ## Overview
 
@@ -48,6 +48,10 @@ This is still a preliminary version of Grumps, so please advise [Joris Pinkse](m
 
 ## Versions
 
+
+### 0.2.3
+
+1. Bug fix for the case in which there are no macro data but an estimator other than mixed logit is selected.
 
 ### 0.2.2
 

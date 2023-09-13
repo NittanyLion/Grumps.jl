@@ -7,7 +7,7 @@
 function MicroCreation!( replicable, markets, s, v, integrators, dθν, rngs, nwgmic, mic, id, fap, options, e, T :: Type{ 𝒯 }, m ) where 𝒯
     th = replicable ? 1 : m
     fac = findall( x->string(x) == markets[m], s.consumers[:, v.market] ) :: Vector{ Int }
-    if fac ≠ nothing
+    if length( fac ) > 0
         nw = NodesWeightsOneMarket( microintegrator( integrators ), dθν, rngs[ th ], nwgmic, length( fac )  )
         # check that all products in the consumer data set are also in the products data set
         mic[m] = GrumpsMicroData( id, markets[m], view( s.consumers, fac, : ), view( s.products, fap[m], : ), v, nw, rngs[th], options, usesmicromoments( e ), m, T )
@@ -19,13 +19,14 @@ end
 function MacroCreation!( replicable, markets, s, v, marketsdrawn, integrators, dθν, subdfs, rngs, nwgmac, id, fap, mic, mac, T :: Type{ 𝒯 }, options, m ) where 𝒯
     th = replicable ? 1 : m
     fama = findall( x->string(x) == markets[m], s.marketsizes[:, v.market] ) :: Vector{ Int }
-    if fama ≠ nothing
+    if length( fama ) > 0
         @warnif length( fama ) > 1 "multiple lines in the market sizes data with the same market name; using the first one"
         fam = fama[1]
         𝒾 = findfirst( x->string( x ) == markets[m], marketsdrawn )
         nw = NodesWeightsOneMarket( macrointegrator( integrators ), dθν, 𝒾 == nothing ? nothing : subdfs[𝒾], v, rngs[ th ], nwgmac  )
         mac[m] = GrumpsMacroData( Val( id ), markets[m], T( s.marketsizes[fam[1], v.marketsize] ) :: T, view( s.products, fap[m], : ), v, nw, isassigned( mic, m ) ? mic[m] : nothing, options, T )
     else
+        @warn "no macro data for $(markets[m])"
         mac[m] = GrumpsMacroNoData{T}( markets[m] )
     end
 end

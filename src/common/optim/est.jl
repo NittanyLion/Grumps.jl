@@ -63,6 +63,7 @@ function grumps!( epassed :: Estimator, d :: Data{T}, o :: OptimizationOptions, 
     δvec = vcat( δ... )
 
     Computeβ!( solution, δvec, d )
+    @info "computing asymptotic variance if requested"
     ComputeVξ!( solution, δvec, d )
     SetResult!( solution, θ, δvec, nothing )
     SetConvergence!( solution, result )

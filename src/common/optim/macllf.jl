@@ -6,6 +6,7 @@ function MacroObjectiveδ!(
     d           :: GrumpsMacroNoData{T}, 
     s           :: MacroSpace{T},
     o           :: OptimizationOptions, 
+                :: Int,
     setzero     :: Bool = true 
     ) :: Union{Nothing,T} where {T<:Flt} 
 
@@ -278,8 +279,8 @@ function MacroObjectiveθ!(
     Hδθ         :: HType{T},
     θ           :: AA1{T},
     δ           :: AA1{T},
-    d           :: GrumpsMacroNoData, 
-    s           :: MacroSpace{T},
+    d           :: GrumpsMacroNoData{T}, 
+    s           :: GrumpsMacroNoSpace{T},
     o           :: OptimizationOptions, 
     m           :: Int,
     setzero     :: Bool = true 
@@ -297,8 +298,8 @@ function MacroObjectiveθ!(
     Hδθ         :: HType{T}, 
     θ           :: A1{T}, 
     δ           :: A1{T},
-    d           :: MacroData{T}, 
-    s           :: MacroSpace{T},
+    d           :: GrumpsMacroData{T}, 
+    s           :: GrumpsMacroSpace{T},
     o           :: OptimizationOptions, 
     m           :: Int, 
     setzero     :: Bool = true 

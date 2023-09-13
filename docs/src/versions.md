@@ -23,4 +23,7 @@ Adds:
 * Added compatibility checks
 * Precautionary change to improve robustness across operating systems
 
+## 0.2.3
+
+1. Bug fix for the case in which there are no macro data but an estimator other than mixed logit is selected.
 
