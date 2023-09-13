@@ -38,7 +38,7 @@ function GrumpsMacroData( id :: Any, mkt :: AbstractString, N :: Real, dfp :: Ab
     S = typeof(mic) ∈ [ Nothing, GrumpsMicroNoData{T} ] ? 0 : length( mic.y )
     N -= S
     shares = typeof(mic) ∈ [ Nothing, GrumpsMicroNoData{T} ] ? Ns / N : [ Ns[j] - sum( mic.Y[:,j] ) for j ∈ 1:J ] / N
-    @ensure all( shares .≥ 0.0 ) "macro shares must be nonnegative in market $mkt; can be negative if there are more micro sample consumers purchasing than are in the population, which would be weird"
+    @ensure all( shares .≥ 0.0 ) "Macro shares must be nonnegative in market $mkt; this error can arise if the inside shares add up to one or if there are more micro sample consumers purchasing than are in the population (which would be weird)"
     if options.macromode == :Ant
         return GrumpsMacroDataAnt{T}( String( mkt ), 𝒳, T.( nw.nodes ), shares, T( N ), T.( nw.weights ) )
     else

@@ -10,7 +10,7 @@ include( "includes.jl" )
 
 @info "included all code"
 
-const Grumps_version = v"0.2.2"
+const Grumps_version = v"0.2.4"
 export Grumps_version
 const GrumpsColor = [ :red, :green, :yellow, :blue, :magenta, :cyan ]
 
