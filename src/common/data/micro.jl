@@ -62,7 +62,7 @@ end
 
 
 
-function CreateInteractions( ::Val{:GrumpsInteractions}, dfc :: AbstractDataFrame, dfp :: AbstractDataFrame, v :: Variables, T = F64 )
+function CreateInteractions( ::Val{:GrumpsInteractions}, dfc :: AbstractDataFrame, dfp :: AbstractDataFrame, v :: Variables, T :: Type{ 𝒯 } = F64 ) where 𝒯 <: Flt
     MustBeInDF( v.interactions[:,1], dfc, "consumer data frame" )
     MustBeInDF( v.interactions[:,2], dfp, "product data frame" )
     S = nrow( dfc ); J = nrow( dfp) + 1; dθz = size( v.interactions, 1 )
@@ -79,7 +79,7 @@ end
 
 
 
-function CreateInteractions( ::Val{:GrumpsInteractions!}, dfc :: AbstractDataFrame, dfp :: AbstractDataFrame, v :: Variables, T :: Type{ 𝒯 }= F64 ) where 𝒯
+function CreateInteractions( ::Val{:GrumpsInteractions!}, dfc :: AbstractDataFrame, dfp :: AbstractDataFrame, v :: Variables, T :: Type{ 𝒯 }= F64 ) where 𝒯 <: Flt
     MustBeInDF( v.interactions[:,1], dfc, "consumer data frame" )
     MustBeInDF( v.interactions[:,2], dfp, "product data frame" )
     S = nrow( dfc ); J = nrow( dfp) + 1; dθz = size( v.interactions, 1 )
@@ -106,7 +106,7 @@ end
 
     CreateMicroInstruments is used for the MSM version of our estimator, which is not recommended.
 """
-function CreateMicroInstruments( ::Any, dfc:: AbstractDataFrame, dfp:: AbstractDataFrame, v :: Variables, usesmicmom :: Bool, T = F64 )
+function CreateMicroInstruments( ::Any, dfc:: AbstractDataFrame, dfp:: AbstractDataFrame, v :: Variables, usesmicmom :: Bool, T :: Type{ 𝒯 }= F64 ) where 𝒯 <: Flt
     S, dδ = nrow( dfc ), nrow( dfp ) 
     J = dδ + 1
     micinst = size( v.microinstruments, 1 ) == 0 ? v.interactions : v.microinstruments
@@ -141,7 +141,7 @@ end
 
     CreateRandomCoefficients takes a dataframe and random draws and turns it into random coefficients data.   
 """
-function CreateRandomCoefficients( ::Any, dfp :: AbstractDataFrame, v :: Variables, nw :: NodesWeights, T = F64 )
+function CreateRandomCoefficients( ::Any, dfp :: AbstractDataFrame, v :: Variables, nw :: NodesWeights, T :: Type{ 𝒯 }= F64 ) where 𝒯 <: Flt
     MustBeInDF( v.randomcoefficients, dfp, "product data frame" )
     R = length( nw.weights )
     dθν = length( v.randomcoefficients )
@@ -154,7 +154,7 @@ function CreateRandomCoefficients( ::Any, dfp :: AbstractDataFrame, v :: Variabl
     return X
 end
 
-function CreateRandomCoefficients( ::Any, dfp :: AbstractDataFrame, v :: Variables, nw :: MSMMicroNodesWeights, T = F64 )
+function CreateRandomCoefficients( ::Any, dfp :: AbstractDataFrame, v :: Variables, nw :: MSMMicroNodesWeights, T :: Type{ 𝒯 }= F64 ) where 𝒯 <: Flt
     MustBeInDF( v.randomcoefficients, dfp, "product data frame" )
     R,S = size( nw.weights )
     dθν = length( v.randomcoefficients )
@@ -204,7 +204,7 @@ function GrumpsMicroData(
     usesmicmom :: Bool,
     m  :: Int,
     T :: Type{ 𝒯 } = F64
-    ) where 𝒯
+    ) where 𝒯 <: Flt
 
     MustBeInDF( v.choice, dfc, "consumer" ) 
     MustBeInDF( v.product, dfp,  "product" ) 

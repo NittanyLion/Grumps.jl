@@ -49,6 +49,9 @@ This is still a preliminary version of Grumps, so please advise [Joris Pinkse](m
 ## Versions
 
 
+### 0.2.4
+
+1. Bug fix for the user-specified arbitrary interactions case.
 ### 0.2.3
 
 1. Bug fix for the case in which there are no macro data but an estimator other than mixed logit is selected.
