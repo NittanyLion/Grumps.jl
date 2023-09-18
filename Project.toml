@@ -30,6 +30,7 @@ TypeTree = "04da0e3b-1cad-4b2c-a963-fc1602baf1af"
 
 [compat]
 Ansillary = "0.1"
+Aqua = "0.7"
 Arrow = "2.6.2"
 CSV = "0.10"
 CpuId = "0.3"
@@ -50,6 +51,7 @@ julia = "1.8,1.9"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 
 [targets]
-test = ["Test"]
+test = ["Test", "Aqua" ]
