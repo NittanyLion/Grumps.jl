@@ -1,6 +1,6 @@
 import LinearAlgebra.dot
 
-function dot( u::VVector{T}, v::VVector{T} ) where {T<:Flt}
+function grumps_dot( u::VVector{T}, v::VVector{T} ) where {T<:Flt}
     @assert( length( u ) == length( v ) )
     sum( dot( u[m], v[m] ) for m ∈ eachindex( u ) )
 end
@@ -24,14 +24,7 @@ function fullisequal( x::AbstractArray, y::AbstractArray )
 end
 
 
-# function minmax_eigen( E :: Vector{ Eigen{ T, T, Matrix{T}, Vector{T} } } )  where {T<:Flt}
-#     mi, ma = typemax( T ), typemin( T )
-#     for Z ∈ E 
-#         mi = min( mi, minimum( Z.values ) )
-#         ma = max( ma, maximum( Z.values ) )
-#     end 
-#     mi, ma
-# end
+
 
 function minmax( v::VVector{T} ) where {T<:Flt}
     mi, ma = typemax( T ), typemin( T )
@@ -51,9 +44,8 @@ function ntr_infs_mat( T, J :: Vector{Int} )
     [ fill( typemax(T), J[m], J[m] ) for m ∈ eachindex( J ) ]
 end
 
-import Base.isfinite
 
-function isfinite( H::Vector{Matrix{T}} ) where {T<:Flt}
+function grumps_isfinite( H::Vector{Matrix{T}} ) where {T<:Flt}
     for A ∈ H
         all( isfinite, A ) || return false
     end

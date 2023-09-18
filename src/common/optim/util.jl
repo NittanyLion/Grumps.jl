@@ -1,27 +1,27 @@
 
 
-function computewhich( F :: FType{T}, G :: GType{T}, H :: HType{T} ) where {T<:Flt}
+function computewhich( F, G, H ) 
     return ( F ≠ nothing, G ≠ nothing, H ≠ nothing )
 end 
 
-function computewhich( F :: FType{T}, G :: GType{T}, H :: HType{T}, H2 :: HType{T} ) where {T<:Flt}
+function computewhich( F, G, H, H2 ) 
     return ( F ≠ nothing, G ≠ nothing, H ≠ nothing, H2 ≠ nothing )
 end 
 
 
-function SetZero!( setzero :: Bool, F :: FType{T}, G :: GType{T}, H :: HType{T}, Xtra :: HType{T} = nothing ) where {T<:Flt}
+function SetZero!( setzero :: Bool, F, G, H, Xtra :: Any = nothing ) 
     setzero || return F 
     if F ≠ nothing 
-        F = zero( T )
+        F = zero( F )
     end
     if G ≠ nothing
-        G .= zero( T )
+        G .= zero( G )
     end
     if H ≠ nothing
-        H .= zero( T )
+        H .= zero( H )
     end
     if Xtra ≠ nothing
-        Xtra .= zero( T )
+        Xtra .= zero( Xtra )
     end
     return F
 end

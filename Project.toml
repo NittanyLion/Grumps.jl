@@ -1,7 +1,7 @@
 name = "Grumps"
 uuid = "3967666a-e078-4e4b-aee9-ca7b8401761d"
 authors = ["Joris Pinkse <pinkse@gmail.com> and contributors"]
-version = "0.2.4"
+version = "0.2.5"
 
 [deps]
 Ansillary = "e36756a0-2672-11ea-3472-2f9ad6253375"

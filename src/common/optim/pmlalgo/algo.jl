@@ -151,7 +151,7 @@ function initial_safeguards(H, gr, Δ, K, λ, plmspace::PLMSpace{T} ) where {T<:
     end
     binaryrun( computesom, 1, M, 1, nothing )
     Hnorm = maximum( maximum( som[m] ) for m ∈ 1:M )
-    gr_norm = sqrt( sum( dot( gr[m], gr[m] ) for m ∈ 1:M ) )       
+    gr_norm = sqrt( grumps_dot( gr, gr ) )       
     λL = max( zero(T), gr_norm / Δ - Hnorm)
     λU = gr_norm / Δ + Hnorm
     λS = zero(T)
@@ -189,7 +189,7 @@ function ntr_solve_subproblem(
     ) where {T<:Flt}
 
     M = length( H )
-    !isfinite( H ) && return T(Inf), false, zero(T), false, false
+    !grumps_isfinite( H ) && return T(Inf), false, zero(T), false, false
 
     ( vectors, values, Qg, QK ) = HeigenQgQK( H, gr, K )
 
@@ -220,8 +220,8 @@ function ntr_solve_subproblem(
         end
 
         ntr_find_direction!( ss, Qs, QK, values, vectors, λ, plmspace.Z )
-        norm2_s = dot( s, s )
-        λ_update = ( norm2_s / abs( dot( s, ss ) ) ) * ( sqrt( norm2_s ) - Δ ) /  Δ 
+        norm2_s = grumps_dot( s, s )
+        λ_update = ( norm2_s / abs( grumps_dot( s, ss ) ) ) * ( sqrt( norm2_s ) - Δ ) /  Δ 
         λ += λ_update
         if λ < λlb
             λ = max( 0.5 * ( λ_previous + λlb ), λlb )
