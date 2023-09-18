@@ -1,9 +1,0 @@
-[deps]
-Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
-Grumps = "3967666a-e078-4e4b-aee9-ca7b8401761d"
-LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-
-[compat]
-Aqua = "0.6"
-Grumps = "0.2.5"

@@ -3,6 +3,7 @@ using Test
 using LinearAlgebra
 using Aqua
 
+Test.detect_ambiguities( Grumps )
 
 Aqua.test_all( Grumps; ambiguities=(recursive=false)) 
 
