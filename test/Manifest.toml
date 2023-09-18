@@ -2,7 +2,7 @@
 
 julia_version = "1.9.2"
 manifest_format = "2.0"
-project_hash = "4a9a0b246a414bd00eb245d7d7027d7dee91f8d4"
+project_hash = "1733fedda6401369c3a7a9b756776289ee9066ce"
 
 [[deps.Adapt]]
 deps = ["LinearAlgebra", "Requires"]
@@ -22,9 +22,9 @@ version = "0.1.0"
 
 [[deps.Aqua]]
 deps = ["Compat", "Pkg", "Test"]
-git-tree-sha1 = "49d3267cc3160e0b754decf4b383e10661e20536"
+git-tree-sha1 = "7e8617720acc82bee80e5244cfa0a2fbd104c5c0"
 uuid = "4c88cf16-eb10-579e-8560-4a9242c79595"
-version = "0.7.1"
+version = "0.6.6"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
