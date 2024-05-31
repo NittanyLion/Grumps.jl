@@ -19,7 +19,6 @@ function CreateK( e :: Union{ GrumpsPenalized, GrumpsGMM, GrumpsMLE }, s :: Sour
     @ensure length( regs ) < length( inst ) "underidentification not allowed"
     V == V' || advisory( "the V(ξ) matrix you entered\nis not (perfectly) symmetric" )
 
-    varrat =  6.0 * ( typeof( V ) == UniformScaling{T} ? V[1,1]  : tr( V ) /  size( V, 1 ) ) / ( pi^2 );  0.5 ≤  varrat ≤ 2.0 || @warn "tr( V(ξ) ) / (J V(ε) ) = $varrat"
 
     inboth = intersect( regs, inst )
     onlyregs = setdiff( regs, inboth )

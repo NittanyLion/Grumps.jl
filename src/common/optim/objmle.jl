@@ -64,7 +64,8 @@ function ObjectiveFunctionθ!(
     e           :: GrumpsMLE, 
     d           :: GrumpsData{T}, 
     o           :: OptimizationOptions,
-    s           :: GrumpsSpace{T} 
+    s           :: GrumpsSpace{T};
+    ignoreexponentiationcorrection = false 
     ) where {T<:Flt}
 
     θ = getθ( θtr, d )
@@ -145,7 +146,7 @@ function ObjectiveFunctionθ!(
             Πhess!( H, e, d.plmdata.𝒦, δ, δθ )
         end
         # correct for the fact that we took an exponential of the random coefficients
-        ExponentiationCorrection!( G, H, θ, dimθz( d ) )
+        ignoreexponentiationcorrection || ExponentiationCorrection!( G, H, θ, dimθz( d ) )
 
     end
 
@@ -155,4 +156,31 @@ function ObjectiveFunctionθ!(
 end
 
 
+function ObjectiveFunctionα!( 
+    fgh         :: GrumpsFGH{T}, 
+    con         :: Constraint{T},
+    F           :: FType{T},
+    G           :: GType{T},
+    H           :: HType{T},      
+    α           :: Vec{ T }, 
+    δ           :: Vec{ Vec{T} },
+    e           :: GrumpsMLE, 
+    d           :: GrumpsData{T}, 
+    o           :: OptimizationOptions,
+    s           :: GrumpsSpace{T} 
+    )
 
+    computeF, computeG, computeH = computewhich( F, G, H )
+    θtr = con.A * α + con.Ur
+    dθ = length( θtr )
+    
+    GG = computeG ? zeros( T, dθ ) : nothing
+    HH = computeH ? zeros( T, dθ, dθ ) : nothing
+
+    F = ObjectiveFunctionθ!( fgh, F, GG, HH, θtr, δ, e, d, o, s )
+
+    computeG && copyto!( G, con.A' * GG )
+    computeH && copyto!( H, con.A' * HH * con.A )
+
+    return F
+end
