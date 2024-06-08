@@ -24,3 +24,12 @@ function colspace(A::AbstractVecOrMat; atol::Real = 0.0, rtol::Real = (min(size(
     indend = sum(s -> s .> tol, SVD.S) 
     return copy((@view SVD.U[:,1:indend]))
 end
+
+
+
+function HasMaximumColumnRank( A; ε = 1.0e-8 )
+    B = copy( A )
+    foreach( normalize!, eachcol( B ) )
+    return rank( B; atol = ε ) == size( A, 2 )
+end
+

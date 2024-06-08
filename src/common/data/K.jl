@@ -1,4 +1,10 @@
 
+
+
+
+
+
+
 function CreateK( e :: GrumpsMLE , s :: Sources, v :: Variables, dδ :: Int, V :: VarξInput{T}, ::Val{ false }, fap :: Vec{ Vec{ Int } } ) where {T<:Flt}
     return zeros( T, dδ , 0  )
 end
@@ -81,6 +87,9 @@ function CreateK( e :: Union{ GrumpsPenalized, GrumpsGMM, GrumpsMLE }, s :: Sour
             end 
         end
     end
+
+    @ensure HasMaximumColumnRank( [ Ztilde Ctilde ] ) "The columns of your instrument matrix are not linearly independent."
+    @ensure HasMaximumColumnRank( [ Xtilde Ctilde ] ) "The columns of your product regressor matrix are not linearly independent."
 
     C1 = colspace( Ctilde )
     Ztilde -= C1 * (C1'Ztilde)
