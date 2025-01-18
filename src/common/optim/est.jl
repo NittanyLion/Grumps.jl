@@ -89,22 +89,22 @@ end
 Conducts the optimization.  You typically just want to set θstart to nothing, i.e. have a starting vector 
 picked automatically.  
 """
-function grumps!( epassed :: Estimator, con :: Constraint{T}, d :: Data{T}, o :: OptimizationOptions, θstart :: StartingVector{T}, seo :: StandardErrorOptions; printstructure = true ) where {T<:Flt}
+function grumps!( epassed :: Estimator, con :: Constraint{T},  d :: Data{T}, o :: OptimizationOptions, θstart :: StartingVector{T}, seo :: StandardErrorOptions; printstructure = true ) where {T<:Flt}
 
     e = CheckSanity( epassed, con, d, o, θstart, seo )
     BLAS.set_num_threads( blasthreads( o ) )
     
-    printstructure && PrintStructure( e, d, o, con, θstart, seo )
+    printstructure && PrintStructure( e, con, d, o, θstart, seo )
  
     memblock    = MemBlock( d, o )
     GC.@preserve memblock begin
-        α           = StartingValues( θstart, e, con, d, o )
+        PrepareConstraint!( con, d )
+        αstart      = StartingValues( θstart, e, con, d, o )
         fgh         = FGH( e, d )
         s           = Space( e, d, o, memblock )
         solution    = Solution( e, d, seo )
         dθ          = dimθ( d )
         dα          = dθ - dim( con )
-        PrepareConstraint!( con, d )
 
 
         δ           = [ zeros( T, dimm ) for dimm ∈ dimδm( d )  ]
@@ -113,7 +113,7 @@ function grumps!( epassed :: Estimator, con :: Constraint{T}, d :: Data{T}, o ::
 
         result = Optim.optimize(
                 Optim.only_fgh!(  ( F, G, H, α ) ->  ObjectiveFunctionα!( fgh, con, F, G, H, α, δ, e, d, o, s ) ),
-                    θconstart, 
+                    αstart, 
                     NewtonTrustRegion(), 
                     Optim.Options(
                     show_trace      = false,
@@ -123,7 +123,8 @@ function grumps!( epassed :: Estimator, con :: Constraint{T}, d :: Data{T}, o ::
                     f_tol           = o.θ.f_tol,
                     iterations      = o.θ.iterations,
                     store_trace     = o.θ.store_trace,
-                    callback        = x->GrumpsαCallBack( con.A * x + con.Ur, con, e, d, o, oldx, repeatx, solution )
+                    # callback        = x->GrumpsαCallBack( con.A * x + con.Ur, con, e, d, o, oldx, repeatx, solution )
+                    callback        = x->GrumpsαCallBack( x, e, con, d, o, oldx, repeatx, solution )
                 )
         )
         
@@ -158,9 +159,9 @@ grumps!( epassed :: Estimator, con :: NoConstraint{T}, d :: Data{T}, o :: Optimi
 
 
 
-grumps!( e :: Estimator, d :: Data{T}, c :: AbstractConstraint{T}; printstructure = true ) where {T<:Flt} = grumps!( e, d, GrumpsOptimizationOptions(), c, nothing, StandardErrorOptions(); printstructure = printstructure  )
-grumps!( e :: Estimator, d :: Data{T}, c :: AbstractConstraint{T}, θstart :: Vec{T}; printstructure = true ) where {T<:Flt} = grumps!( e, d, GrumpsOptimizationOptions(), c, θstart, StandardErrorOptions(); printstructure = printstructure )
-grumps!( e :: Estimator, d :: Data{T}, c :: AbstractConstraint{T}, o :: OptimizationOptions; printstructure = true ) where {T<:Flt} = grumps!( e, d, o, c, nothing, StandardErrorOptions(); printstructure = printstructure )
+grumps!( e :: Estimator, c :: AbstractConstraint{T}, d :: Data{T}; printstructure = true ) where {T<:Flt} = grumps!( e, c, d, GrumpsOptimizationOptions(), nothing, StandardErrorOptions(); printstructure = printstructure  )
+grumps!( e :: Estimator, c :: AbstractConstraint{T}, d :: Data{T}, θstart :: Vec{T}; printstructure = true ) where {T<:Flt} = grumps!( e, c, d, GrumpsOptimizationOptions(), θstart, StandardErrorOptions(); printstructure = printstructure )
+grumps!( e :: Estimator, c :: AbstractConstraint{T}, d :: Data{T}, o :: OptimizationOptions; printstructure = true ) where {T<:Flt} = grumps!( e, c, d, o, nothing, StandardErrorOptions(); printstructure = printstructure )
 grumps!( e :: Estimator, d :: Data{T}; printstructure = true ) where {T<:Flt} = grumps!( e, d, GrumpsOptimizationOptions(), nothing, StandardErrorOptions(); printstructure = printstructure  )
 grumps!( e :: Estimator, d :: Data{T}, θstart :: Vec{T}; printstructure = true ) where {T<:Flt} = grumps!( e, d, GrumpsOptimizationOptions(), θstart, StandardErrorOptions(); printstructure = printstructure )
 grumps!( e :: Estimator, d :: Data{T}, o :: OptimizationOptions; printstructure = true ) where {T<:Flt} = grumps!( e, d, o, nothing, StandardErrorOptions(); printstructure = printstructure )

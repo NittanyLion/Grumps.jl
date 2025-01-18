@@ -194,7 +194,7 @@ function PrintThreads( th :: GrumpsThreads, memsave )
         deemphornot( true, i10( inthreads(th) ) ) ) 
 end
 
-function PrintStructure( e :: Estimator, con :: AnyConstraint{T}, d :: GrumpsData,  o :: OptimizationOptions, θstart, seo :: StandardErrorOptions ) 
+function PrintStructure( e :: Estimator, con :: AbstractConstraint, d :: GrumpsData,  o :: OptimizationOptions, θstart, seo :: StandardErrorOptions ) 
     println()
     HeadPrint( "Summary", '∨' )
     HeadPrint( "Specification")
@@ -204,7 +204,7 @@ function PrintStructure( e :: Estimator, con :: AnyConstraint{T}, d :: GrumpsDat
     println(  Sizes( d ) )
     HeadPrint( "Detailed Estimator Description" )
     println( DetailedDescription( e ) )
-    Constrained( e ) && advisory( "You've imposed a constraint; still need to show what the constraint is." )
+    Constrained( con ) && advisory( "You've imposed a constraint; still need to show what the constraint is." )
     HeadPrint( "Nodes and Draws" )
     println( IntegrationSizes( d ) )
     HeadPrint( "Optimization Options" )
@@ -221,4 +221,4 @@ function PrintStructure( e :: Estimator, con :: AnyConstraint{T}, d :: GrumpsDat
 end
 
 
-PrintStructure( e :: Estimator, d :: GrumpsData,  o :: OptimizationOptions, θstart, seo :: StandardErrorOptions ) = PrintStructure( e, NoConstraint{T}(), d,  o, θstart, seo )
+PrintStructure( e :: Estimator, d :: GrumpsData,  o :: OptimizationOptions, θstart, seo :: StandardErrorOptions; T = Float64 ) = PrintStructure( e, d, NoConstraint{T}(), o, θstart, seo ) 

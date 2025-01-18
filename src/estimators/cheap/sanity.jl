@@ -9,3 +9,5 @@ function CheckSanitySpecific( e::GrumpsCheapEstimator, d :: Data{T}, o :: Optimi
     return e
 end
     
+
+handlesconstraints( e::GrumpsCheapEstimator ) = true

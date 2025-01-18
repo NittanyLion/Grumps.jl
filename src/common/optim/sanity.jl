@@ -9,9 +9,9 @@ end
 
 
 
-function CheckSanity( epassed :: Estimator, con :: AnyConstraint{T}, d :: Data{T}, o :: OptimizationOptions, θstart :: StartingVector{T}, seo :: StandardErrorOptions ) where {T<:Flt}
+function CheckSanity( epassed :: Estimator, con :: AbstractConstraint{T}, d :: Data{T}, o :: OptimizationOptions, θstart :: StartingVector{T}, seo :: StandardErrorOptions ) where {T<:Flt}
     e = CheckSanitySpecific( epassed, d, o, θstart, seo )  # check sanity for issue specific to an estimator
-    Constrained( con ) && @ensure HandlesConstraints( e ) "Estimator $e cannot handle constraints"
+    Constrained( con ) && @ensure handlesconstraints( e ) "Estimator $e cannot handle constraints"
     mktthreads( o ) == 1 && inthreads( o ) == 1 && advisory( "you are only using one Julia thread\nwhich is typically slow:\nstart Julia with e.g. julia -t 8 to get 8 threads" )
     return e
 end

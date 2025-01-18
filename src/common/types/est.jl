@@ -20,6 +20,8 @@ usespenalty( ::GrumpsMLE ) = false
 seprocedure( ::GrumpsEstimator ) = :defaultseprocedure
 seprocedure( ::GrumpsGMM ) = :notyetimplemented
 
+handlesconstraints( ::GrumpsEstimator ) = false
+
 struct GrumpsMultinomialLogitEstimator <: GrumpsMLE
     function GrumpsMultinomialLogitEstimator() 
         @ensure false "GrumpsMultinomialLogitEstimator not yet implemented"

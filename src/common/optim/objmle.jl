@@ -168,7 +168,7 @@ function ObjectiveFunctionα!(
     d           :: GrumpsData{T}, 
     o           :: OptimizationOptions,
     s           :: GrumpsSpace{T} 
-    )
+    ) where {T<:Flt}
 
     computeF, computeG, computeH = computewhich( F, G, H )
     θtr = con.A * α + con.Ur
