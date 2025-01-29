@@ -1,5 +1,6 @@
 /Manifest.toml
 /docs/build/
+/cleerbug
 test.todo
 _example.jl
 _*

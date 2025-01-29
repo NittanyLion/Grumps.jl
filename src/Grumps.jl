@@ -10,7 +10,7 @@ include( "includes.jl" )
 
 @info "included all code"
 
-const Grumps_version = v"0.2.5"
+const Grumps_version = v"0.3.0"
 export Grumps_version
 const GrumpsColor = [ :red, :green, :yellow, :blue, :magenta, :cyan ]
 
@@ -59,7 +59,7 @@ function __init__()
     lastversiondate = try 
         readlines( "$(@__DIR__)/versiondate" )[1] |> Date
     catch
-        Date( "2023-09-03" )
+        Date( "2025-01-18" )
     end
     printstyled( "This is Grumps version $Grumps_version ($lastversiondate)\n\n\n"; color= 206, bold = true ); 
     versionage = Day( today() - lastversiondate ) |> Dates.value

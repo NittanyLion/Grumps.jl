@@ -6,6 +6,7 @@ function Heigen( H :: VMatrix{T} ) where {T<:Flt}
     @threads :dynamic for m ∈ 1:M
         H_eig[m] = eigen( Symmetric( H[m] ) )
         for j ∈ eachindex( H_eig[m].values )
+            # WHY IS THIS NEEDED? *****
             H_eig[m].values[j] ≥ zero( T ) && break
             H_eig[m].values[j] = zero( T )
         end
@@ -51,7 +52,7 @@ function ntr_find_direction!( p :: VVector{ T },  Qg :: VVector{T}, QK :: VMatri
         end
     end
     A += I
-    C = cholesky( Symmetric( A ); check = false )
+    C = cholesky( Symmetric( A ); check = true )
     for m ∈ 1:M
          Z[m] .=  C.U' \ ( QK[m]' ) 
     end
@@ -75,7 +76,7 @@ function ntr_find_direction!( p :: VVector{ T },  Qg :: VVector{T}, QK :: VMatri
     p
 end 
 
-@todo 2 "REMOVE DUPLICATION WITH PREVIOUS FUNCTION"
+# @todo 2 "REMOVE DUPLICATION WITH PREVIOUS FUNCTION"
 
 function ntr_find_direction(  P :: VMatrix{ T },  QG :: VMatrix{T}, QK :: VMatrix{T}, values::VVector{T},  vectors::VMatrix{T}, λ :: T, Z::VMatrix{T} ) where {T<:Flt}
     M = length( P )
@@ -189,12 +190,13 @@ function ntr_solve_subproblem(
     ) where {T<:Flt}
 
     M = length( H )
+    @debug "$M markets"
     !grumps_isfinite( H ) && return T(Inf), false, zero(T), false, false
 
     ( vectors, values, Qg, QK ) = HeigenQgQK( H, gr, K )
 
     min_H_ev, max_H_ev = minmax( values )
-
+    @debug "$min_H_ev $max_H_ev min and max eigenvalues"
 
     if min_H_ev ≥ 1.0e-8
         ntr_find_direction!( s, Qg, QK, values, vectors, zero(T), plmspace.Z )
@@ -231,6 +233,7 @@ function ntr_solve_subproblem(
             reached_solution = true
             break
         end
+        iter == max_iters && @debug "ran out of iterations"
     end
 
     return ntr_m( H, gr, x, s, K ), false, λ, reached_solution
@@ -309,7 +312,6 @@ end
 
 function ntr_assess_convergence( state::NTRState{T}, ntr::NTR{T}, options::NTROptions{T} ) where {T<:Flt}
     if state.ρ ≤ state.η 
-        # @info "ρ less than η   $(state.ρ) ≤ $(state.η)"
         return false, false, false, false
     end
     # Accept the point and check convergence
@@ -317,10 +319,6 @@ function ntr_assess_convergence( state::NTRState{T}, ntr::NTR{T}, options::NTROp
     f_converged = ( abs( value( ntr ) - state.f_x_previous ) ≤ options.f_rel_tol * abs( value( ntr ) ) )
     f_increased = ( value( ntr ) > state.f_x_previous )
     g_converged = ( ntr_loss( gradient( ntr ) ) ≤ options.g_abs_tol )
-    # printstyled("convergence measures:\n"; color = :green)
-    # println( "xloss = ", ntr_loss( fulldiff( state.x, state.x_previous ) ) )
-    # println( "floss = ", abs( value( ntr ) - state.f_x_previous ) )
-    # println( "gloss = ", ntr_loss( gradient( ntr ) ) )
     return x_converged, f_converged, g_converged, f_increased
 end
 
@@ -385,14 +383,6 @@ end
 
 
 
-# function ntr_best!( ntr :: NTR{T}, best :: NTRFGH{T} ) where {T<:Flt}
-#     ntr.F ≤ best.f || return
-#     best.f = ntr.F
-#     best.g[:] = vcat( gradient( ntr )... )
-#     best.H[:,:] = hessian( ntr )
-#     best.x[:] = vcat( ntr.x_f... )
-#     nothing
-# end
 
 
 @todo 4 "must check ntr_best! for bugs"

@@ -194,7 +194,7 @@ function PrintThreads( th :: GrumpsThreads, memsave )
         deemphornot( true, i10( inthreads(th) ) ) ) 
 end
 
-function PrintStructure( e :: Estimator, con :: AbstractConstraint, d :: GrumpsData,  o :: OptimizationOptions, θstart, seo :: StandardErrorOptions ) 
+function PrintStructure( e :: Estimator, d :: GrumpsData, con :: AbstractConstraint,  o :: OptimizationOptions, θstart, seo :: StandardErrorOptions ) 
     println()
     HeadPrint( "Summary", '∨' )
     HeadPrint( "Specification")

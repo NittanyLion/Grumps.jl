@@ -20,6 +20,8 @@ picked automatically.
 """
 function grumps!( epassed :: Estimator, d :: Data{T}, o :: OptimizationOptions, θstart :: StartingVector{T}, seo :: StandardErrorOptions; printstructure = true ) where {T<:Flt}
 
+    @debug "debugging is on"
+    
     e = CheckSanity( epassed, d, o, θstart, seo )
     BLAS.set_num_threads( blasthreads( o ) )
     
