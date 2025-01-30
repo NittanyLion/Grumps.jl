@@ -211,6 +211,8 @@ function ntr_solve_subproblem(
     reached_solution = false
     Qs = [ similar( Qg[m] )  for m ∈ 1:M ]    
     for iter ∈ 1:max_iters
+        @debug "$iter $λ"
+
         λ_previous = λ
 
         ntr_find_direction!( s, Qg, QK, values, vectors, λ, plmspace.Z  )

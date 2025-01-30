@@ -3,8 +3,9 @@ abstract type GrumpsEstimator <: Estimator end
 abstract type GrumpsMLE <: GrumpsEstimator end
 abstract type GrumpsPenalized <: GrumpsEstimator end
 abstract type GrumpsGMM <: GrumpsEstimator end
+abstract type GrumpsDevelopment <: GrumpsPenalized end
 
-const GrumpsEstimatorClasses = [ GrumpsMLE; GrumpsPenalized; GrumpsGMM ]
+const GrumpsEstimatorClasses = [ GrumpsMLE; GrumpsPenalized; GrumpsGMM; GrumpsDevelopment ]
 
 # set some sensible defaults
 usesmicrodata( ::GrumpsEstimator ) = true

@@ -1,4 +1,4 @@
-function CheckSanitySpecific( e::GrumpsPenalized, d :: Data{T}, o :: OptimizationOptions, θstart :: StartingVector{T}, seo :: StandardErrorOptions ) where {T<:Flt}
+function CheckSanitySpecific( e::GrumpsDevelopmentEstimator, d :: Data{T}, o :: OptimizationOptions, θstart :: StartingVector{T}, seo :: StandardErrorOptions ) where {T<:Flt}
         
     if dimmom( d ) == dimβ( d )
         advisory( "your product level moments are exactly identified,\nso trying to switch you to MLE" )
