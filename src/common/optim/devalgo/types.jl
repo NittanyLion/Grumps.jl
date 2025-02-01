@@ -27,7 +27,7 @@ mutable struct NewterState{T<:Flt}
     x_previous      :: VVector{T} 
     x               :: VVector{T} 
     f_x_previous    :: T
-    s               :: VVector{T} 
+    p               :: VVector{T} 
     g_previous      :: VVector{T} 
     Δ               :: T
     ρ               :: T
@@ -44,8 +44,8 @@ end
 
 
 struct NewterOptions{T<:Flt}
-    initial_Δ    :: T 
-    Δhat        :: T 
+    initial_Δ   :: T 
+    Δ̂           :: T 
     η           :: T
     ρ̲           :: T 
     ρ̄           :: T 
@@ -131,6 +131,10 @@ mutable struct NewterTrace{T<:Flt}
     end
 end
 
+
+function NewterResult!( best :: PMLFGH{T}, status :: Symbol ) where {T<:Flt}
+
+end
 
 # mutable struct NTRFGH{T<:Flt}
 #     f           :: T

@@ -1,105 +1,105 @@
 
 
 
-value( newt::Newter{T} ) where {T <: Flt} = newt.F
-gradient( newt::Newter{T} ) where {T <: Flt} = newt.DF
-hessian( newt::Newter{T} ) where {T <: Flt} = newt.H
+value( 🦎::Newter{T} ) where {T <: Flt} = 🦎.F
+gradient( 🦎::Newter{T} ) where {T <: Flt} = 🦎.DF
+hessian( 🦎::Newter{T} ) where {T <: Flt} = 🦎.H
+Kmat( 🦎::Newter{T} ) where {T<:Flt} = 🦎.K
 
-
-function value_add_penalty!!( newt::Newter{T}, x::VVector{T} ) where {T<:Flt}
-    Kx = sum( newt.K[m]' * x[m] for m ∈ eachindex(x) )
-    newt.F += dot( Kx, Kx ) * T(0.5)
+function value_add_penalty!!( 🦎::Newter{T}, x::VVector{T} ) where {T<:Flt}
+    Kx = sum( 🦎.K[m]' * x[m] for m ∈ eachindex(x) )
+    🦎.F += dot( Kx, Kx ) * T(0.5)
 end
 
 
 # functions with two exclamation marks set stuff without checking if there is a repetition
-function value!!( newt::Newter{T}, x::VVector{T} ) where {T<:Flt}
-    # newt.F = newt.objfun( T(0.0), nothing, nothing, x, newt.data ) 
-    newt.F = newt.objfun( T(0.0), nothing, nothing, x ) 
-    value_add_penalty!!( newt, x )
-    deepcopyto!( newt.x_f, x)
-    newt.F
+function value!!( 🦎::Newter{T}, x::VVector{T} ) where {T<:Flt}
+    # 🦎.F = 🦎.objfun( T(0.0), nothing, nothing, x, 🦎.data ) 
+    🦎.F = 🦎.objfun( T(0.0), nothing, nothing, x ) 
+    value_add_penalty!!( 🦎, x )
+    deepcopyto!( 🦎.x_f, x)
+    🦎.F
 end
 
-function gradient_add_penalty!!( newt::Newter{T}, x::VVector{T} ) where {T<:Flt}
-    Kx = sum( newt.K[m]' * x[m] for m ∈ eachindex(x) )
+function gradient_add_penalty!!( 🦎::Newter{T}, x::VVector{T} ) where {T<:Flt}
+    Kx = sum( 🦎.K[m]' * x[m] for m ∈ eachindex(x) )
     for m ∈ eachindex( x )
-        # local Kx  = newt.K[m]' * x[m]
-        newt.DF[m][:] +=  newt.K[m] * Kx
+        # local Kx  = 🦎.K[m]' * x[m]
+        🦎.DF[m][:] +=  🦎.K[m] * Kx
     end
 end
 
-function gradient!!( newt::Newter{T}, x::VVector{T} ) where {T<:Flt}
-    deepcopyto!( newt.x_df, x )
-    newt.objfun( nothing, newt.DF, nothing, x )
-    gradient_add_penalty!!( newt, x )
-    gradient( newt )
+function gradient!!( 🦎::Newter{T}, x::VVector{T} ) where {T<:Flt}
+    deepcopyto!( 🦎.x_df, x )
+    🦎.objfun( nothing, 🦎.DF, nothing, x )
+    gradient_add_penalty!!( 🦎, x )
+    gradient( 🦎 )
 end
 
-function hessian!!( newt::Newter{T}, x::VVector{T} ) where {T<:Flt}
-    deepcopyto!( newt.x_h, x )
-    newt.objfun( nothing, nothing, newt.H, x )
-    hessian( newt )
+function hessian!!( 🦎::Newter{T}, x::VVector{T} ) where {T<:Flt}
+    deepcopyto!( 🦎.x_h, x )
+    🦎.objfun( nothing, nothing, 🦎.H, x )
+    hessian( 🦎 )
 end
 
 
-function value_gradient!!( newt::Newter{T}, x::VVector{T} ) where {T<:Flt}
+function value_gradient!!( 🦎::Newter{T}, x::VVector{T} ) where {T<:Flt}
     # computes both the value and the gradient
-    deepcopyto!( newt.x_f, x )
-    deepcopyto!( newt.x_df, x )
-    newt.F = newt.objfun( T(0.0), gradient(newt), nothing, x )
-    value_add_penalty!!( newt, x )
-    gradient_add_penalty!!( newt, x )
-    ( value(newt), gradient(newt) )
+    deepcopyto!( 🦎.x_f, x )
+    deepcopyto!( 🦎.x_df, x )
+    🦎.F = 🦎.objfun( T(0.0), gradient(🦎), nothing, x )
+    value_add_penalty!!( 🦎, x )
+    gradient_add_penalty!!( 🦎, x )
+    ( value(🦎), gradient(🦎) )
 end
 
-function value!( newt::Newter{T}, x::VVector{T} ) where {T<:Flt}
-    fullisequal( x, newt.x_f ) || value!!( newt, x )
-    value( newt )
+function value!( 🦎::Newter{T}, x::VVector{T} ) where {T<:Flt}
+    fullisequal( x, 🦎.x_f ) || value!!( 🦎, x )
+    value( 🦎 )
 end
 
-function gradient!( newt::Newter{T}, x::VVector{T} ) where {T<:Flt}
-    fullisequal( x, newt.x_df ) || gradient!!( newt, x )
-    gradient( newt )
+function gradient!( 🦎::Newter{T}, x::VVector{T} ) where {T<:Flt}
+    fullisequal( x, 🦎.x_df ) || gradient!!( 🦎, x )
+    gradient( 🦎 )
 end
 
-function hessian!( newt::Newter{T}, x::VVector{T} ) where {T<:Flt}
-    fullisequal( x, newt.x_h ) || hessian!!( newt, x )
-    hessian( newt )
+function hessian!( 🦎::Newter{T}, x::VVector{T} ) where {T<:Flt}
+    fullisequal( x, 🦎.x_h ) || hessian!!( 🦎, x )
+    hessian( 🦎 )
 end
 
-function value_gradient!( newt::Newter{T}, x::VVector{T} ) where {T<:Flt}
-    if !fullisequal( x, newt.x_f) && !fullisequal( x, newt.x_df )
-        value_gradient!!( newt, x )
-    elseif !fullisequal( x, newt.x_f )
-        value!!( newt, x )
-    elseif !fullisequal( x, newt.x_df )
-        gradient!!( newt, x )
+function value_gradient!( 🦎::Newter{T}, x::VVector{T} ) where {T<:Flt}
+    if !fullisequal( x, 🦎.x_f) && !fullisequal( x, 🦎.x_df )
+        value_gradient!!( 🦎, x )
+    elseif !fullisequal( x, 🦎.x_f )
+        value!!( 🦎, x )
+    elseif !fullisequal( x, 🦎.x_df )
+        gradient!!( 🦎, x )
     end
-    ( value(newt), gradient(newt) )
+    ( value(🦎), gradient(🦎) )
 end
 
-function value_gradient_hessian!!( newt::Newter{T}, x::VVector{T} ) where {T<:Flt}
-    deepcopyto!( newt.x_f, x )
-    deepcopyto!( newt.x_df, x )
-    deepcopyto!( newt.x_h, x )
-    newt.objfun( T(0.0), newt.DF, newt.H, x )
-    value( newt ), gradient( newt ), hessian( newt )
+function value_gradient_hessian!!( 🦎::Newter{T}, x::VVector{T} ) where {T<:Flt}
+    deepcopyto!( 🦎.x_f, x )
+    deepcopyto!( 🦎.x_df, x )
+    deepcopyto!( 🦎.x_h, x )
+    🦎.objfun( T(0.0), 🦎.DF, 🦎.H, x )
+    value( 🦎 ), gradient( 🦎 ), hessian( 🦎 )
 end
 
 
 
 
-function fullhessian( newt :: Newter{T} ) where {T<:Flt}
-    dx = [ length( newt.x_f[m] ) for m ∈ eachindex( newt.x_f ) ]
+function fullhessian( 🦎 :: Newter{T} ) where {T<:Flt}
+    dx = [ length( 🦎.x_f[m] ) for m ∈ eachindex( 🦎.x_f ) ]
     sumdx = sum( dx )
     H = zeros( T, sumdx, sumdx )
-    for m ∈ eachindex( newt.x_f )
-        H[ newt.ranges[m], newt.ranges[m] ] = newt.H[m]
+    for m ∈ eachindex( 🦎.x_f )
+        H[ 🦎.ranges[m], 🦎.ranges[m] ] = 🦎.H[m]
     end
-    for m ∈ eachindex( newt.x_f )
-        for mm ∈ eachindex( newt.x_f )
-            H[ newt.ranges[m], newt.ranges[mm] ] += newt.K[m] * newt.K[mm]'
+    for m ∈ eachindex( 🦎.x_f )
+        for mm ∈ eachindex( 🦎.x_f )
+            H[ 🦎.ranges[m], 🦎.ranges[mm] ] += 🦎.K[m] * 🦎.K[mm]'
         end
     end
     H

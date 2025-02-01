@@ -198,7 +198,9 @@ function ntr_solve_subproblem(
 
     if min_H_ev ≥ 1.0e-8
         ntr_find_direction!( s, Qg, QK, values, vectors, zero(T), plmspace.Z )
+        # @info "initial direction found = $s"
         if dot(s,s) ≤ Δ^2 
+            # @debug "returning the initial direction"
             return ntr_m( H, gr, x, s, K ), true, zero(T), false, true
         end
     end
@@ -211,11 +213,10 @@ function ntr_solve_subproblem(
     reached_solution = false
     Qs = [ similar( Qg[m] )  for m ∈ 1:M ]    
     for iter ∈ 1:max_iters
-        @debug "$iter $λ"
-
         λ_previous = λ
 
         ntr_find_direction!( s, Qg, QK, values, vectors, λ, plmspace.Z  )
+        # @debug "$iter  direction = $s"
         ss = deepcopy( s )
         for m ∈ 1:M
             Qs[m][:] = vectors[m]' * s[m]  
@@ -254,15 +255,24 @@ end
 
 function ntr_update_state!( ntr :: NTR{T}, state :: NTRState{T}, method :: NTRMethod{T}, plmspace :: PLMSpace{T} ) where {T<:Flt}
     # fine the next step direction
+
+    # @debug "initial gradient = $(gradient(ntr))"
+    # @debug "initial hessian = $(hessian(ntr))"
+
     ( ℳ, state.interior, state.λ, state.reached_subproblem_solution ) = 
             ntr_solve_subproblem( gradient( ntr ), hessian( ntr ), ntr.K, state.Δ, state.s, state.x, plmspace )
-
+    @debug "reached subproblem solution: $(state.reached_subproblem_solution)"
     # maintain a record of the previous position
     deepcopyto!( state.x_previous, state.x )
     state.f_x_previous = value( ntr )
 
     # update the function value and gradient
+    # @debug "from $(state.x)"
+    # @debug "p=$(state.s)"
     fulladd!( state.x, state.s )
+    # @debug "to $(state.x)"
+    # exit()
+
     deepcopyto!( state.g_previous, gradient( ntr ) )
     value_gradient!( ntr, state.x )         
 

@@ -1,5 +1,5 @@
 # load optimization code
-for f ∈ [ "types", "algo", "ui" ]
+for f ∈ [ "types", "algo", "ui", "opt" ]
     include( "devalgo/$(f).jl" )
 end  
 
@@ -44,7 +44,6 @@ function ObjectiveFunctionθ!(
     s           :: GrumpsSpace{T} 
     ) where {T<:Flt}
 
-    @info "ok, got here"
 
     θ = getθ( θtr, d )
 

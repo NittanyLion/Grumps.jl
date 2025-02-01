@@ -48,7 +48,8 @@ function grumpsδ!( fgh :: PMLFGH{T}, θ::Vec{T}, δ :: Vec{ Vec{T} }, e :: Grum
                 g_abs_tol = o.δ.g_tol, 
                 f_rel_tol = o.δ.f_tol, 
                 iterations = o.δ.iterations, 
-                show_trace = o.δ.show_trace )   
+                # show_trace = o.δ.show_trace )   
+                show_trace = true )   
                 )    
 
     for m ∈ markets
@@ -58,4 +59,27 @@ function grumpsδ!( fgh :: PMLFGH{T}, θ::Vec{T}, δ :: Vec{ Vec{T} }, e :: Grum
 end
 
 
+
+function grumpsδ!( fgh :: PMLFGH{T}, θ::Vec{T}, δ :: Vec{ Vec{T} }, e :: GrumpsDevelopment, d :: GrumpsData{T}, o :: OptimizationOptions, s :: GrumpsSpace{T}  ) where {T<:Flt}
+
+    markets = 1:dimM( d )
+
+    ret = dev_optimize( (F,G,H,δ)-> InsideObjective!( F, G, H, θ, δ, e, d, o, s ), 
+            δ, 
+            d, 
+            fgh,
+            NewterOptions( T; 
+                x_abs_tol = o.δ.x_tol, 
+                g_abs_tol = o.δ.g_tol, 
+                f_rel_tol = o.δ.f_tol, 
+                iterations = o.δ.iterations, 
+                # show_trace = o.δ.show_trace )   
+                show_trace = true )   
+                )    
+
+    for m ∈ markets
+        copyto!( δ[m], fgh.market[m].δ )
+    end
+    return ret
+end
 
