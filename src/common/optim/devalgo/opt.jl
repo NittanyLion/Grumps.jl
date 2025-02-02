@@ -41,7 +41,7 @@ function dev_optimize(  f, xstart :: VVector{T}, d::GrumpsData{T}, best :: PMLFG
         @debug "found δ solution"
         return NewterResult!( best, :success )
     end
-    @debug "ran out of δ iterations"
+    @debug "ran out of δ iterations  ($(options.iterations))"
     return NewterResult!( best, :out_of_iterations )
 end
 

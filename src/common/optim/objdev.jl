@@ -41,9 +41,14 @@ function ObjectiveFunctionθ!(
     e           :: GrumpsDevelopment, 
     d           :: GrumpsData{T}, 
     o           :: OptimizationOptions,
-    s           :: GrumpsSpace{T} 
+    s           :: GrumpsSpace{T},
+    lastθtr     :: Vec{ T },
+    lastδ       :: VVector{ T }
     ) where {T<:Flt}
 
+    sameθ = (lastθtr == θtr) ? true : false
+    @debug "same θ?   $sameθ  $(norm(lastθtr-θtr))"
+    copyto!( lastθtr, θtr )
 
     θ = getθ( θtr, d )
 
@@ -53,9 +58,10 @@ function ObjectiveFunctionθ!(
     
     SetZero!( true, F, G, H )
     markets = 1:dimM( d )
-    for m ∈ markets
-        δ[m] .= zero( T )
-    end
+
+    # for m ∈ markets
+        # δ[m] .= zero( T )
+    # end
 
     if !memsave( s )
         for m ∈ markets
@@ -64,7 +70,13 @@ function ObjectiveFunctionθ!(
     end
 
     # compute δ
-    grumpsδ!( fgh, θ, δ, e, d, o, s )
+    if !sameθ 
+        # fill!.( δ, zero( T ) )
+        copyto!.( δ, lastδ )
+        grumpsδ!( fgh, θ, δ, e, d, o, s )
+        copyto!.( lastδ, δ )
+    end
+
     completed = Threads.Atomic{Int}( 0 )
     sem = Semaphore( 1 )
     if progressbar( o ) 

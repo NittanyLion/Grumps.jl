@@ -69,7 +69,6 @@ GrumpsMicroSpace( d :: GrumpsMicroNoData{T}, mustrecompute :: Bool = false ) whe
 GrumpsMicroSpace( d :: GrumpsMicroData{T}, mustrecompute :: Bool = false ) where {T<:Flt} = GrumpsMicroSpace( dimR( d ), dimS( d ), dimJ( d ), dimθ( d ), mustrecompute, T )
 
 
-@todo 4 "must reset lastδ every time a new θ is computed"
 
 
 struct GrumpsMacroNoSpace{T<:Flt} <: MacroSpace{T}

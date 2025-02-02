@@ -36,11 +36,12 @@ function grumps!( epassed :: Estimator, d :: Data{T}, o :: OptimizationOptions, 
         
 
         δ           = [ zeros( T, dimm ) for dimm ∈ dimδm( d )  ]
+        oldδ       = copy.( δ )
         oldx = zeros( T, dimθ( d ) )
         repeatx = zeros( Int, 1 )
-
+        oldθ = similar( θstart );  fill!( oldθ, typemax( T ) )
         result = Optim.optimize(
-                Optim.only_fgh!(  ( F, G, H, θ ) ->  ObjectiveFunctionθ!( fgh, F, G, H, θ, δ, e, d, o, s ) ),
+                Optim.only_fgh!(  ( F, G, H, θ ) ->  ObjectiveFunctionθ!( fgh, F, G, H, θ, δ, e, d, o, s, oldθ, oldδ ) ),
                     θstart, 
                     NewtonTrustRegion(), 
                     Optim.Options(
