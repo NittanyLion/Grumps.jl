@@ -213,7 +213,7 @@ number of BLAS threads set.
 function GrumpsThreads(; blas = 0, markets = 0, inner = 0 )
     nth = nthreads()
     if blas ≤ 0 || blas >nth
-        blas = min( 32, nth)
+        blas = max( 2, div( nth, 4 ) )
     end
     if markets ≤ 0 || markets > nth
         markets = nth

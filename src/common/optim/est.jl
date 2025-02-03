@@ -22,8 +22,6 @@ function grumps!( epassed :: Estimator, d :: Data{T}, o :: OptimizationOptions, 
 
     e = CheckSanity( epassed, d, o, θstart, seo )
     BLAS.set_num_threads( blasthreads( o ) )
-    @warn "take out the following line"
-    BLAS.set_num_threads( 8 )
     
     printstructure && PrintStructure( e, d, o, θstart, seo )
   
