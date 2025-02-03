@@ -58,7 +58,7 @@ function grumps!( epassed :: Estimator, d :: Data{T}, o :: OptimizationOptions, 
         θ = getθ( θtr, d )
         Unbalance!( θ, d )
 
-        ObjectiveFunctionθ!( fgh, zero(T), nothing, nothing, θtr, δ, e, d, o, s )         # pick up δ
+        ObjectiveFunctionθ!( fgh, zero(T), nothing, nothing, θtr, δ, e, d, o, s , oldθ, oldδ )         # pick up δ
     end
     
     δvec = vcat( δ... )

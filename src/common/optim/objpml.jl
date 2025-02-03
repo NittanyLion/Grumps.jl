@@ -43,7 +43,9 @@ function ObjectiveFunctionθ!(
     e           :: GrumpsPenalized, 
     d           :: GrumpsData{T}, 
     o           :: OptimizationOptions,
-    s           :: GrumpsSpace{T} 
+    s           :: GrumpsSpace{T},
+    lastθtr     :: Vec{ T },
+    lastδ       :: Vec{ Vec{ T } }
     ) where {T<:Flt}
 
     θ = getθ( θtr, d )
