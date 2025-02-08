@@ -25,7 +25,7 @@ function  InsideObjective1!(
          ) 
 
     # now pick up Hδθ to construct dδθ
-    if Hδθ ≠ nothing
+    isnothing( Hδθ ) ||
         MacroObjectiveθ!(
             nothing,
             nothing,
@@ -39,7 +39,6 @@ function  InsideObjective1!(
             m,
             true 
         )
-    end
 
     return F1
 end

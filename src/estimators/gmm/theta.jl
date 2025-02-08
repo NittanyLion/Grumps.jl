@@ -28,12 +28,13 @@ function GMMMoment1!(
  
     ChoiceProbabilities!( s, d, o, δ ) 
 
-    πij = zeros( T, consumers[end], products[end] )
-    @threads :dynamic for i ∈ consumers
-        for j ∈ products
-            πij[i,j] = sum( d.w[r] * s.πrij[r,i,j] for r ∈ weights )
-        end
-    end
+    # πij = zeros( T, consumers[end], products[end] )
+    @tullio πij[i,j] := d.w[r] * s.πrij[r,i,j] 
+    # @threads :dynamic for i ∈ consumers
+    #     for j ∈ products
+    #         πij[i,j] = sum( d.w[r] * s.πrij[r,i,j] for r ∈ weights )
+    #     end
+    # end
 
 
     # first fill the moments
@@ -46,13 +47,11 @@ function GMMMoment1!(
     end
 
     
-    if momdθ == nothing && momdδ == nothing
-        return nothing
-    end
+    isnothing( momdθ ) && isnothing( momdδ ) &&  return nothing
 
     Δb =  zeros( T, J, dθ )
 
-    if momdθ ≠ nothing
+    if !isnothing( momdθ )
         momdθ .= zero( T )
         for i ∈ consumers, r ∈ weights
             ComputeΔb!( Δb, s, d, o, r, i )
@@ -63,9 +62,7 @@ function GMMMoment1!(
         # no derivatives of macro moments with respect to θ            
     end
 
-    if momdδ == nothing
-        return nothing
-    end
+    isnothing( momdδ ) && return nothing
 
     momdδ .= zero( T )
     @threads :dynamic for μ ∈ bmoments

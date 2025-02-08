@@ -22,6 +22,7 @@ function Momentθ1!(
     initializelastδ!( s, m )
     grumpsδ!( fgh.inside, θ, δ, e, d, o, s.marketspace[m], m )      # compute δs in the inner loop and store them in s.δ
 
+   
     F = OutsideMoment1!(  fgh, θ, δ, e, d, 𝒦m, o, s.marketspace[m], computeF, computeG )
 
     freeAθZXθ!( e, s, o, m )
@@ -78,10 +79,7 @@ function ObjectiveFunctionθ!(
         F = dot( mom, mom )
     end
 
-    if !computeG && !computeH
-        return F
-    end
-
+    !computeG && !computeH && return F
 
     δθ = Vec{ Mat{T} }( undef, markets[end] )
     insides = 1:dimδ( d )
@@ -98,18 +96,17 @@ function ObjectiveFunctionθ!(
     G = 2.0 * both'  * mom
 
 
+
     if computeH
         H[:,:] = 2.0 * both' * both
     end
 
     ExponentiationCorrection!( G, H, θ, dimθz( d ) )
 
-    if computeG
-        copyto!( Garg, G )
-    end
+    computeG && copyto!( Garg, G )
 
-    # computeG && println( "gradient = $G")
-    # computeH && println( "Hessian = $(round.(H;digits=5)) ")
+    computeG && @debug "gradient = $G"
+    computeH && @debug "Hessian = $(round.(H;digits=5))\n$(eigvals(H))"
     return F
 end
 

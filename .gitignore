@@ -4,4 +4,6 @@ cleerbug/
 test.todo
 _example.jl
 _*
+*.csv
+
 
