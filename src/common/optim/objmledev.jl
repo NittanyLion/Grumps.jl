@@ -1,7 +1,7 @@
    
-@todo 2 "figure out when to recompute"
-inside( fgh )       = fgh.inside
-outside( fgh )      = fgh.outside
+# @todo 2 "figure out when to recompute"
+# inside( fgh )       = fgh.inside
+# outside( fgh )      = fgh.outside
 
 
 
@@ -18,17 +18,26 @@ function ObjectiveFunctionθ1!(
     computeF    :: Bool,
     computeG    :: Bool,
     computeH    :: Bool,
-    m           :: Int                              
+    m           :: Int,
+    sameθ       :: Bool,
+    lastδ       :: Vec{ T },
+    :: Val{ :dev }                               
     ) where {T<:Flt}
 
     recompute =  currentθ( s ) ≠ θ || mustrecompute( marketspace(s, m) )
     recompute && AθZXθ!( θ, e, d, o, s, m ) 
 
-    δ .= zero( T )
+    copyto!( δ, lastδ )
+    if !sameθ
+        grumpsδ!( inside( fgh ), θ, δ, e, d, o, marketspace( s, m ), m )
+        copyto!( lastδ, δ )
+    end
+
+    # δ .= zero( T )
 
     # if recompute
-    initializelastδ!( s, m )
-    grumpsδ!( inside( fgh ), θ, δ, e, d, o, marketspace( s, m ), m )
+    # initializelastδ!( s, m )
+    # grumpsδ!( inside( fgh ), θ, δ, e, d, o, marketspace( s, m ), m )
     # end
     
 
@@ -44,9 +53,9 @@ function ObjectiveFunctionθ1!(
 end
 
 # these functions are redundant for all but the cheap Grumps estimator
-Πof( e :: GrumpsMLE, 𝒦 :: Mat{T}, δ :: Vec{ Vec{T} } ) where {T<:Flt} = zero( T )
-Πgrad!( G :: Vec{T}, e :: GrumpsMLE, 𝒦 :: Mat{T}, δ :: Vec{ Vec{T} }, δθ :: Vec{ Mat{T} } ) where {T<:Flt} = nothing
-Πhess!( H :: Mat{T}, e :: GrumpsMLE, 𝒦 :: Mat{T}, δ :: Vec{ Vec{T} }, δθ :: Vec{ Mat{T} } ) where {T<:Flt} = nothing
+# Πof( e :: GrumpsMLE, 𝒦 :: Mat{T}, δ :: Vec{ Vec{T} } ) where {T<:Flt} = zero( T )
+# Πgrad!( G :: Vec{T}, e :: GrumpsMLE, 𝒦 :: Mat{T}, δ :: Vec{ Vec{T} }, δθ :: Vec{ Mat{T} } ) where {T<:Flt} = nothing
+# Πhess!( H :: Mat{T}, e :: GrumpsMLE, 𝒦 :: Mat{T}, δ :: Vec{ Vec{T} }, δθ :: Vec{ Mat{T} } ) where {T<:Flt} = nothing
 
 
 # this computes the outside objective function
@@ -62,11 +71,13 @@ function ObjectiveFunctionθ!(
     o           :: OptimizationOptions,
     s           :: GrumpsSpace{T},
     lastθtr     :: Vec{ T },
-    lastδ       :: Vec{ Vec{ T } } 
+    lastδ       :: Vec{ Vec{ T } },
+                :: Val{ :dev } 
     ) where {T<:Flt}
 
 
     sameθ = ( lastθtr == θtr ) ? true : false
+    copyto!( lastθtr, θtr )
 
     θ = getθ( θtr, d )
 
@@ -100,7 +111,10 @@ function ObjectiveFunctionθ!(
             computeF,
             computeG,
             computeH,
-            m                           
+            m,   
+            sameθ,       
+            lastδ[m],
+            Val( :dev )                 
             )
 
         if progressbar( o ) 
