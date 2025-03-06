@@ -13,6 +13,7 @@ function EstimatorFolders( )
             ests = vcat( ests, fn )
         end
     end
+    @info "$ests"
     return ests
 end
 

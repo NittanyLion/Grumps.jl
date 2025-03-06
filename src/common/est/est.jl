@@ -9,9 +9,9 @@ Creates and returns a GrumpsEstimator type.  Grumps is reasonably good at figuri
 *Estimator( "maximum likelihood" )* gives you the unpenalized Grumps maximum likelihood estimator.
 
 The estimators currently programmed include:
-* the full CLER estimator
-* a cheaper alternative to CLER that has the same limit distribution
-* MDLE, i.e CLER without product level moments
+* the full CLEER
+* a cheaper alternative to CLEER that has the same limit distribution
+* MDLE, i.e CLEER without product level moments
 * mixed logit with share constraints
 * mixed logit estimator using micro data only
 * GMM estimators of the same model (in progress: not recommended)
@@ -40,11 +40,11 @@ the *Estimator( s :: String )* method is usually a better choice.
 
 Possible choices include:
 
-*:cler* the full CLER estimator  
+*:cleer* the full CLEER   
 
-*:cheap* a cheaper alternative to CLER that has the same limit distribution
+*:cheap* a cheaper alternative to CLEER that has the same limit distribution
 
-*:mdle* MDLE, i.e CLER without product level moments
+*:mdle* MDLE, i.e CLEER without product level moments
 
 *:shareconstraint* mixed logit with share constraints
 
