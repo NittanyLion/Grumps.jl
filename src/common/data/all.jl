@@ -33,7 +33,7 @@ end
 
 
 function GrumpsData( 
-    id                  :: Any,
+    id                  :: Symbol,
     e                   :: GrumpsEstimator,
     ss                  :: Sources,
     v                   :: Variables,
@@ -177,7 +177,8 @@ function GrumpsData(
     replicable          :: Bool = true
     )  where 𝒯
     
-    return GrumpsData( Val( id( options ) ), e, ss, v, integrators, T; options = options, replicable = replicable )
+    # return GrumpsData( Val( id( options ) ), e, ss, v, integrators, T; options = options, replicable = replicable )
+    return GrumpsData( id( options ), e, ss, v, integrators, T; options = options, replicable = replicable )
 end 
 
 """

@@ -7,6 +7,8 @@ module Grumps
 include( "debug.jl" )
 include( "exports.jl" )
 include( "includes.jl" )
+include( "precompiles.jl" )
+
 
 @info "included all code"
 
