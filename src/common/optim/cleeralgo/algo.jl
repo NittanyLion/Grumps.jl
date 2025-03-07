@@ -46,13 +46,12 @@ end
 
 q22sum( Rⱽ, A, Rp ) = sum( abs, Rⱽ' * A' * Rp )
 
-import LinearAlgebra.norm
 
-norm( v :: VVector{T} ) where {T<:Flt} = sqrt( sum( sum.( abs2, v ) ) )
+Norm( v :: VVector{T} ) where {T<:Flt} = sqrt( sum( sum.( abs2, v ) ) )
 
 function NewterInitialSafeguards( g :: VVector{T}, H :: VMatrix{T}, Δ, λ ) where {T<:Flt}
     λˢ = maximum( ThreadsX.map( x->maximum( -diag( x ) ), H ) )
-    g_norm = norm( g ) 
+    g_norm = Norm( g ) 
     H_norm = maximum( opnorm.( H ) )
     λ̲ = max( zero( T ), λˢ, g_norm / Δ - H_norm )
     λ̄ = g_norm / Δ + H_norm
