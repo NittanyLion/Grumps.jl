@@ -11,6 +11,7 @@ inisout( ::GrumpsCLEER ) = true
 iopattern( ::GrumpsCLEER ) = "111111"
 
 Estimator( ::Val{ :cleer } ) = GrumpsCLEER()
+Estimator( ::Val{ :cler } )  = GrumpsCLEER()
 
 
 const GrumpsCLEERInstance = GrumpsCLEER()

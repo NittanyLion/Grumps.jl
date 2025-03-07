@@ -75,7 +75,7 @@ end
 for nodes ∈ [ 11 ] # , 17, 25]
     for draws ∈ [ 10_000 ]  # , 100_000 ]
         # other descriptive strings are allowed, as are the exact symbols
-        for meth ∈ [ "cheap" ]#, "cler", "mle", "mixed logit" ]#, "mle", "grumps share constraints", "mixed logit"]#, "gmm" ]         
+        for meth ∈ [ "cler", "cheap", "mle", "mixed logit" ]#, "mle", "grumps share constraints", "mixed logit"]#, "gmm" ]         
             # run the program
             sol = myprogram( nodes, draws, meth ) 
             # get the θ coefficients only 

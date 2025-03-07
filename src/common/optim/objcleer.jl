@@ -1,5 +1,5 @@
 # load optimization code
-for f ∈ [ "types", "algo", "ui", "opt" ]
+for f ∈ [ "types", "algo", "ui", "util", "opt" ]
     include( "cleeralgo/$(f).jl" )
 end  
 
