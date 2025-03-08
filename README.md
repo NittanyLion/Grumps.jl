@@ -6,7 +6,7 @@
 
 ![header](https://joris.pinkse.org/paper/grumps/featured_hu67731c91d8ac62b9ec64ef8cd1d226d8_3264943_808x455_fill_q75_lanczos_smart1.jpg)
 
-# Grumps.jl v0.2.5
+# Grumps.jl v0.2.5 (Dev)
 
 ## Overview
 
