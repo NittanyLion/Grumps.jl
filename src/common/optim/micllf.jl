@@ -272,9 +272,7 @@ function MicroObjectiveθ!(
 
 
     computeF && ( F -= sum( log( s.πi[i] ) for i ∈ consumers  ) )       # compute F if so desired
-    if !( computeG || computeH ) 
-        return F                      
-    end
+    computeG || computeH || return F                      
 
     GradientHessianMicroθ!( G, Hθθ, Hδθ, d, s, o )
 

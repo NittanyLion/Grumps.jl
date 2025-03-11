@@ -17,3 +17,4 @@ function fullisequal( x::AbstractArray, y::AbstractArray )
     end
     true
 end
+
